@@ -28,11 +28,12 @@ export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
     const slug = searchParams.get("slug");
+    console.log("Received slug:", slug);
 
     let response;
     if (slug) {
-      // Fetch a specific blog post by slug
       const post = await BlogPost.findOne({ slug });
+      console.log("Fetched post:", post);
       if (!post) {
         response = NextResponse.json(
           { message: "Post not found" },
@@ -42,7 +43,6 @@ export async function GET(req) {
         response = NextResponse.json(post, { status: 200 });
       }
     } else {
-      // Fetch all blog posts if no slug is provided
       const posts = await BlogPost.find();
       response = NextResponse.json(posts, { status: 200 });
     }
