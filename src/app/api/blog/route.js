@@ -30,31 +30,28 @@ export async function GET(req) {
     const slug = searchParams.get("slug");
     console.log("Received slug:", slug);
 
-    let response;
     if (slug) {
-      const post = await BlogPost.findOne({ slug });
+      const decodedSlug = decodeURIComponent(slug);
+      const post = await BlogPost.findOne({ slug: decodedSlug });
       console.log("Fetched post:", post);
       if (!post) {
-        response = NextResponse.json(
-          { message: "Post not found" },
-          { status: 404 },
+        return setCorsHeaders(
+          NextResponse.json({ message: "Post not found" }, { status: 404 }),
         );
-      } else {
-        response = NextResponse.json(post, { status: 200 });
       }
-    } else {
-      const posts = await BlogPost.find();
-      response = NextResponse.json(posts, { status: 200 });
+      return setCorsHeaders(NextResponse.json(post, { status: 200 }));
     }
 
-    return setCorsHeaders(response);
+    const posts = await BlogPost.find();
+    return setCorsHeaders(NextResponse.json(posts, { status: 200 }));
   } catch (error) {
     console.error("Error fetching blog posts:", error);
-    const response = NextResponse.json(
-      { message: "Error fetching blog posts", error: error.message },
-      { status: 500 },
+    return setCorsHeaders(
+      NextResponse.json(
+        { message: "Error fetching blog posts", error: error.message },
+        { status: 500 },
+      ),
     );
-    return setCorsHeaders(response);
   }
 }
 
@@ -68,7 +65,6 @@ export async function POST(req) {
     // Process FormData
     for (const [key, value] of formData.entries()) {
       if (key === "image" && value instanceof Blob) {
-        // Handle file upload
         const buffer = Buffer.from(await value.arrayBuffer());
         const fileName = `${Date.now()}-${value.name}`;
         const filePath = path.join(
@@ -77,33 +73,30 @@ export async function POST(req) {
           fileName,
         );
 
-        // Save the file to the public/images/blog directory
         await writeFile(filePath, buffer);
 
-        imagePath = `/images/blog/${fileName}`; // Public path to access the image
+        imagePath = `/images/blog/${fileName}`;
       } else {
         body[key] = value;
       }
     }
 
-    // Add image path to the blog post data
     if (imagePath) {
       body.image = imagePath;
     }
 
-    // Create a new BlogPost in the database
     const newPost = new BlogPost(body);
     await newPost.save();
 
-    const response = NextResponse.json(newPost, { status: 201 });
-    return setCorsHeaders(response);
+    return setCorsHeaders(NextResponse.json(newPost, { status: 201 }));
   } catch (error) {
     console.error("Failed to create post:", error);
-    const response = NextResponse.json(
-      { message: "Failed to create post", error: error.message },
-      { status: 400 },
+    return setCorsHeaders(
+      NextResponse.json(
+        { message: "Failed to create post", error: error.message },
+        { status: 400 },
+      ),
     );
-    return setCorsHeaders(response);
   }
 }
 

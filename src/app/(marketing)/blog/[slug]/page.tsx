@@ -11,6 +11,7 @@ interface BlogPostPageProps {
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const slug = params?.slug;
+  console.log("Fetching post with slug:", slug);
 
   if (!slug) {
     return (
@@ -24,6 +25,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   }
 
   const post = await fetchPostBySlug(slug);
+  console.log("Fetched post:", post);
 
   if (!post) {
     return (

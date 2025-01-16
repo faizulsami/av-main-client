@@ -7,7 +7,6 @@ const baseURL = process.env.NEXT_PUBLIC_AUTH_DOMAIN
   : "http://localhost:3000/api/blog";
 
 const useBlogAPI = () => {
-  // Fetch all blog posts
   const fetchAllPosts = useCallback(async (): Promise<BlogPost[]> => {
     try {
       const response = await axios.get<BlogPost[]>(baseURL);
@@ -20,11 +19,12 @@ const useBlogAPI = () => {
     }
   }, []);
 
-  // Fetch a blog post by slug
   const fetchPostBySlug = useCallback(
     async (slug: string): Promise<BlogPost> => {
       try {
-        const response = await axios.get<BlogPost>(`${baseURL}/${slug}`);
+        const response = await axios.get<BlogPost>(
+          `${baseURL}?slug=${encodeURIComponent(slug)}`,
+        );
         return response.data;
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.data?.message) {
@@ -36,12 +36,10 @@ const useBlogAPI = () => {
     [],
   );
 
-  // Create a new blog post
   const createPost = useCallback(
     async (postData: Partial<BlogPost>): Promise<BlogPost> => {
       try {
         const response = await axios.post<BlogPost>(baseURL, postData);
-        console.log("Created Post:", response.data);
         return response.data;
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.data?.message) {
@@ -53,7 +51,6 @@ const useBlogAPI = () => {
     [],
   );
 
-  // Update an existing blog post
   const updatePost = useCallback(
     async (slug: string, updatedData: Partial<BlogPost>): Promise<BlogPost> => {
       try {
@@ -61,7 +58,6 @@ const useBlogAPI = () => {
           `${baseURL}/${slug}`,
           updatedData,
         );
-        console.log("Updated Post:", response.data);
         return response.data;
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.data?.message) {
@@ -73,11 +69,9 @@ const useBlogAPI = () => {
     [],
   );
 
-  // Delete a blog post
   const deletePost = useCallback(async (slug: string): Promise<void> => {
     try {
       await axios.delete(`${baseURL}/${slug}`);
-      console.log(`Deleted Post with slug: ${slug}`);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.data?.message) {
         throw new Error(error.response.data.message);
