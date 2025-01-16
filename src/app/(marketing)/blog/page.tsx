@@ -1,3 +1,5 @@
+"use client";
+
 import TitleHeader from "@/components/common/TitleHeader";
 import RecentPosts from "@/components/pages/blog/RecentPosts";
 // import VideosSection from "@/components/pages/blog/VideoSection";
