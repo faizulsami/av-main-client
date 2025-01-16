@@ -27,30 +27,27 @@ export async function OPTIONS() {
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
-    const slug = searchParams.get("slug");
+    const slug = decodeURIComponent(searchParams.get("slug") || "");
     console.log("Received slug:", slug);
 
     if (slug) {
-      const decodedSlug = decodeURIComponent(slug);
-      const post = await BlogPost.findOne({ slug: decodedSlug });
-      console.log("Fetched post:", post);
+      const post = await BlogPost.findOne({ slug });
       if (!post) {
-        return setCorsHeaders(
-          NextResponse.json({ message: "Post not found" }, { status: 404 }),
+        return NextResponse.json(
+          { message: "Post not found" },
+          { status: 404 },
         );
       }
-      return setCorsHeaders(NextResponse.json(post, { status: 200 }));
+      return NextResponse.json(post, { status: 200 });
     }
 
     const posts = await BlogPost.find();
-    return setCorsHeaders(NextResponse.json(posts, { status: 200 }));
+    return NextResponse.json(posts, { status: 200 });
   } catch (error) {
     console.error("Error fetching blog posts:", error);
-    return setCorsHeaders(
-      NextResponse.json(
-        { message: "Error fetching blog posts", error: error.message },
-        { status: 500 },
-      ),
+    return NextResponse.json(
+      { message: "Error fetching blog posts", error: error.message },
+      { status: 500 },
     );
   }
 }
