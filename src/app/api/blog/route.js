@@ -6,33 +6,55 @@ import BlogPost from "./schema";
 
 await connectMongoDB();
 
+// Helper function to set CORS headers
+function setCorsHeaders(response) {
+  response.headers.set("Access-Control-Allow-Origin", "*");
+  response.headers.set(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+  );
+  response.headers.set("Access-Control-Allow-Headers", "Content-Type");
+  return response;
+}
+
+// Handle preflight requests (OPTIONS)
+export async function OPTIONS() {
+  const response = NextResponse.json({}, { status: 204 });
+  return setCorsHeaders(response);
+}
+
 // Handle GET requests (Fetch all blog posts or a specific post by slug)
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
     const slug = searchParams.get("slug");
 
+    let response;
     if (slug) {
       // Fetch a specific blog post by slug
       const post = await BlogPost.findOne({ slug });
       if (!post) {
-        return NextResponse.json(
+        response = NextResponse.json(
           { message: "Post not found" },
           { status: 404 },
         );
+      } else {
+        response = NextResponse.json(post, { status: 200 });
       }
-      return NextResponse.json(post, { status: 200 });
+    } else {
+      // Fetch all blog posts if no slug is provided
+      const posts = await BlogPost.find();
+      response = NextResponse.json(posts, { status: 200 });
     }
 
-    // Fetch all blog posts if no slug is provided
-    const posts = await BlogPost.find();
-    return NextResponse.json(posts, { status: 200 });
+    return setCorsHeaders(response);
   } catch (error) {
     console.error("Error fetching blog posts:", error);
-    return NextResponse.json(
+    const response = NextResponse.json(
       { message: "Error fetching blog posts", error: error.message },
       { status: 500 },
     );
+    return setCorsHeaders(response);
   }
 }
 
@@ -73,13 +95,15 @@ export async function POST(req) {
     const newPost = new BlogPost(body);
     await newPost.save();
 
-    return NextResponse.json(newPost, { status: 201 });
+    const response = NextResponse.json(newPost, { status: 201 });
+    return setCorsHeaders(response);
   } catch (error) {
     console.error("Failed to create post:", error);
-    return NextResponse.json(
+    const response = NextResponse.json(
       { message: "Failed to create post", error: error.message },
       { status: 400 },
     );
+    return setCorsHeaders(response);
   }
 }
 
@@ -92,15 +116,21 @@ export async function PUT(req) {
       new: true,
     });
     if (!updatedPost) {
-      return NextResponse.json({ message: "Post not found" }, { status: 404 });
+      const response = NextResponse.json(
+        { message: "Post not found" },
+        { status: 404 },
+      );
+      return setCorsHeaders(response);
     }
-    return NextResponse.json(updatedPost);
+    const response = NextResponse.json(updatedPost);
+    return setCorsHeaders(response);
   } catch (error) {
     console.error("Failed to update post:", error);
-    return NextResponse.json(
+    const response = NextResponse.json(
       { message: "Failed to update post", error: error.message },
       { status: 400 },
     );
+    return setCorsHeaders(response);
   }
 }
 
@@ -113,15 +143,21 @@ export async function PATCH(req) {
       new: true,
     });
     if (!updatedPost) {
-      return NextResponse.json({ message: "Post not found" }, { status: 404 });
+      const response = NextResponse.json(
+        { message: "Post not found" },
+        { status: 404 },
+      );
+      return setCorsHeaders(response);
     }
-    return NextResponse.json(updatedPost);
+    const response = NextResponse.json(updatedPost);
+    return setCorsHeaders(response);
   } catch (error) {
     console.error("Failed to partially update post:", error);
-    return NextResponse.json(
+    const response = NextResponse.json(
       { message: "Failed to partially update post", error: error.message },
       { status: 400 },
     );
+    return setCorsHeaders(response);
   }
 }
 
@@ -131,14 +167,22 @@ export async function DELETE(req) {
     const { id } = req.nextUrl.searchParams;
     const deletedPost = await BlogPost.findByIdAndDelete(id);
     if (!deletedPost) {
-      return NextResponse.json({ message: "Post not found" }, { status: 404 });
+      const response = NextResponse.json(
+        { message: "Post not found" },
+        { status: 404 },
+      );
+      return setCorsHeaders(response);
     }
-    return NextResponse.json({ message: "Post deleted successfully" });
+    const response = NextResponse.json({
+      message: "Post deleted successfully",
+    });
+    return setCorsHeaders(response);
   } catch (error) {
     console.error("Failed to delete post:", error);
-    return NextResponse.json(
+    const response = NextResponse.json(
       { message: "Failed to delete post", error: error.message },
       { status: 500 },
     );
+    return setCorsHeaders(response);
   }
 }
