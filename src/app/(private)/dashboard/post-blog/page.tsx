@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Image from "next/image";
+import { useToast } from "@/hooks/use-toast";
 
 interface BlogPost {
   title: string;
@@ -41,6 +42,8 @@ export default function PostBlog() {
     description: "",
   });
   const [imagePreview, setImagePreview] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const { toast } = useToast();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -52,19 +55,73 @@ export default function PostBlog() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Submitting post:", post);
+    setLoading(true);
+
+    try {
+      const slug = post.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+
+      const formData = new FormData();
+      formData.append("title", post.title);
+      formData.append("author", post.author);
+      formData.append("date", post.date);
+      formData.append("category", post.category);
+      formData.append("info", post.info);
+      formData.append("description", post.description);
+      formData.append("slug", slug);
+      formData.append("content", post.description);
+
+      if (post.image) {
+        formData.append("image", post.image);
+      }
+
+      const response = await fetch("/api/blog", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to post blog: ${response.statusText}`);
+      }
+
+      toast({
+        title: "Blog posted successfully!",
+        description: "Your blog post has been created and published.",
+      });
+
+      setPost({
+        title: "",
+        author: "",
+        date: "",
+        category: "",
+        info: "",
+        description: "",
+      });
+      setImagePreview("");
+    } catch (error: unknown) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <Card className="mb-4">
-      <CardHeader className="">
+      <CardHeader>
         <CardTitle className="text-2xl font-semibold">
-          Post a new blog
+          Post a New Blog
         </CardTitle>
       </CardHeader>
-
-      <CardContent className=" mt-6">
+      <CardContent className="mt-6">
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Image Upload */}
           <div className="space-y-2">
             <div className="flex items-center space-x-4">
               <Button
@@ -76,7 +133,7 @@ export default function PostBlog() {
                 Choose File
               </Button>
               <span className="text-gray-500">
-                {imagePreview ? "File chosen" : "No File Choosen"}
+                {imagePreview ? "File chosen" : "No File Chosen"}
               </span>
             </div>
             <Input
@@ -98,6 +155,7 @@ export default function PostBlog() {
             )}
           </div>
 
+          {/* Blog Title */}
           <div className="space-y-2">
             <Label htmlFor="title" className="text-gray-700">
               Blog Title
@@ -111,6 +169,7 @@ export default function PostBlog() {
             />
           </div>
 
+          {/* Author and Date */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="author" className="text-gray-700">
@@ -138,6 +197,7 @@ export default function PostBlog() {
             </div>
           </div>
 
+          {/* Category */}
           <div className="space-y-2">
             <Label htmlFor="category" className="text-gray-700">
               Post Category
@@ -159,6 +219,7 @@ export default function PostBlog() {
             </Select>
           </div>
 
+          {/* Blog Info */}
           <div className="space-y-2">
             <Label htmlFor="info" className="text-gray-700">
               Blog Info
@@ -172,6 +233,7 @@ export default function PostBlog() {
             />
           </div>
 
+          {/* Blog Description */}
           <div className="space-y-2">
             <Label htmlFor="description" className="text-gray-700">
               Post Description
@@ -188,13 +250,13 @@ export default function PostBlog() {
           </div>
         </form>
       </CardContent>
-
-      <CardFooter className="">
+      <CardFooter>
         <Button
           onClick={handleSubmit}
+          disabled={loading}
           className="w-full bg-soft-paste hover:bg-soft-paste-active text-white font-semibold py-6"
         >
-          Post New Blog
+          {loading ? "Posting..." : "Post New Blog"}
         </Button>
       </CardFooter>
     </Card>
