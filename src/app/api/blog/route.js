@@ -4,11 +4,34 @@ import path from "path";
 import connectMongoDB from "../db";
 import BlogPost from "./schema";
 
+// Import CORS package
+import Cors from "cors";
+
+// Initialize CORS
+const cors = Cors({
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+});
+
+// Middleware to run CORS
+function runMiddleware(req, res, fn) {
+  return new Promise((resolve, reject) => {
+    fn(req, res, (result) => {
+      if (result instanceof Error) {
+        return reject(result);
+      }
+      return resolve(result);
+    });
+  });
+}
+
 await connectMongoDB();
 
 // Handle GET requests (Fetch all blog posts or a specific post by slug)
 export async function GET(req) {
   try {
+    await runMiddleware(req, { status: () => {}, setHeader: () => {} }, cors);
+
     const { searchParams } = new URL(req.url);
     const slug = searchParams.get("slug");
 
@@ -39,6 +62,8 @@ export async function GET(req) {
 // Handle POST requests (Create a new blog post)
 export async function POST(req) {
   try {
+    await runMiddleware(req, { status: () => {}, setHeader: () => {} }, cors);
+
     const formData = await req.formData();
     const body = {};
     let imagePath = "";
@@ -86,6 +111,8 @@ export async function POST(req) {
 // Handle PUT requests (Update a blog post by ID)
 export async function PUT(req) {
   try {
+    await runMiddleware(req, { status: () => {}, setHeader: () => {} }, cors);
+
     const { id } = req.nextUrl.searchParams;
     const body = await req.json();
     const updatedPost = await BlogPost.findByIdAndUpdate(id, body, {
@@ -107,6 +134,8 @@ export async function PUT(req) {
 // Handle PATCH requests (Partial update of a blog post by ID)
 export async function PATCH(req) {
   try {
+    await runMiddleware(req, { status: () => {}, setHeader: () => {} }, cors);
+
     const { id } = req.nextUrl.searchParams;
     const body = await req.json();
     const updatedPost = await BlogPost.findByIdAndUpdate(id, body, {
@@ -128,6 +157,8 @@ export async function PATCH(req) {
 // Handle DELETE requests (Delete a blog post by ID)
 export async function DELETE(req) {
   try {
+    await runMiddleware(req, { status: () => {}, setHeader: () => {} }, cors);
+
     const { id } = req.nextUrl.searchParams;
     const deletedPost = await BlogPost.findByIdAndDelete(id);
     if (!deletedPost) {

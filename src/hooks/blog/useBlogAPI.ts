@@ -2,7 +2,9 @@ import { useCallback } from "react";
 import axios from "axios";
 import { BlogPost } from "@/types/blog.types";
 
-const baseURL = `${process.env.NEXT_PUBLIC_AUTH_DOMAIN}/api/blog`;
+const baseURL = process.env.NEXT_PUBLIC_AUTH_DOMAIN
+  ? `${process.env.NEXT_PUBLIC_AUTH_DOMAIN}/api/blog`
+  : "http://localhost:3000/api/blog";
 
 const useBlogAPI = () => {
   // Fetch all blog posts
