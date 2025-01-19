@@ -27,6 +27,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   try {
     // Fetch the blog post by slug
     const post = await fetchPostBySlug(decodedSlug);
+    console.log("Fetched post on BlogPostPage:", post);
 
     if (!post) {
       return (
