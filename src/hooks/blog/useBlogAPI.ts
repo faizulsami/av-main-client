@@ -23,7 +23,7 @@ const useBlogAPI = () => {
     async (slug: string): Promise<BlogPost> => {
       try {
         const response = await axios.get<BlogPost>(
-          `${baseURL}/${encodeURIComponent(slug)}`,
+          `${baseURL}?slug=${encodeURIComponent(slug)}`,
         );
         return response.data;
       } catch (error) {
