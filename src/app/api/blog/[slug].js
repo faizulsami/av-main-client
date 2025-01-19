@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import connectMongoDB from "../db";
-import BlogPost from "./schema";
+import connectMongoDB from "../../db";
+import BlogPost from "../schema";
 
 await connectMongoDB();
 
@@ -42,89 +42,6 @@ export async function GET(req) {
     console.error("Error fetching blog post:", error);
     const response = NextResponse.json(
       { message: "Error fetching blog post", error: error.message },
-      { status: 500 },
-    );
-    return setCorsHeaders(response);
-  }
-}
-
-// Handle PUT requests (Update a blog post by slug)
-export async function PUT(req) {
-  try {
-    const { pathname } = new URL(req.url);
-    const slug = decodeURIComponent(pathname.split("/").pop());
-    const body = await req.json();
-    const updatedPost = await BlogPost.findOneAndUpdate({ slug }, body, {
-      new: true,
-    });
-    if (!updatedPost) {
-      const response = NextResponse.json(
-        { message: "Post not found" },
-        { status: 404 },
-      );
-      return setCorsHeaders(response);
-    }
-    const response = NextResponse.json(updatedPost);
-    return setCorsHeaders(response);
-  } catch (error) {
-    console.error("Failed to update post:", error);
-    const response = NextResponse.json(
-      { message: "Failed to update post", error: error.message },
-      { status: 400 },
-    );
-    return setCorsHeaders(response);
-  }
-}
-
-// Handle PATCH requests (Partial update of a blog post by slug)
-export async function PATCH(req) {
-  try {
-    const { pathname } = new URL(req.url);
-    const slug = decodeURIComponent(pathname.split("/").pop());
-    const body = await req.json();
-    const updatedPost = await BlogPost.findOneAndUpdate({ slug }, body, {
-      new: true,
-    });
-    if (!updatedPost) {
-      const response = NextResponse.json(
-        { message: "Post not found" },
-        { status: 404 },
-      );
-      return setCorsHeaders(response);
-    }
-    const response = NextResponse.json(updatedPost);
-    return setCorsHeaders(response);
-  } catch (error) {
-    console.error("Failed to partially update post:", error);
-    const response = NextResponse.json(
-      { message: "Failed to partially update post", error: error.message },
-      { status: 400 },
-    );
-    return setCorsHeaders(response);
-  }
-}
-
-// Handle DELETE requests (Delete a blog post by slug)
-export async function DELETE(req) {
-  try {
-    const { pathname } = new URL(req.url);
-    const slug = decodeURIComponent(pathname.split("/").pop());
-    const deletedPost = await BlogPost.findOneAndDelete({ slug });
-    if (!deletedPost) {
-      const response = NextResponse.json(
-        { message: "Post not found" },
-        { status: 404 },
-      );
-      return setCorsHeaders(response);
-    }
-    const response = NextResponse.json({
-      message: "Post deleted successfully",
-    });
-    return setCorsHeaders(response);
-  } catch (error) {
-    console.error("Failed to delete post:", error);
-    const response = NextResponse.json(
-      { message: "Failed to delete post", error: error.message },
       { status: 500 },
     );
     return setCorsHeaders(response);
