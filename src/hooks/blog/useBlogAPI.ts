@@ -23,7 +23,7 @@ const useBlogAPI = () => {
     async (slug: string): Promise<BlogPost> => {
       try {
         const response = await axios.get<BlogPost>(
-          `${baseURL}?slug=${encodeURIComponent(slug)}`,
+          `${baseURL}/${encodeURIComponent(slug)}`,
         );
         return response.data;
       } catch (error) {
@@ -55,7 +55,7 @@ const useBlogAPI = () => {
     async (slug: string, updatedData: Partial<BlogPost>): Promise<BlogPost> => {
       try {
         const response = await axios.put<BlogPost>(
-          `${baseURL}/${slug}`,
+          `${baseURL}/${encodeURIComponent(slug)}`,
           updatedData,
         );
         return response.data;
@@ -71,7 +71,7 @@ const useBlogAPI = () => {
 
   const deletePost = useCallback(async (slug: string): Promise<void> => {
     try {
-      await axios.delete(`${baseURL}/${slug}`);
+      await axios.delete(`${baseURL}/${encodeURIComponent(slug)}`);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.data?.message) {
         throw new Error(error.response.data.message);
