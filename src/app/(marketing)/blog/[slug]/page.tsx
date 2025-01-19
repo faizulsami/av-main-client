@@ -9,7 +9,7 @@ interface BlogPostPageProps {
 
 // Fetch and render the blog post
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
-  const { slug } = await params;
+  const { slug } = params;
   const decodedSlug = decodeURIComponent(slug);
   console.log("Fetching post with slug:", decodedSlug);
 

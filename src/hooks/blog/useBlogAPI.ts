@@ -6,8 +6,6 @@ const baseURL = process.env.NEXT_PUBLIC_AUTH_DOMAIN
   ? `${process.env.NEXT_PUBLIC_AUTH_DOMAIN}/api/blog`
   : "http://localhost:3000/api/blog";
 
-// const baseURL = "http://localhost:3000/api/blog";
-
 const useBlogAPI = () => {
   const fetchAllPosts = useCallback(async (): Promise<BlogPost[]> => {
     try {
