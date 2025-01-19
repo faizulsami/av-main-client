@@ -73,70 +73,78 @@ export function Footer() {
 
   return (
     <footer className="w-full bg-violet text-white">
-      <div className="container mx-auto px-4 py-12 flex flex-col items-center">
-        <div className="mb-12">
-          <Image
-            src="/images/av.png"
-            alt="Anonymous Voice"
-            width={60}
-            height={60}
-            priority
-            className="w-auto h-auto"
-          />
-        </div>
+      <div className="relative">
+        <div className="container mx-auto px-4 py-12 flex flex-col items-center relative z-10">
+          <div className="mb-12">
+            <Image
+              src="/images/av.png"
+              alt="Anonymous Voice"
+              width={60}
+              height={60}
+              priority
+              className="w-auto h-auto"
+            />
+          </div>
 
-        <div className="w-full max-w-xl mb-10 text-center">
-          <h2 className="text-2xl font-bold mb-6">
-            Subscribe To Our Newsletter
-          </h2>
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col sm:flex-row gap-4 px-4"
-          >
-            <div className="flex-1">
-              <Input
-                {...register("email")}
-                type="email"
-                placeholder="Email Address"
-                className="h-11 bg-transparent border-white/80 text-white placeholder:text-white/80 font-semibold"
-              />
-              {errors.email && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.email.message}
-                </p>
-              )}
-            </div>
-            <Button
-              type="submit"
-              size="lg"
-              disabled={isSubmitting}
-              className=" bg-white text-violet hover:bg-white/90 transition-colors disabled:opacity-50 font-semibold"
+          <div className="w-full max-w-xl mb-10 text-center">
+            <h2 className="text-2xl font-bold mb-6">
+              Subscribe To Our Newsletter
+            </h2>
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="flex flex-col sm:flex-row gap-4 px-4"
             >
-              {isSubmitting ? "Subscribing..." : "Submit"}
-            </Button>
-          </form>
+              <div className="flex-1">
+                <Input
+                  {...register("email")}
+                  type="email"
+                  placeholder="Email Address"
+                  className="h-11 bg-transparent border-white/80 text-white placeholder:text-white/80 font-semibold"
+                />
+                {errors.email && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.email.message}
+                  </p>
+                )}
+              </div>
+              <Button
+                type="submit"
+                size="lg"
+                disabled={isSubmitting}
+                className=" bg-white text-violet hover:bg-white/90 transition-colors disabled:opacity-50 font-semibold"
+              >
+                {isSubmitting ? "Subscribing..." : "Submit"}
+              </Button>
+            </form>
+          </div>
+
+          <nav className="w-full max-w-4xl mb-8">
+            <ul className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-center text-xs font-semibold">
+              {footerLinks.map(({ href, label }) => (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    className="hover:underline underline-offset-4 transition-all"
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <Separator className="w-full max-w-4xl mb-4" />
+
+          <div className="text-xs text-white/80">
+            © Copyright {currentYear} - Anonymous Voice. All rights reserved.
+          </div>
         </div>
-
-        <nav className="w-full max-w-4xl mb-8">
-          <ul className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-center text-xs font-semibold">
-            {footerLinks.map(({ href, label }) => (
-              <li key={href}>
-                <Link
-                  href={href}
-                  className="hover:underline underline-offset-4 transition-all"
-                >
-                  {label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <Separator className="w-full max-w-4xl mb-4" />
-
-        <div className="text-xs text-white/80">
-          © Copyright {currentYear} - Anonymous Voice. All rights reserved.
-        </div>
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: "url('/images/overlay/footer-overlay.png')",
+          }}
+        />
       </div>
     </footer>
   );

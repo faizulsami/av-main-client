@@ -437,7 +437,7 @@ const Header: React.FC = () => {
               alt="Anonymous Voice Logo"
               width={100}
               height={100}
-              className="w-auto h-12 sm:h-14"
+              className="w-auto h-12 sm:h-16"
             />
           </Link>
 
