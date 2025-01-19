@@ -33,22 +33,26 @@ export async function GET(req) {
     if (slug) {
       const post = await BlogPost.findOne({ slug });
       if (!post) {
-        return NextResponse.json(
+        const response = NextResponse.json(
           { message: "Post not found" },
           { status: 404 },
         );
+        return setCorsHeaders(response);
       }
-      return NextResponse.json(post, { status: 200 });
+      const response = NextResponse.json(post, { status: 200 });
+      return setCorsHeaders(response);
     }
 
     const posts = await BlogPost.find();
-    return NextResponse.json(posts, { status: 200 });
+    const response = NextResponse.json(posts, { status: 200 });
+    return setCorsHeaders(response);
   } catch (error) {
     console.error("Error fetching blog posts:", error);
-    return NextResponse.json(
+    const response = NextResponse.json(
       { message: "Error fetching blog posts", error: error.message },
       { status: 500 },
     );
+    return setCorsHeaders(response);
   }
 }
 
@@ -85,15 +89,15 @@ export async function POST(req) {
     const newPost = new BlogPost(body);
     await newPost.save();
 
-    return setCorsHeaders(NextResponse.json(newPost, { status: 201 }));
+    const response = NextResponse.json(newPost, { status: 201 });
+    return setCorsHeaders(response);
   } catch (error) {
     console.error("Failed to create post:", error);
-    return setCorsHeaders(
-      NextResponse.json(
-        { message: "Failed to create post", error: error.message },
-        { status: 400 },
-      ),
+    const response = NextResponse.json(
+      { message: "Failed to create post", error: error.message },
+      { status: 400 },
     );
+    return setCorsHeaders(response);
   }
 }
 
