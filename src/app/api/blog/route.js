@@ -24,35 +24,29 @@ export async function OPTIONS() {
 }
 
 // Handle GET requests (Fetch all blog posts or a specific post by slug)
+
 export async function GET(req) {
   try {
-    const { searchParams } = new URL(req.url);
-    const slug = decodeURIComponent(searchParams.get("slug") || "");
-    console.log("Received slug:", slug);
+    const url = new URL(req.url);
+    const slug = url.searchParams.get("slug");
 
     if (slug) {
-      const post = await BlogPost.findOne({ slug });
+      const post = await BlogPost.findOne({ slug: decodeURIComponent(slug) });
       if (!post) {
-        const response = NextResponse.json(
-          { message: "Post not found" },
-          { status: 404 },
+        return setCorsHeaders(
+          NextResponse.json({ message: "Post not found" }, { status: 404 }),
         );
-        return setCorsHeaders(response);
       }
-      const response = NextResponse.json(post, { status: 200 });
-      return setCorsHeaders(response);
+      return setCorsHeaders(NextResponse.json(post));
     }
 
     const posts = await BlogPost.find();
-    const response = NextResponse.json(posts, { status: 200 });
-    return setCorsHeaders(response);
+    return setCorsHeaders(NextResponse.json(posts));
   } catch (error) {
-    console.error("Error fetching blog posts:", error);
-    const response = NextResponse.json(
-      { message: "Error fetching blog posts", error: error.message },
-      { status: 500 },
+    console.error("Error in GET:", error);
+    return setCorsHeaders(
+      NextResponse.json({ message: error.message }, { status: 500 }),
     );
-    return setCorsHeaders(response);
   }
 }
 
