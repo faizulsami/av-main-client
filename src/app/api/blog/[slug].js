@@ -30,6 +30,7 @@ export async function GET(req) {
 
     const post = await BlogPost.findOne({ slug });
     if (!post) {
+      console.log("Post not found for slug:", slug);
       const response = NextResponse.json(
         { message: "Post not found" },
         { status: 404 },
