@@ -11,7 +11,7 @@ export function VideoSection({ imageUrl, videoUrl }: VideoSectionProps) {
   };
 
   return (
-    <div className="lg:max-w-4xl mt-20">
+    <div className="lg:max-w-3xl mt-20 mx-auto">
       <div
         className="relative rounded-3xl overflow-hidden aspect-video cursor-pointer group"
         onClick={handlePlay}
