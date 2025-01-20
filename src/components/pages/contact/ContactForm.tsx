@@ -1,12 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useFormState } from "react-dom";
-import {
-  contactFormSchema,
-  type ContactFormData,
-} from "@/lib/validations/contact";
+import * as z from "zod";
+import emailjs from "@emailjs/browser";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,11 +18,25 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { submitContactForm } from "@/lib/actions";
+
+const formSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  email: z.string().email("Invalid email address"),
+  phoneNumber: z.string().optional(),
+  subject: z.enum(["General Inquiry", "Support", "Partnership", "Other"]),
+  message: z.string().min(10, "Message must be at least 10 characters long"),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 export default function ContactForm() {
-  const form = useForm<ContactFormData>({
-    resolver: zodResolver(contactFormSchema),
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
@@ -35,11 +47,48 @@ export default function ContactForm() {
     },
   });
 
-  const [state, formAction] = useFormState(submitContactForm, null);
+  const onSubmit = async (data: FormValues) => {
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const serviceId = process.env.EMAILJS_SERVICE_ID;
+      const templateId = process.env.EMAILJS_TEMPLATE_ID;
+      const userId = process.env.EMAILJS_USER_ID;
+
+      if (!serviceId || !templateId || !userId) {
+        throw new Error(
+          "Missing EmailJS configuration in environment variables.",
+        );
+      }
+
+      await emailjs.send(
+        serviceId,
+        templateId,
+        {
+          from_name: `${data.firstName} ${data.lastName}`,
+          from_email: data.email,
+          phone_number: data.phoneNumber,
+          subject: data.subject,
+          message: data.message,
+        },
+        userId,
+      );
+      setSubmitSuccess(true);
+      form.reset();
+    } catch (error) {
+      console.error("Error sending email:", error);
+      setSubmitError(
+        "An error occurred while sending the message. Please try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <Form {...form}>
-      <form action={formAction} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
@@ -92,7 +141,7 @@ export default function ContactForm() {
             name="phoneNumber"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Phone Number</FormLabel>
+                <FormLabel>Phone Number (Optional)</FormLabel>
                 <FormControl>
                   <Input placeholder="+1 (555) 000-0000" {...field} />
                 </FormControl>
@@ -152,13 +201,19 @@ export default function ContactForm() {
           )}
         />
 
-        {state?.error && <p className="text-red-500 text-sm">{state.error}</p>}
+        {submitError && <p className="text-red-500 text-sm">{submitError}</p>}
+        {submitSuccess && (
+          <p className="text-green-500 text-sm">
+            Thank you for your message. We&apos;ll get back to you soon!
+          </p>
+        )}
 
         <Button
           type="submit"
           className="w-full md:w-auto bg-[#86C6C6] hover:bg-[#78b7b7]"
+          disabled={isSubmitting}
         >
-          Send Message
+          {isSubmitting ? "Sending..." : "Send Message"}
         </Button>
       </form>
     </Form>
