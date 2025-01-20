@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 // import { Button } from "@/components/ui/button";
-import { MessageCircle } from "lucide-react";
 
 interface WhoWeAreProps {
   image: string;
@@ -59,11 +58,18 @@ export default function WhoWeAre() {
 
       {/* Chat Icon - Only visible on larger screens */}
       <motion.div
-        className="absolute top-4 right-4 border-2 border-soft-paste-hover bg-soft-paste p-1 rounded-full"
-        {...fadeIn}
-        transition={{ delay: 0.8 }}
+        className="absolute top-1 right-1 before:p-1 rounded-full"
+        initial="initial"
+        animate="animate"
+        variants={fadeIn}
+        transition={{ delay: 0.8, duration: 0.5, ease: "easeInOut" }}
       >
-        <MessageCircle className="w-6 h-6 text-soft-paste-light" />
+        <Image
+          src={"/images/icons/chat-bubble-icon.png"}
+          alt="Chat Bubble Icon"
+          width={36}
+          height={36}
+        />
       </motion.div>
 
       {/* Main Content Container */}

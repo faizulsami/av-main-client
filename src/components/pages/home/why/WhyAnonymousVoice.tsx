@@ -38,10 +38,11 @@ export default function WhyAnonymousVoice() {
           </div>
 
           {/* Right Column */}
-          <div className="relative">
+          <div className="relative border">
             <div className="absolute inset-0 -z-10">
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[140%] aspect-square rounded-full bg-[#86C6C6]/10" />
-              <div className="absolute right-[10%] top-[40%] -translate-y-1/2 w-[140%] aspect-square rounded-full bg-[#9B8ACB]/10" />
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[100%] aspect-square rounded-full bg-[#86C6C6]/10" />
+
+              <div className="absolute right-[10%] top-1/2 -translate-y-1/2 w-[100%] aspect-square rounded-full bg-[#9B8ACB]/10" />
             </div>
             <div className="relative aspect-[4/3] rounded-3xl overflow-hidden">
               <Image
