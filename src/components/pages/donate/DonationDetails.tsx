@@ -55,7 +55,7 @@ export default function DonationDetails() {
                 <span className="font-medium">Bkash:</span> 110*****9577
               </div>
               <div>
-                <span className="font-medium">Nagad:</span> 215462321548.
+                <span className="font-medium">Nagad:</span> 215462321548
               </div>
               <div>
                 <span className="font-medium">Rocket:</span> 12458796542
@@ -65,6 +65,45 @@ export default function DonationDetails() {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Support Our Mission */}
+        <div className="rounded-xl p-6 text-muted-foreground bg-soft-paste-light-hover leading-relaxed text-sm mb-8">
+          <h2 className="text-xl font-bold text-center text-violet mb-4">
+            Support Our Mission
+          </h2>
+          <p>
+            Anonymous Voices is a growing platform, your generosity can help us
+            expand our reach and continue providing support to those in need.
+            Every contribution, no matter how small, can make a big impact.
+          </p>
+          <ul className="list-disc list-inside mt-4">
+            <li>Expand our services and reach even more individuals.</li>
+            <li>
+              Train more volunteers to equip them with the skills to offer
+              greater support.
+            </li>
+            <li>
+              Improve our platform to ensure it remains user-friendly, safe, and
+              accessible to all.
+            </li>
+            <li>
+              Innovate mental health support by allowing us to offer
+              professional counseling services in the future, ensuring
+              individuals receive the expert care they need.
+            </li>
+          </ul>
+          <p className="mt-4">
+            If you’re interested in supporting our cause, please connect with us
+            via our official email, and we’ll share the necessary details to
+            guide you through the donation process.
+          </p>
+          <p className="mt-4 font-medium">Our Email address</p>
+          <p>anonymous.voices.av@gmail.com</p>
+          <p className="mt-4">
+            Thank you for believing in our mission and for helping us create a
+            space where everyone feels heard and valued.
+          </p>
         </div>
 
         {/* Thank You Message */}

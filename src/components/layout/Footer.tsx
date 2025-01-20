@@ -27,7 +27,7 @@ export function Footer() {
   const footerLinks = [
     { href: "/contact", label: "Contact Us" },
     { href: "/faq", label: "FAQ" },
-    // { href: "/crisis", label: "Crisis" },
+    { href: "/crisis", label: "Crisis" },
     { href: "/privacy", label: "Privacy & Policy" },
     { href: "/terms", label: "Terms & Conditions" },
   ];

@@ -16,7 +16,7 @@ export default function Page() {
         className="bg-cover bg-center bg-no-repeat border"
         style={{ backgroundImage: "url('/images/overlay/grainy-overlay.png')" }}
       >
-        <div className="container w-full mx-auto px-4 md:px-8 lg:px-16 xl:px-24">
+        <div className="container w-full mx-auto px-2 md:px-8 lg:px-16 xl:px-24">
           <WhoWeAre />
           <WhatWeDo />
           {/* <HonourableVolunteers /> */}
