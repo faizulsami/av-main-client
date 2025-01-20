@@ -5,42 +5,17 @@ const members: TeamMember[] = [
   {
     name: "Sarah Thompson",
     role: "Volunteer",
-    image: "/images/sarah2.png",
+    image: "/images/volunteers/volunteer1.png",
   },
   {
-    name: "John Martinez",
+    name: "Jessica Martinez",
     role: "Volunteer",
-    image: "/images/john2.png",
-  },
-  {
-    name: "Emily Chen",
-    role: "Volunteer",
-    image: "/images/emily2.png",
-  },
-  {
-    name: "Michael Patel",
-    role: "Volunteer",
-    image: "/images/michael2.png",
-  },
-  {
-    name: "Sarah Thompson",
-    role: "Volunteer",
-    image: "/images/sarah3.png",
-  },
-  {
-    name: "John Martinez",
-    role: "Volunteer",
-    image: "/images/john3.png",
+    image: "/images/volunteers/volunteer2.png",
   },
   {
     name: "Emily Chen",
     role: "Volunteer",
-    image: "/images/emily3.png",
-  },
-  {
-    name: "Michael Patel",
-    role: "Volunteer",
-    image: "/images/michael3.png",
+    image: "/images/volunteers/volunteer3.png",
   },
 ];
 
@@ -52,7 +27,7 @@ export default function LeadershipSection() {
           Our Leadership
         </h2>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mb-8">
+        <div className="container mx-auto max-w-4xl grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 mb-8">
           {members.map((member, index) => (
             <div key={index} className="flex flex-col items-center">
               <div className="relative w-full aspect-square rounded-xl overflow-hidden mb-4">
@@ -60,14 +35,13 @@ export default function LeadershipSection() {
                   src={member.image}
                   alt={member.name}
                   className="object-cover"
-                  layout="fill"
+                  width={1000}
+                  height={1000}
                   loading="lazy"
                 />
               </div>
-              <h3 className="font-medium text-gray-900 text-center">
-                {member.name}
-              </h3>
-              <p className="text-gray-600 text-sm">{member.role}</p>
+              <h3 className="font-semibold text-center">{member.name}</h3>
+              <p className="text-sm text-muted-foreground">{member.role}</p>
             </div>
           ))}
         </div>

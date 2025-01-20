@@ -8,13 +8,18 @@ import QuotationsSection from "@/components/pages/about/QuotationsSection";
 
 const AboutPage = () => {
   return (
-    <div className="container mx-auto px-4 py-8 space-y-12 md:space-y-20">
-      <TitleHeader title="Want To Know More About Us?" />
-      <OurJourney />
-      <LeadershipSection />
-      <MissionSection />
-      <VisionSection />
-      <QuotationsSection />
+    <div
+      className="w-full"
+      style={{ backgroundImage: "url('/images/overlay/about-overlay.png')" }}
+    >
+      <div className="container mx-auto px-4 py-8 space-y-12 md:space-y-20">
+        <TitleHeader title="Want To Know More About Us?" />
+        <OurJourney />
+        <LeadershipSection />
+        <MissionSection />
+        <VisionSection />
+        <QuotationsSection />
+      </div>
     </div>
   );
 };
