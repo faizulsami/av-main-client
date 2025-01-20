@@ -9,10 +9,10 @@ export default function VisionSection() {
         <div className="flex flex-col items-center rounded-xl overflow-hidden text-center bg-soft-paste-light-hover p-4 gap-4 max-w-4xl mx-auto">
           <div className="prose prose-lg text-muted-foreground text-sm w-full">
             <p>
-              Our vision is to create a world where mental health is prioritized
-              and accessible to all. We aim to break the stigma surrounding
-              mental health and provide a supportive community where individuals
-              can seek help without fear of judgment.
+              To create a world where every voice is heard, emotional well-being
+              is prioritised, and mental health awareness eliminates the stigma
+              around expressing one’s feelings, ensuring that no one faces their
+              emotions in isolation.
             </p>
             <br />
             <p>

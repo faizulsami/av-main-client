@@ -9,10 +9,9 @@ export default function MissionSection() {
         <div className="flex flex-col items-center rounded-xl overflow-hidden text-center bg-soft-paste-light-hover p-4 gap-4 max-w-4xl mx-auto">
           <div className="prose prose-lg text-muted-foreground text-sm h-full w-full">
             <p>
-              Our mission is to provide accessible and compassionate mental
-              health care to everyone in need. We are dedicated to creating a
-              safe and supportive environment where individuals can seek help
-              without fear of judgment.
+              To provide a safe, anonymous platform where individuals can freely
+              express their emotions, where every emotion is validated, and
+              sharing becomes a step toward emotional well-being.
             </p>
             <br />
             <p>
