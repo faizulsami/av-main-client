@@ -52,19 +52,9 @@ export default function ContactForm() {
     setSubmitError(null);
 
     try {
-      const serviceId = process.env.EMAILJS_SERVICE_ID;
-      const templateId = process.env.EMAILJS_TEMPLATE_ID;
-      const userId = process.env.EMAILJS_USER_ID;
-
-      if (!serviceId || !templateId || !userId) {
-        throw new Error(
-          "Missing EmailJS configuration in environment variables.",
-        );
-      }
-
       await emailjs.send(
-        serviceId,
-        templateId,
+        "av_mail_service",
+        "template_zq8s5br",
         {
           from_name: `${data.firstName} ${data.lastName}`,
           from_email: data.email,
@@ -72,8 +62,9 @@ export default function ContactForm() {
           subject: data.subject,
           message: data.message,
         },
-        userId,
+        "oWgFw-BVvUQC-W8HC",
       );
+
       setSubmitSuccess(true);
       form.reset();
     } catch (error) {
