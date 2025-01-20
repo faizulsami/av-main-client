@@ -8,49 +8,40 @@ export default function OurJourney() {
           Our Journey
         </h2>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-          {/* Left Column - Image */}
-          <div className="relative w-full h-96 lg:h-full rounded-xl border overflow-hidden shadow-lg">
-            <Image
-              src="/images/who-we-are.png"
-              alt="Supportive mental health consultation"
-              className="w-full object-cover"
-              layout="fill"
-              loading="lazy"
-            />
-          </div>
-
-          {/* Right Column - Content */}
-          <div className="space-y-6 text-center lg:text-start">
-            <h3 className="text-xl md:text-2xl font-bold text-soft-paste leading-tight">
-              Committed to Your Mental Wellness with Compassionate Care
+        <div className="flex flex-col items-center gap-6">
+          <div className="space-y-6 text-center max-w-4xl mx-auto">
+            <h3 className="text-xl md:text-2xl font-bold text-soft-paste leading-tight ">
+              Committed to Your Mental <br /> Wellness with Compassionate Care
             </h3>
 
             <div className="space-y-4 text-muted-foreground text-sm">
               <p className="leading-relaxed">
-                At Anonymous Voice, we believe that every voice deserves to be
-                heard, especially when it comes to mental health. We are
-                dedicated to creating a safe, supportive space where individuals
-                can seek guidance, share their experiences, and find solace
-                without judgment. Our team of compassionate professionals is
-                committed to providing personalized mental health services that
-                prioritize your unique journey. We understand that reaching out
-                for help can be daunting, which is why we focus on creating a
-                comfortable and confidential environment.
+                Our journey began with a simple mission: to provide accessible
+                and compassionate mental health care to everyone in need. Over
+                the years, we have grown into a community of dedicated
+                professionals and volunteers who are passionate about making a
+                difference in people&apos;s lives.
               </p>
-
               <p className="leading-relaxed">
-                At Anonymous Voice, we believe that every voice deserves to be
-                heard, especially when it comes to mental health. We are
-                dedicated to creating a safe, supportive space where individuals
-                can seek guidance, share their experiences, and find solace
-                without judgment. Our team of compassionate professionals is
-                committed to providing personalized mental health services that
-                prioritize your unique journey. We understand that reaching out
-                for help can be daunting, which is why we focus on creating a
-                comfortable and confidential environment.
+                We believe that mental wellness is a fundamental right, and we
+                strive to create a safe and supportive environment where
+                individuals can seek help without fear of judgment. Our team is
+                committed to offering personalized care, innovative therapies,
+                and continuous support to help you achieve your mental health
+                goals.
               </p>
             </div>
+          </div>
+
+          <div className="relative w-full max-w-4xl mx-auto rounded-xl border overflow-hidden shadow-lg">
+            <Image
+              src="/images/about/who-we-are.webp"
+              alt="Supportive mental health consultation"
+              className="w-full object-cover text-xs"
+              loading="lazy"
+              width={1200}
+              height={600}
+            />
           </div>
         </div>
       </div>

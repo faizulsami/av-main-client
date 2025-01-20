@@ -18,7 +18,7 @@ export default function QuotationsSection() {
           &quot;Every story deserves a listener.&quot;
         </p>
 
-        <div className="space-y-4">
+        <div className="space-y-4 max-w-4xl mx-auto">
           {quotes.map((quote, index) => (
             <QuoteCard key={index}>{quote}</QuoteCard>
           ))}

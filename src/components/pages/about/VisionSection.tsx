@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 export default function VisionSection() {
   return (
     <section className="w-full py-16">
@@ -8,44 +6,37 @@ export default function VisionSection() {
           Our Vision
         </h2>
 
-        <div className="flex flex-col lg:flex-row items-center rounded-xl overflow-hidden text-center lg:text-start bg-soft-paste-light-hover p-4 gap-4">
-          {/* Text Content */}
-          <div className="prose prose-lg text-muted-foreground text-sm w-full lg:w-1/2">
+        <div className="flex flex-col items-center rounded-xl overflow-hidden text-center bg-soft-paste-light-hover p-4 gap-4 max-w-4xl mx-auto">
+          <div className="prose prose-lg text-muted-foreground text-sm w-full">
             <p>
-              Contrary to popular belief, Lorem Ipsum is not simply random text.
-              It has roots in a piece of classical Latin literature from 45 BC,
-              making it over 2000 years old. Richard McClintock, a Latin
-              professor at Hampden-Sydney College in Virginia, looked up one of
-              the more obscure Latin words, consectetur, from a Lorem Ipsum
-              passage, and going through the cites of the word in classical
-              literature, discovered the undoubtable source.
+              Our vision is to create a world where mental health is prioritized
+              and accessible to all. We aim to break the stigma surrounding
+              mental health and provide a supportive community where individuals
+              can seek help without fear of judgment.
             </p>
             <br />
             <p>
-              Contrary to popular belief, Lorem Ipsum is not simply random text.
-              It has roots in a piece of classical Latin literature from 45 BC,
-              making it over 2000 years old. Richard McClintock, a Latin
-              professor at Hampden-Sydney College in Virginia, looked up one of
-              the more obscure Latin words, consectetur, from a Lorem Ipsum
-              passage, and going through the cites of the word in classical
-              literature, discovered the undoubtable source. Contrary to popular
-              belief, Lorem Ipsum is not simply random text. It has roots in a
-              piece of classical Latin literature from 45 BC, making it over
-              2000 years old. Richard McClintock, a Latin professor at
-              Hampden-Sydney College in Virginia, looked up one of the more
-              obscure Latin words,
+              We envision a future where everyone has access to the resources
+              and support they need to achieve mental wellness. Our commitment
+              is to offer innovative therapies, personalized care, and
+              continuous support to help individuals lead fulfilling lives.
             </p>
-          </div>
-
-          {/* Image */}
-          <div className="relative w-full lg:w-1/2 h-96 rounded-2xl overflow-hidden">
-            <Image
-              src="/images/our-vision.png"
-              alt="Serene landscape with curved pathway and bench at sunset"
-              className="object-cover"
-              layout="fill"
-              loading="lazy"
-            />
+            <br />
+            <p>
+              We believe that mental health is a fundamental aspect of overall
+              well-being, and we are dedicated to raising awareness and
+              understanding of mental health issues. By fostering an environment
+              of empathy and compassion, we hope to empower individuals to take
+              control of their mental health and seek the help they need.
+            </p>
+            <br />
+            <p>
+              Our vision extends beyond just providing care; we aim to be a
+              catalyst for change in the way society views and addresses mental
+              health. Through education, advocacy, and community engagement, we
+              strive to create a world where mental health is treated with the
+              same importance as physical health.
+            </p>
           </div>
         </div>
       </div>
