@@ -78,66 +78,68 @@ const itemVariants = {
 
 export default function Component() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <section className="w-full bg-[url('/images/watermark_bg.png')] bg-cover bg-center">
-        <TitleHeader title="Easy Steps to Access Support" />
+    <div className="bg-[url('/images/overlay/how-it-overlay.png')] w-full">
+      <div className="container  mx-auto px-4 py-8">
+        <section className="w-full  bg-cover bg-center">
+          <TitleHeader title="Easy Steps to Access Support" />
 
-        <div className="container mx-auto">
-          {/* Subtitle */}
-          <div className="text-center mb-8">
-            <h3 className="text-violet text-2xl font-bold mb-4">
-              Step-by-Step Guideline
-            </h3>
-            <div className="inline-flex items-center bg-soft-paste rounded-full px-6 py-2 text-white gap-4">
-              Follow These Simple Steps
-              <Image
-                src="/images/arrow_hand.png"
-                alt="Arrow Hand"
-                width={10}
-                height={10}
-              />
+          <div className="container mx-auto">
+            {/* Subtitle */}
+            <div className="text-center mb-8">
+              <h3 className="text-violet text-2xl font-bold mb-4">
+                Step-by-Step Guideline
+              </h3>
+              <div className="inline-flex items-center bg-soft-paste rounded-full px-6 py-2 text-white gap-4">
+                Follow These Simple Steps
+                <Image
+                  src="/images/arrow_hand.png"
+                  alt="Arrow Hand"
+                  width={10}
+                  height={10}
+                />
+              </div>
             </div>
-          </div>
 
-          {/* Steps */}
-          <motion.div
-            className="space-y-12 mt-12 px-4"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            viewport={{ once: true }}
-          >
-            {steps.map((step) => (
-              <motion.div
-                key={step.id}
-                className="flex flex-col items-center text-center space-y-4"
-                variants={itemVariants}
-              >
-                <div className="rounded-lg border-2 border-[#A393EB] px-6 py-1 text-[#A393EB] font-medium mb-4">
-                  Step {step.id}
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-[#8CD7D0]/20 flex items-center justify-center text-[#8CD7D0]">
-                    {step.icon}
+            {/* Steps */}
+            <motion.div
+              className="space-y-12 mt-12 px-4"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              viewport={{ once: true }}
+            >
+              {steps.map((step) => (
+                <motion.div
+                  key={step.id}
+                  className="flex flex-col items-center text-center space-y-4"
+                  variants={itemVariants}
+                >
+                  <div className="rounded-lg border-2 border-[#A393EB] px-6 py-1 text-[#A393EB] font-medium mb-4">
+                    Step {step.id}
                   </div>
-                  <h4 className="text-base font-bold text-gray-800">
-                    {step.title}
-                  </h4>
-                </div>
 
-                <p className="text-sm text-muted-foreground max-w-md">
-                  {step.description}
-                </p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-[#8CD7D0]/20 flex items-center justify-center text-[#8CD7D0]">
+                      {step.icon}
+                    </div>
+                    <h4 className="text-base font-bold text-gray-800">
+                      {step.title}
+                    </h4>
+                  </div>
 
-      <section>
-        <WhatToExpect />
-      </section>
+                  <p className="text-sm text-muted-foreground max-w-md">
+                    {step.description}
+                  </p>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+
+        <section>
+          <WhatToExpect />
+        </section>
+      </div>
     </div>
   );
 }
