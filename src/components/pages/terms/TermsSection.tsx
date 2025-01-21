@@ -50,11 +50,13 @@ export default function TermsSection() {
           </AlertDescription>
         </Alert>
 
-        <Card className="bg-[#9B8ACB] text-white max-w-3xl mx-auto">
-          <CardContent className="p-6">
+        <Card className="bg-violet text-white max-w-3xl mx-auto">
+          <CardContent className="p-4">
             <div className="flex items-center gap-4 justify-center">
-              <Phone className="h-6 w-6" />
-              <p className="text-lg font-medium">Emergency? Call 999</p>
+              <Phone size={20} />
+              <a href="tel:999" className="font-medium">
+                Emergency? Call 999
+              </a>
             </div>
           </CardContent>
         </Card>
