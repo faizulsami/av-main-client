@@ -14,14 +14,14 @@ export interface Post {
 export interface FetchPostResponse {
   success: boolean;
   message: string;
-  data: Post[];
+  data: Post;
 }
 
 export async function fetchPostBySlug(
   slug: string,
 ): Promise<FetchPostResponse | null> {
   try {
-    const response = await fetch(`/api/posts/${slug}`);
+    const response = await fetch(`/api/blog/${slug}`);
     if (!response.ok) {
       return null;
     }
