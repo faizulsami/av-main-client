@@ -2,29 +2,46 @@
 
 import { useEffect, useState } from "react";
 import BlogCard from "./BlogCard";
-import useBlogAPI from "@/hooks/blog/useBlogAPI";
-import { BlogPost } from "@/types/blog.types";
+import { Skeleton } from "@/components/ui/skeleton";
+
+interface Post {
+  title: string;
+  excerpt?: string;
+  description: string;
+  image: string;
+  slug: string;
+}
 
 export default function RecentPosts() {
-  const { fetchAllPosts } = useBlogAPI();
-  const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  console.log("Posts:", posts);
 
   useEffect(() => {
-    const loadPosts = async () => {
+    const fetchPosts = async () => {
       try {
-        const fetchedPosts: BlogPost[] = await fetchAllPosts();
-        setPosts(fetchedPosts);
+        const response = await fetch("/api/blog");
+        if (!response.ok) {
+          throw new Error("Failed to fetch posts");
+        }
+        const result = await response.json();
+        if (result.success && Array.isArray(result.data)) {
+          setPosts(result.data);
+        } else {
+          throw new Error("Unexpected response format");
+        }
       } catch (err) {
-        setError((err as Error).message || "An unexpected error occurred.");
+        setError(
+          err instanceof Error ? err.message : "An unknown error occurred",
+        );
       } finally {
         setLoading(false);
       }
     };
 
-    loadPosts();
-  }, [fetchAllPosts]);
+    fetchPosts();
+  }, []);
 
   if (loading) {
     return (
@@ -35,10 +52,7 @@ export default function RecentPosts() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {Array.from({ length: 4 }).map((_, index) => (
-              <div
-                key={index}
-                className="animate-pulse bg-gray-200 h-40 w-full rounded-lg"
-              />
+              <Skeleton key={index} className="h-48 w-full" />
             ))}
           </div>
         </div>
@@ -47,11 +61,7 @@ export default function RecentPosts() {
   }
 
   if (error) {
-    return <p className="text-red-500">Error: {error}</p>;
-  }
-
-  if (posts.length === 0) {
-    return <p>No posts found.</p>;
+    return <div>Error: {error}</div>;
   }
 
   return (
@@ -65,7 +75,10 @@ export default function RecentPosts() {
             <BlogCard
               key={post.slug}
               title={post.title}
-              excerpt={post.excerpt || post.content.slice(0, 100)}
+              excerpt={
+                post.excerpt ||
+                (post.description ? post.description.slice(0, 100) : "")
+              }
               image={post.image}
               slug={post.slug}
             />
