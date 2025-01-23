@@ -15,7 +15,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       await fetchPostBySlug(decodedSlug);
     console.log("Fetched post response:", response);
 
-    if (!response || !response.success || !response.data) {
+    if (
+      !response ||
+      !response.success ||
+      !response.data ||
+      response.data.length === 0
+    ) {
       return (
         <div className="container mx-auto px-4 py-8">
           <h1 className="text-2xl font-bold text-red-500">
@@ -29,21 +34,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       );
     }
 
-    const post = response.data.find((p: any) => p.slug === decodedSlug);
-
-    if (!post) {
-      return (
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="text-2xl font-bold text-red-500">
-            Blog Post Not Found
-          </h1>
-          <p className="text-gray-600">
-            The blog post you are looking for does not exist or has been
-            removed.
-          </p>
-        </div>
-      );
-    }
+    const post = response.data[0]; // Select the first post from the array
 
     return (
       <div className="container mx-auto px-4 py-8 md:px-6 lg:px-8">
@@ -53,9 +44,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               {post.title}
             </h1>
             <div className="flex flex-wrap items-center gap-4 text-muted-foreground mb-4 text-sm">
-              <span className="font-medium">
-                {post.author || "Author not specified"}
-              </span>
+              <span className="font-medium">{post?.author}</span>
               {post.date && (
                 <>
                   <span>•</span>
