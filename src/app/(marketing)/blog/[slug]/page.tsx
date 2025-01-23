@@ -1,28 +1,9 @@
 import { format } from "date-fns";
 import Image from "next/image";
-import { fetchPostBySlug } from "@/lib/blog";
+import { fetchPostBySlug, FetchPostResponse } from "@/lib/blog";
 
 interface BlogPostPageProps {
   params: { slug: string };
-}
-
-interface Post {
-  image: string;
-  _id: string;
-  slug: string;
-  title: string;
-  content: string;
-  date: string;
-  author: string;
-  category: string;
-  tags: string[];
-  __v: number;
-}
-
-interface FetchPostResponse {
-  success: boolean;
-  message: string;
-  data: Post[];
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
@@ -30,7 +11,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const decodedSlug = decodeURIComponent(slug);
 
   try {
-    const response: FetchPostResponse = await fetchPostBySlug(decodedSlug);
+    const response: FetchPostResponse | null =
+      await fetchPostBySlug(decodedSlug);
+    console.log("Fetched post response:", response);
 
     if (!response || !response.success || !response.data) {
       return (
@@ -46,7 +29,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       );
     }
 
-    const post = response.data.find((p: Post) => p.slug === decodedSlug);
+    const post = response.data.find((p: any) => p.slug === decodedSlug);
 
     if (!post) {
       return (
