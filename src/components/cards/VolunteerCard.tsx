@@ -77,11 +77,13 @@ export default function VolunteerCard({
     return actionType === buttonType;
   };
 
-  const isDisabled = userRole !== "mentee";
+  const isDisabled = userRole && userRole !== "mentee" && userRole !== "guest";
   const tooltipMessage =
     userRole === "mentor" || userRole === "admin"
       ? "Action not allowed for your role"
       : "";
+
+  console.log(userRole);
 
   return (
     <Card className="rounded-xl border overflow-hidden">
