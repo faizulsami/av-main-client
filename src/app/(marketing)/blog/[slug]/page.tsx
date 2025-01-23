@@ -1,10 +1,28 @@
 import { format } from "date-fns";
 import Image from "next/image";
 import { fetchPostBySlug } from "@/lib/blog";
-import { MDXRemote } from "next-mdx-remote/rsc";
 
 interface BlogPostPageProps {
   params: { slug: string };
+}
+
+interface Post {
+  image: string;
+  _id: string;
+  slug: string;
+  title: string;
+  content: string;
+  date: string;
+  author: string;
+  category: string;
+  tags: string[];
+  __v: number;
+}
+
+interface FetchPostResponse {
+  success: boolean;
+  message: string;
+  data: Post[];
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
@@ -12,7 +30,23 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const decodedSlug = decodeURIComponent(slug);
 
   try {
-    const post = await fetchPostBySlug(decodedSlug);
+    const response: FetchPostResponse = await fetchPostBySlug(decodedSlug);
+
+    if (!response || !response.success || !response.data) {
+      return (
+        <div className="container mx-auto px-4 py-8">
+          <h1 className="text-2xl font-bold text-red-500">
+            Blog Post Not Found
+          </h1>
+          <p className="text-gray-600">
+            The blog post you are looking for does not exist or has been
+            removed.
+          </p>
+        </div>
+      );
+    }
+
+    const post = response.data.find((p: Post) => p.slug === decodedSlug);
 
     if (!post) {
       return (
@@ -62,7 +96,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           )}
 
           <div className="prose prose-lg max-w-none dark:prose-invert">
-            <MDXRemote source={post.content} />
+            {post.content}
           </div>
         </article>
       </div>
