@@ -65,6 +65,8 @@ export default function ChatInterface() {
   const [messageInput, setMessageInput] = useState("");
   const [incomingCall, setIncomingCall] = useState<CallInvitation | null>(null);
   const { addMessage } = useChatStore();
+  console.log("Chat users", users);
+  console.log("Messages", messages);
 
   const currentActiveUser = useMemo(() => AuthService.getStoredUser(), []);
   const currentUser = useMemo(
@@ -290,14 +292,18 @@ export default function ChatInterface() {
   return (
     <div className="flex h-screen bg-background">
       <aside className="hidden md:flex w-full max-w-[20vw] flex-col border-r">
-        {isLoading ? (
+        {/* {isLoading ? (
           <Skeleton className="w-full h-full" />
         ) : (
           <ChatSidebar
             setSelectedUser={setSelectedUser}
             selectedUser={selectedUser}
           />
-        )}
+        )} */}
+        <ChatSidebar
+          setSelectedUser={setSelectedUser}
+          selectedUser={selectedUser}
+        />
       </aside>
 
       <ChatMessages

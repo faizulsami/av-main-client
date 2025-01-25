@@ -53,6 +53,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
     }
     return filteredContacts;
   }, [filteredContacts, currentActiveuser]);
+  console.log("Matched Contacts", matchedContacts);
 
   const handleUserSelect = React.useCallback(
     (contact: ChatContact) => {
