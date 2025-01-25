@@ -47,12 +47,12 @@ const faqs = [
 
 export default function FAQSection() {
   return (
-    <section className="w-full min-h-screen bg-gray-50 px-4 py-16">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl md:text-4xl font-medium text-center text-[#9B8ACB] mb-2">
+    <section className="w-full min-h-screen px-4 py-16">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-2xl md:text-3xl font-medium text-center text-violet mb-2">
           Frequently Asked Questions
         </h1>
-        <p className="text-center text-gray-600 mb-12">
+        <p className="text-center text-muted-foreground mb-12">
           Find answers to common questions about Anonymous Voices
         </p>
 
@@ -68,10 +68,10 @@ export default function FAQSection() {
         </Accordion>
 
         <div className="mt-12 text-center">
-          <p className="text-gray-600 mb-4">
+          <p className="text-muted-foreground mb-4">
             Didn&apos;t find what you are looking for?
           </p>
-          <Button asChild className="bg-[#86C6C6] hover:bg-[#78b7b7]">
+          <Button asChild className="bg-soft-paste hover:bg-soft-paste-dark">
             <Link href="/contact">Contact Us</Link>
           </Button>
         </div>
