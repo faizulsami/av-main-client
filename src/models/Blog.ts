@@ -20,7 +20,7 @@ const BlogSchema = new Schema<IBlog>(
   {
     title: {
       type: String,
-      required: [true, "Title is required"],
+      required: [true, "Title is odiously required"],
       trim: true,
     },
     slug: {
