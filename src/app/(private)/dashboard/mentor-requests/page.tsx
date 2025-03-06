@@ -53,7 +53,7 @@ export default function MentorRequests() {
     <div className="container mx-auto">
       <header className="flex items-center justify-between mb-6">
         <h1 className="text-lg  font-bold">
-          {isLoading ? <Skeleton className="h-8 w-48" /> : "Mentor Requests"}
+          {isLoading ? <Skeleton className="h-8 w-48" /> : "Listener Requests"}
         </h1>
       </header>
 

@@ -11,6 +11,7 @@ interface UseApprovedMentorsReturn {
   error: string | null;
   refetch: () => Promise<void>;
   approveMentor: (userName: string) => Promise<void>;
+  deleteMentor: (id: string) => Promise<void>;
   meta: {
     page: number;
     limit: number;
@@ -74,9 +75,24 @@ export function useApprovedMentors(): UseApprovedMentorsReturn {
     }
   };
 
+  const deleteMentor = async (id: string) => {
+    try {
+      setIsLoading(true);
+      await api.delete(`/api/v1/mentors/${id}`);
+
+      await fetchApprovedMentors();
+    } catch (err) {
+      setError(handleAxiosError(err));
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
     approveMentor,
     approvedMentors,
+    deleteMentor,
     isLoading,
     error,
     refetch: fetchApprovedMentors,

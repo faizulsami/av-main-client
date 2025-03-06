@@ -74,11 +74,13 @@ export const TimeSlotSchema = z.object({
 });
 
 export const mentorFormSchema = z.object({
-  password: z.string().min(8, "Password must be at least 8 characters"),
-  // .regex(
-  //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/,
-  //   "Password must contain at least one uppercase letter, one lowercase letter, and one number",
-  // ),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+      "Password must contain at least one uppercase letter, one lowercase letter, and one number",
+    ),
   userName: z.string().min(3, "Username must be at least 3 characters"),
   mentor: z.object({
     gender: z.enum(["male", "female", "other"]),
