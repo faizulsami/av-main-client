@@ -98,7 +98,7 @@ export default function ApprovedMentors() {
   const handleConfirmDelete = async () => {
     if (selectedMentor) {
       try {
-        await deleteMentor(selectedMentor.id);
+        // await deleteMentor(selectedMentor.id);
         setDeleteDialogOpen(false);
         setSelectedMentor(null);
       } catch (error) {
@@ -111,7 +111,7 @@ export default function ApprovedMentors() {
     <div className="h-full">
       <div className="flex justify-between items-center mb-6">
         <h1 className="font-bold">
-          {isLoading ? <Skeleton className="h-8 w-48" /> : "Approved Mentors"}
+          {isLoading ? <Skeleton className="h-8 w-48" /> : "Approved Listener"}
         </h1>
       </div>
 
@@ -136,7 +136,7 @@ export default function ApprovedMentors() {
                   colSpan={4}
                   className="text-center text-gray-500 py-8"
                 >
-                  No approved mentors found
+                  No approved listener found
                 </TableCell>
               </TableRow>
             ) : (
