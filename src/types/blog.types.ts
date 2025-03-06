@@ -1,35 +1,62 @@
-// export interface BlogPost {
-//   slug: string;
-//   content: string;
-//   title: string;
-//   excerpt: string;
-//   image: string;
-//   date: string;
-//   author: string;
-//   category: string;
-//   readTime: string;
-//   tags: string[];
-// }
-
 export interface BlogPost {
-  title: string;
+  blogId?: string;
+  blogTitle: string;
+  featuredImage?: File | string;
+  content: string;
+  blogStatus?: string;
+  blogSlug: string;
+  blogCategory: string;
+  excerpt: string;
+  blogType: string;
+  createdAt?: string;
+  updatedAt?: string;
   author: string;
-  date: string;
-  category: string;
-  info: string;
-  description: string;
-  image?: File;
+}
+
+export interface BlogApiResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+  };
+  data: BlogPost[];
+}
+
+export interface Blog {
+  _id: string;
+  blogId: string;
+  blogTitle: string;
+  featuredImage: string;
+  blogSlug: string;
+  excerpt: string;
+  blogCategory: string;
+  author: string;
+  blogType: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+  id: string;
 }
 
 export interface BlogResponse {
-  _id: string;
-  title: string;
-  slug: string;
-  author: string;
-  date: string;
-  category: string;
-  info: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
+  statusCode: number;
+  success: boolean;
+  message: string;
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+  };
+  data: Blog[];
+}
+
+export interface SingleBlogResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: Blog;
 }

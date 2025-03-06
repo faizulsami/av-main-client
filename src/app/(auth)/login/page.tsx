@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/form";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 // import { MentorLogin } from "./MentorLogin";
 
 const loginSchema = z.object({
@@ -37,6 +37,8 @@ export default function LoginPage() {
   const { login } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect") || "/";
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -57,7 +59,7 @@ export default function LoginPage() {
       //   description: "You have successfully logged in.",
       // });
 
-      router.push("/");
+      router.push(redirect);
     } catch (error) {
       toast({
         title: "Login Failed",

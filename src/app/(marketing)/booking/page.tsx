@@ -30,15 +30,20 @@ export default function Booking() {
     (volunteer) => volunteer.adminApproval,
   );
 
+  const selectedVolunteer = approvedVolunteers.find(
+    (volunteer) => volunteer.userName === mentorUserName,
+  );
+
+  console.log("Selected Volunteer:", selectedVolunteer);
+
   return (
-    <div className="max-w-6xl mx-auto mt-4 px-2">
-      {approvedVolunteers.slice(0, 1).map((volunteer) => (
+    <div className="max-w-4xl w-full mx-auto mt-4 px-2 gap-4 flex flex-col py-10">
+      {selectedVolunteer && (
         <BookingDetailsCard
-          key={volunteer.id}
-          {...volunteer}
+          {...selectedVolunteer}
           showAvailability={sessionConfig?.requiresTimeSlot ?? true}
         />
-      ))}
+      )}
 
       <ChoosePlan
         mentorUsername={mentorUserName}

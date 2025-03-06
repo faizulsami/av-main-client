@@ -11,7 +11,7 @@ interface UseApprovedMentorsReturn {
   error: string | null;
   refetch: () => Promise<void>;
   approveMentor: (userName: string) => Promise<void>;
-  deleteMentor: (id: string) => Promise<void>;
+  deleteMentor: (userName: string) => Promise<void>;
   meta: {
     page: number;
     limit: number;
@@ -75,10 +75,11 @@ export function useApprovedMentors(): UseApprovedMentorsReturn {
     }
   };
 
-  const deleteMentor = async (id: string) => {
+  const deleteMentor = async (userName: string) => {
+    console.log("USERNAME - deleteMentor", userName)
     try {
       setIsLoading(true);
-      await api.delete(`/api/v1/mentors/${id}`);
+      await api.delete(`/api/v1/mentors/${userName}`);
 
       await fetchApprovedMentors();
     } catch (err) {
@@ -91,8 +92,8 @@ export function useApprovedMentors(): UseApprovedMentorsReturn {
 
   return {
     approveMentor,
-    approvedMentors,
     deleteMentor,
+    approvedMentors,
     isLoading,
     error,
     refetch: fetchApprovedMentors,

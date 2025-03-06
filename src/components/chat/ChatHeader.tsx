@@ -3,7 +3,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { CallButton } from "../call/call-button";
+// import { CallButton } from "../call/call-button";
 import { useChatContactsStore } from "@/store/chat-contacts.store";
 import { ScrollArea } from "../ui/scroll-area";
 import { cn } from "@/lib/utils";
@@ -11,22 +11,12 @@ import { AuthService } from "@/services/auth.service";
 import { useChatStore } from "@/store/useChatStore";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ChatContact } from "@/types/chat.types";
+import { Badge } from "../ui/badge";
 
 interface currentMentorUser {
   username: string;
   role: string;
 }
-
-// interface ChatContact {
-//   id: string;
-//   username: string;
-//   avatar: string;
-//   lastMessage: string;
-//   timestamp?: string;
-//   isActive?: boolean;
-//   hasHeart?: boolean;
-// }
-
 interface ChatHeaderProps {
   selectedUser: ChatContact;
   setSelectedUser: React.Dispatch<React.SetStateAction<ChatContact | null>>;
@@ -46,7 +36,8 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   isSidebarOpen,
   setIsSidebarOpen,
   // lastActiveTime,
-  currentUser,
+  // currentUser,
+  // onPhoneClick,
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -102,6 +93,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
       "mentee",
       isMentor ? contact.username : currentActiveuser.userName,
     );
+
     params.set(
       "mentor",
       isMentor ? currentActiveuser.userName : contact.username,
@@ -199,20 +191,25 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         </SheetContent>
       </Sheet>
 
-      <Avatar className="h-10 w-10">
+      {/* <Avatar className="h-10 w-10">
         <AvatarImage src="/images/avatar.svg" alt={selectedUser.username} />
         <AvatarFallback>{selectedUser.username.charAt(0)}</AvatarFallback>
-      </Avatar>
+      </Avatar> */}
       <div className="flex-1 min-w-0">
-        <h2 className="font-semibold truncate">{selectedUser.username}</h2>
+        <Badge variant="secondary" className="font-semibold truncate">
+          @ {selectedUser.username}
+        </Badge>
         {/* <p className="text-xs text-muted-foreground truncate">
           {lastActiveTime || "Active 9m ago"}
         </p> */}
       </div>
 
-      {currentUser.role === "mentor" && (
+      {/* {currentUser.role === "mentor" && (
         <CallButton menteeId={selectedUser.id} />
-      )}
+      )} */}
+      {/* {currentUser.role === "mentor" && (
+        <CallButton onPhoneClick={onPhoneClick} />
+      )} */}
     </header>
   );
 };

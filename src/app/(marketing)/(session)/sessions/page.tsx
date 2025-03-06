@@ -16,6 +16,7 @@ export default function Session() {
   const actionParam = searchParams.get("action");
   const { approvedVolunteers, loading, error } = useVolunteers<Volunteer[]>();
   const [visibleCount, setVisibleCount] = useState(10);
+  console.log("Approved Volunteers", approvedVolunteers);
 
   if (loading) {
     return <Loading />;
@@ -24,6 +25,13 @@ export default function Session() {
   if (error) {
     return <div>Error: {error}</div>;
   }
+
+  const sortedVolunteers = approvedVolunteers.sort((a, b) => {
+    if (a.isOnline !== b.isOnline) {
+      return a.isOnline ? -1 : 1; // Online volunteers come first
+    }
+    return a.name.localeCompare(b.name); // Then sort by name in ascending order
+  });
 
   const validateActionType = (action: string | null): ActionType => {
     if (action === "chat" || action === "quick-call" || action === "booking") {
@@ -63,12 +71,12 @@ export default function Session() {
 
         {/* Cards Grid */}
         <motion.div
-          className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8"
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          {approvedVolunteers.slice(0, visibleCount).map((volunteer, index) => (
+          {sortedVolunteers.slice(0, visibleCount).map((volunteer, index) => (
             <motion.div
               key={volunteer.id}
               initial={{ opacity: 0, y: 20 }}
@@ -79,8 +87,9 @@ export default function Session() {
                 name={volunteer.name}
                 userName={volunteer.userName}
                 title={volunteer.title}
+                gender={volunteer.gender}
                 profileImage={volunteer.profileImage}
-                isActive={volunteer.isActive}
+                isOnline={volunteer.isOnline}
                 rating={volunteer.rating}
                 yearsExperience={volunteer.yearsExperience}
                 sessionsCompleted={volunteer.sessionsCompleted}

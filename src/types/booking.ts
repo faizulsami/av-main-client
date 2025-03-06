@@ -38,7 +38,7 @@ export const BookingSchema = z.object({
   id: z.string(),
   user: UserSchema,
   schedule: z.string(),
-  duration: z.string(),
+  duration: z.number(),
   status: BookingStatusSchema,
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -53,9 +53,9 @@ export type Booking = z.infer<typeof BookingSchema>;
 
 // Constants
 export const DURATION_OPTIONS = [
-  { value: "10", label: "10 min call" },
-  { value: "20", label: "20 min call" },
-  { value: "30", label: "30 min call" },
+  { value: 10, label: "10 min call" },
+  { value: 20, label: "20 min call" },
+  { value: 30, label: "30 min call" },
 ] as const;
 
 // Session Configuration
@@ -95,9 +95,9 @@ export interface ChoosePlanProps {
 
 export interface PlanFieldProps {
   label: string;
-  value: string;
+  value: number;
   hasDropdown?: boolean;
-  onDurationChange?: (value: string) => void;
+  onDurationChange?: (value: number) => void;
 }
 
 export interface ConfirmDialogProps {

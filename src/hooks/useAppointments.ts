@@ -24,6 +24,24 @@ interface Appointment {
   createdAt: string;
   updatedAt: string;
   id: string;
+  scheduleSlot: {
+    id: string;
+    userName: string;
+    createdAt: string;
+    schedule: {
+      day: string;
+      isAvailable: boolean;
+      startTime: {
+        hours: number;
+        minutes: number;
+      };
+      endTime: {
+        hours: number;
+        minutes: number;
+      };
+    }[];
+  };
+  durationMinutes: number;
 }
 
 interface AppointmentResponse {

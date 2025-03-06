@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-// import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import ArrowHand from "@/components/buttons/ArrowHand";
 
 interface WhoWeAreProps {
   image: string;
@@ -33,11 +34,10 @@ export default function WhoWeAre() {
     image,
     altImg,
     title,
-    subtitle,
     description,
     extendedDescription,
-    // buttonText,
-    // onLearnMore,
+    buttonText,
+    onLearnMore,
   } = whoWeAreData;
 
   const fadeIn = {
@@ -48,14 +48,6 @@ export default function WhoWeAre() {
 
   return (
     <section className="relative w-full mx-auto mt-10 py-12 space-y-10 px-4 overflow-hidden">
-      <motion.h2
-        className="text-2xl sm:text-3xl font-bold text-violet-dark text-center"
-        {...fadeIn}
-        transition={{ delay: 0.2 }}
-      >
-        {title}
-      </motion.h2>
-
       {/* Chat Icon - Only visible on larger screens */}
       <motion.div
         className="absolute top-1 right-1 before:p-1 rounded-full"
@@ -73,10 +65,10 @@ export default function WhoWeAre() {
       </motion.div>
 
       {/* Main Content Container */}
-      <div className="flex flex-col lg:flex-row items-center lg:space-x-12 gap-6">
+      <div className="flex flex-col lg:flex-row items-end lg:space-x-12 gap-4">
         {/* Image Container */}
         <motion.div
-          className="relative w-full lg:w-1/2 aspect-[4/2] lg:aspect-[12/7] max-w-2xl rounded-2xl overflow-hidden bg-violet-200 p-2"
+          className="relative w-full lg:w-1/3 aspect-[4/2] lg:aspect-[9/9] max-w-2xl rounded-2xl overflow-hidden bg-violet-200 p-2"
           {...fadeIn}
         >
           <Image
@@ -85,18 +77,28 @@ export default function WhoWeAre() {
             className="object-cover"
             fill
             priority
-            sizes="(max-width: 1024px) 100vw, 50vw"
           />
         </motion.div>
 
         {/* Text Content Container */}
-        <div className="flex-1 space-y-4">
+        <div className="flex-1 space-y-4 lg:w-2/3">
+          <motion.h2
+            className="text-xl sm:text-2xl font-bold text-violet text-center lg:text-left"
+            {...fadeIn}
+            transition={{ delay: 0.2 }}
+          >
+            {title}
+          </motion.h2>
+
           <motion.h3
-            className="text-xl sm:text-2xl lg:text-3xl font-bold text-soft-paste-dark text-center lg:text-left"
+            className="text-xl sm:text-2xl font-bold text-soft-paste-dark text-center lg:text-left"
             {...fadeIn}
             transition={{ delay: 0.3 }}
           >
-            {subtitle}
+            {/* {subtitle} */}
+            <p>
+              Committed to Your Mental <br /> Wellness with Compassionate Care
+            </p>
           </motion.h3>
 
           <motion.p
@@ -115,7 +117,7 @@ export default function WhoWeAre() {
             {extendedDescription}
           </motion.p>
 
-          {/* <motion.div
+          <motion.div
             className="flex justify-center lg:justify-start"
             {...fadeIn}
             transition={{ delay: 0.6 }}
@@ -124,9 +126,10 @@ export default function WhoWeAre() {
               onClick={onLearnMore}
               className="bg-soft-paste text-white px-8 py-2 rounded-lg transition-colors"
             >
-              {buttonText} →
+              {buttonText}
+              <ArrowHand />
             </Button>
-          </motion.div> */}
+          </motion.div>
         </div>
       </div>
     </section>

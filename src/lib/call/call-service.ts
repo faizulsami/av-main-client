@@ -3,16 +3,13 @@ import { CallInvitation } from "./types";
 
 export class CallService {
   private static peerConnection: RTCPeerConnection | null = null;
+  static localStream: MediaStream | null = null;
 
   static generateRoomId(): string {
-    return Math.random().toString(36).substring(2, 9);
+    return `${Math.random().toString(36).substring(2, 9)}${Date.now()}`;
   }
 
-  static async initializeCall(
-    socket: Socket,
-    isCaller: boolean,
-    roomId: string,
-  ) {
+  static async initializeCall(socket: Socket, roomId: string) {
     const configuration = {
       iceServers: [
         { urls: "stun:stun.l.google.com:19302" },
@@ -34,10 +31,16 @@ export class CallService {
 
     // Set up audio track
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach((track) => {
-        this.peerConnection?.addTrack(track, stream);
+      this.localStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
       });
+      this.localStream.getTracks().forEach((track) => {
+        this.peerConnection?.addTrack(track, this.localStream!);
+      });
+      // const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // stream.getTracks().forEach((track) => {
+      //   this.peerConnection?.addTrack(track, stream);
+      // });
     } catch (err) {
       console.error("Error accessing microphone:", err);
       throw err;
@@ -78,6 +81,13 @@ export class CallService {
       console.error("Error handling offer:", err);
       throw err;
     }
+  }
+
+  static endCall() {
+    this.localStream?.getTracks().forEach((track) => track.stop());
+    this.peerConnection?.close();
+    this.peerConnection = null;
+    this.localStream = null;
   }
 
   static sendCallInvitation(socket: Socket, invitation: CallInvitation) {

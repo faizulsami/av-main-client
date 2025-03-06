@@ -11,9 +11,9 @@ import axios from "axios";
 export interface UserInfo {
   id?: string;
   userName: string;
+  email?: string;
   isVerified?: boolean;
   role: UserRole;
-  adminApproval?: boolean;
   userDetails?: string;
 }
 

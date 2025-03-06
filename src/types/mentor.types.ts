@@ -7,9 +7,28 @@ export interface MentorRequest {
   profileImage: string;
   adminApproval: boolean;
   email: string;
-  availability: string;
+  gender: "male" | "female" | "other";
+  availability: TimeSlot[];
   specialization: string;
+  bio: string;
   createdAt: string;
+  activeStatus: "online" | "offline";
+  scheduleId: {
+    schedule: {
+      _id: string;
+      day: Day;
+      startTime: {
+        hours: number;
+        minutes: number;
+      };
+      endTime: {
+        hours: number;
+        minutes: number;
+      };
+      isAvailable: boolean;
+    }[];
+  };
+  phone?: string;
 }
 
 export interface ApiResponse<T> {
@@ -25,7 +44,7 @@ export interface ApiResponse<T> {
 }
 
 export interface DialogState {
-  type: "approve" | "reject" | null;
+  type: "approve" | "reject" | "details" | null;
   mentor: MentorRequest | null;
 }
 
@@ -34,6 +53,7 @@ export interface MentorTableProps {
   isLoading: boolean;
   onApprove: (mentor: MentorRequest) => void;
   onReject: (mentor: MentorRequest) => void;
+  onViewDetails: (mentor: MentorRequest) => void;
 }
 
 export interface MentorDialogProps {
@@ -78,7 +98,7 @@ export const mentorFormSchema = z.object({
     .string()
     .min(8, "Password must be at least 8 characters")
     .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/,
       "Password must contain at least one uppercase letter, one lowercase letter, and one number",
     ),
   userName: z.string().min(3, "Username must be at least 3 characters"),
@@ -92,6 +112,8 @@ export const mentorFormSchema = z.object({
     email: z.string().email("Invalid email address"),
     profileImage: z.string().optional(),
     adminApproval: z.boolean().default(false),
+    activeStatus: z.enum(["online", "offline"]).default("offline"),
+    phone: z.string().min(11, "Phone number is required"),
   }),
 });
 

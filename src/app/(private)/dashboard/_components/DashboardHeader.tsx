@@ -10,15 +10,19 @@ import { useState } from "react";
 // import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   CalendarClock,
+  FileText,
   Mail,
   Menu,
   MessageSquare,
+  PenSquare,
+  Settings2,
   // User,
   UserPlus,
   Users,
 } from "lucide-react";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetTitle,
   SheetTrigger,
@@ -61,33 +65,33 @@ const getMentorNavItems = (): NavItem[] => [
 const getAdminNavItems = (): NavItem[] => [
   {
     title: "All Listener",
-    href: "/dashboard/mentors",
+    href: "/dashboard/listener",
     icon: <Users size={20} />,
   },
   {
     title: "Listener Requests",
-    href: "/dashboard/mentor-requests",
+    href: "/dashboard/listener-requests",
     icon: <UserPlus size={20} />,
   },
-  // {
-  //   title: "Post A Blog",
-  //   href: "/dashboard/post-blog",
-  //   icon: <PenSquare size={20} />,
-  // },
-  // {
-  //   title: "Blog Management",
-  //   href: "/dashboard/blog-management",
-  //   icon: <FileText size={20} />,
-  // },
-  // {
-  //   title: "Data Customization",
-  //   href: "/dashboard/data-customization",
-  //   icon: <Settings2 size={20} />,
-  // },
+  {
+    title: "Post A Blog",
+    href: "/dashboard/post-blog",
+    icon: <PenSquare size={20} />,
+  },
+  {
+    title: "Blog Management",
+    href: "/dashboard/blog-management",
+    icon: <FileText size={20} />,
+  },
+  {
+    title: "Data Customization",
+    href: "/dashboard/data-customization",
+    icon: <Settings2 size={20} />,
+  },
 
   // {
-  //   title: "Mentors",
-  //   href: "/dashboard/mentors",
+  //   title: "Listener",
+  //   href: "/dashboard/listener",
   //   icon: <User size={20} />,
   // },
   // {
@@ -109,7 +113,7 @@ export default function DashboardHeader() {
   const navItems =
     user?.role === "admin" ? getAdminNavItems() : getMentorNavItems();
   const dashboardTitle =
-    user?.role === "admin" ? "Admin Dashboard" : "Listener Dashboard";
+    user?.role === "admin" ? "Admin Dashboard" : "Mentor Dashboard";
 
   return (
     <header className="flex h-16 items-center justify-between border-b bg-white px-4 md:px-6">
@@ -131,13 +135,15 @@ export default function DashboardHeader() {
                   key={item?.title}
                   href={item?.href}
                   className={cn(
-                    "flex items-center gap-2 rounded px-3 py-3 text-sm transition-colors hover:bg-soft-paste-light-active text-soft-paste-dark font-bold",
+                    "rounded px-3 py-3 text-sm transition-colors hover:bg-soft-paste-light-active text-soft-paste-dark font-bold",
                     activeItem === item?.title && "bg-gray-100 font-medium",
                   )}
                   onClick={() => setActiveItem(item?.title)}
                 >
-                  {item?.icon}
-                  {item?.title}
+                  <SheetClose className="flex items-center gap-2 w-full">
+                    {item?.icon}
+                    {item?.title}
+                  </SheetClose>
                 </Link>
               ))}
             </nav>

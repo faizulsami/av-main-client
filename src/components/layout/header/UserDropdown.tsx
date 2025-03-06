@@ -21,7 +21,7 @@ const roleDropdownItems = {
     // { label: "Settings", href: "/settings" },
   ],
   admin: [
-    { label: "Dashboard", href: "/dashboard/mentors" },
+    { label: "Dashboard", href: "/dashboard/listeners" },
     // { label: "Settings", href: "/settings" },
     // { label: "User Management", href: "/admin/users" },
     // { label: "Analytics", href: "/admin/analytics" },

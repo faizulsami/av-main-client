@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,34 +27,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import api from "@/config/axios.config";
-import { Day, mentorFormSchema } from "@/types/mentor.types";
+import { Day, mentorFormSchema, MentorFormValues } from "@/types/mentor.types";
 import { AvailabilityScheduler } from "@/components/availability/AvailabilityScheduler";
-
-// const mentorFormSchema = z.object({
-//   password: z
-//     .string()
-//     .min(8, "Password must be at least 8 characters")
-//     .regex(
-//       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/,
-//       "Password must contain at least one uppercase letter, one lowercase letter, and one number",
-//     ),
-//   userName: z.string().min(3, "Username must be at least 3 characters"),
-//   mentor: z.object({
-//     gender: z.enum(["male", "female", "other"]),
-//     name: z.string().min(2, "Name is required"),
-//     bio: z.string().min(10, "Bio must be at least 10 characters"),
-//     designation: z.string().min(2, "Designation is required"),
-//     specialization: z.string().min(2, "Specialization is required"),
-//     availability: z.string().min(5, "Availability schedule is required"),
-//     email: z.string().email("Invalid email address"),
-//     profileImage: z.string().optional(),
-//     adminApproval: z.boolean().default(false),
-//   }),
-// });
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useRouter } from "next/navigation";
+import { registerMentor } from "@/services/mentor/mentor.service";
 
 const DEFAULT_PROFILE_IMAGE = "/images/avatar.png";
 const DEFAULT_AVAILABILITY: Array<{
@@ -74,49 +59,56 @@ const DEFAULT_AVAILABILITY: Array<{
 ].map((day) => ({
   day: day as Day,
   startTime: { hours: 9, minutes: 0 },
-  endTime: { hours: 5, minutes: 0 },
+  endTime: { hours: 17, minutes: 0 },
   isAvailable: false,
 }));
 
-type MentorFormValues = z.infer<typeof mentorFormSchema>;
-
 const MentorRegistrationForm = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
+  const [showDialog, setShowDialog] = useState(false);
+  const [dialogMessage, setDialogMessage] = useState("");
   const router = useRouter();
 
   const form = useForm<MentorFormValues>({
     resolver: zodResolver(mentorFormSchema),
     defaultValues: {
+      userName: "",
+      password: "",
       mentor: {
         gender: "male",
         availability: DEFAULT_AVAILABILITY,
         adminApproval: false,
         profileImage: DEFAULT_PROFILE_IMAGE,
+        name: "",
+        email: "",
+        bio: "",
+        designation: "",
+        specialization: "",
+        activeStatus: "offline",
+        phone: "",
       },
     },
   });
 
   async function onSubmit(values: MentorFormValues) {
+    // console.log("Registration Values:", values);
     setIsLoading(true);
     try {
-      await api.post("/api/v1/users/create-mentor", values);
+      await registerMentor(values);
+      // console.log("MENTOR REGISTRATION RESULT", result);
 
-      toast({
-        title: "Registration Successful",
-        description:
-          "Your mentor account has been created. Please wait for admin approval.",
-      });
+      setDialogMessage(
+        "Registration Successful. Your mentor account has been created. Please wait for admin approval.",
+      );
+      setShowDialog(true);
 
       form.reset();
-      router.push("/login");
+      // router.push("/login");
     } catch (error) {
-      toast({
-        title: "Registration Failed",
-        description:
-          "There was an error creating your account. Please try again.",
-        variant: "destructive",
-      });
+      setDialogMessage(
+        "Registration Failed. There was an error creating your account. Please try again.",
+      );
+      setShowDialog(true);
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -146,7 +138,7 @@ const MentorRegistrationForm = () => {
                     <FormItem>
                       <FormLabel>Username</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter username" {...field} />
+                        <Input {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -162,7 +154,7 @@ const MentorRegistrationForm = () => {
                       <FormControl>
                         <Input
                           type="password"
-                          placeholder="Enter password"
+                          placeholder="Enter your password"
                           {...field}
                         />
                       </FormControl>
@@ -196,6 +188,24 @@ const MentorRegistrationForm = () => {
                       <Input
                         type="email"
                         placeholder="Enter your email"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="mentor.phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="tel"
+                        placeholder="Enter your phone number"
                         {...field}
                       />
                     </FormControl>
@@ -294,20 +304,6 @@ const MentorRegistrationForm = () => {
                   </FormItem>
                 )}
               />
-
-              {/* <FormField
-                control={form.control}
-                name="mentor.profileImage"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Profile Image URL</FormLabel>
-                    <FormControl>
-                      <Input placeholder="https://example.com/image.jpg" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              /> */}
             </form>
           </Form>
         </CardContent>
@@ -328,6 +324,43 @@ const MentorRegistrationForm = () => {
           </Button>
         </CardFooter>
       </Card>
+
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent className="sm:max-w-md bg-white rounded-lg shadow-lg p-6 flex flex-col items-center">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-violet text-center pb-3">
+              Registration Result
+            </DialogTitle>
+            <DialogDescription className="text-center text-soft-paste-dark font-bold">
+              {dialogMessage}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-2 flex items-center justify-center gap-4">
+            <DialogClose asChild>
+              <Button
+                type="button"
+                size={"sm"}
+                className="bg-soft-paste hover:bg-gray-300 font-bold py-2 px-4 rounded"
+                onClick={() => {
+                  router.push("/login");
+                }}
+              >
+                Login
+              </Button>
+            </DialogClose>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                size={"sm"}
+                className="bg-red-400 hover:bg-gray-300 font-bold py-2 px-4 rounded"
+                onClick={() => setShowDialog(false)}
+              >
+                Close
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

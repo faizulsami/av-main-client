@@ -6,11 +6,12 @@ import {
   Mail,
   MessageSquare,
   Users,
-  // Settings2,
-  // FileText,
+  Settings2,
+  FileText,
   PenSquare,
   UserPlus,
   Home,
+  User,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/hooks/useAuth";
@@ -22,7 +23,7 @@ type NavItem = {
   icon: React.ReactNode;
 };
 
-const mentorNavItems: NavItem[] = [
+const listenersNavItems: NavItem[] = [
   {
     title: "Booked Calls",
     href: "/dashboard/booked-calls",
@@ -38,22 +39,22 @@ const mentorNavItems: NavItem[] = [
     href: "/dashboard/notifications",
     icon: <Mail size={20} />,
   },
-  // {
-  //   title: "Profile",
-  //   href: "/dashboard/profile",
-  //   icon: <User size={20} />,
-  // },
+  {
+    title: "Profile",
+    href: "/dashboard/profile",
+    icon: <User size={20} />,
+  },
 ];
 
 const adminNavItems: NavItem[] = [
   {
-    title: "All Listeners",
-    href: "/dashboard/mentors",
+    title: "All Listener",
+    href: "/dashboard/listeners",
     icon: <Users size={20} />,
   },
   {
     title: "Listener Requests",
-    href: "/dashboard/mentor-requests",
+    href: "/dashboard/listener-requests",
     icon: <UserPlus size={20} />,
   },
   {
@@ -61,23 +62,28 @@ const adminNavItems: NavItem[] = [
     href: "/dashboard/post-blog",
     icon: <PenSquare size={20} />,
   },
-  // {
-  //   title: "Blog Management",
-  //   href: "/dashboard/blog-management",
-  //   icon: <FileText size={20} />,
-  // },
-  // {
-  //   title: "Data Customization",
-  //   href: "/dashboard/data-customization",
-  //   icon: <Settings2 size={20} />,
-  // },
+  {
+    title: "Blog Management",
+    href: "/dashboard/blog-management",
+    icon: <FileText size={20} />,
+  },
+  {
+    title: "Data Customization",
+    href: "/dashboard/data-customization",
+    icon: <Settings2 size={20} />,
+  },
+  {
+    title: "Notifications",
+    href: "/dashboard/notifications",
+    icon: <Mail size={20} />,
+  },
 ];
 
 export default function DashboardSidebar() {
   const [activeItem, setActiveItem] = React.useState("Booked Calls");
   const { user } = useAuth();
 
-  const navItems = user?.role === "admin" ? adminNavItems : mentorNavItems;
+  const navItems = user?.role === "admin" ? adminNavItems : listenersNavItems;
   const dashboardTitle = "Dashboard";
 
   return (

@@ -13,17 +13,22 @@ export const PlanField = ({
   hasDropdown = false,
   onDurationChange,
 }: PlanFieldProps) => {
+  console.log("PlanField rendered with value:", value, typeof value);
+
   if (hasDropdown) {
     return (
       <div className="space-y-2 text-sm">
         <label className="block text-soft-paste font-semibold">{label}</label>
-        <Select onValueChange={onDurationChange} defaultValue="10">
+        <Select
+          onValueChange={(v) => onDurationChange?.(Number(v))}
+          value={value.toString()}
+        >
           <SelectTrigger className="border-soft-paste-light-active">
             <SelectValue placeholder="Select duration" />
           </SelectTrigger>
           <SelectContent>
             {DURATION_OPTIONS.map(({ value, label }) => (
-              <SelectItem key={value} value={value}>
+              <SelectItem key={value} value={value.toString()}>
                 {label}
               </SelectItem>
             ))}

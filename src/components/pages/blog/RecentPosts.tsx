@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import BlogCard from "./BlogCard";
+import BlogCard from "./FeaturedBlogCard";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface Post {

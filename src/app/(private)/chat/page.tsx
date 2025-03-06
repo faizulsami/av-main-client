@@ -5,31 +5,19 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { io, Socket } from "socket.io-client";
 import { AuthService } from "@/services/auth.service";
 import { socketService } from "@/services/socket.service";
-import { Skeleton } from "@/components/ui/skeleton";
 import Loading from "@/app/loading";
 import { useAppointments } from "@/hooks/useAppointments";
 import ChatSidebar from "@/components/chat/ChatSidebar";
 import ChatMessages from "@/components/chat/ChatMessages";
-import UserProfile from "@/components/chat/ChatUserProfile";
-import { useRouter } from "next/navigation";
+import UserProfile from "@/components/chat/chat-user-profile/ChatUserProfile";
 import { CallInvitation } from "@/types/call";
 import CallInviteDialog from "@/components/chat/CallInviteDialog";
 import { CallService } from "@/lib/call/call-service";
 import { useChatContactsStore } from "@/store/chat-contacts.store";
 import { useChatStore } from "@/store/useChatStore";
 import { ChatContact } from "@/types/chat.types";
-
-// interface ChatContact {
-//   id: string;
-//   username: string;
-//   avatar: string;
-//   lastMessage: string;
-//   timestamp?: string;
-//   isActive?: boolean;
-//   hasHeart?: boolean;
-//   mentorName?: string;
-//   mentorUserName: string;
-// }
+import { VoiceCall } from "@/components/chat/VoiceCall";
+import { useToast } from "@/hooks/use-toast";
 
 interface Message {
   id: string;
@@ -50,7 +38,7 @@ interface ReceivedMessage {
 }
 
 export default function ChatInterface() {
-  const router = useRouter();
+  const { toast } = useToast();
   const { appointments, refetch } = useAppointments();
   const { setFilteredContacts } = useChatContactsStore();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -59,14 +47,16 @@ export default function ChatInterface() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [socket, setSocket] = useState<Socket | null>(null);
-  const [users, setUsers] = useState<ChatContact[]>([]);
+  // const [users, setUsers] = useState<ChatContact[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [selectedUser, setSelectedUser] = useState<ChatContact | null>(null);
   const [messageInput, setMessageInput] = useState("");
   const [incomingCall, setIncomingCall] = useState<CallInvitation | null>(null);
   const { addMessage } = useChatStore();
-  console.log("Chat users", users);
-  console.log("Messages", messages);
+  const [showCallScreen, setShowCallScreen] = useState<{
+    roomId: string;
+    isCaller: boolean;
+  } | null>(null);
 
   const currentActiveUser = useMemo(() => AuthService.getStoredUser(), []);
   const currentUser = useMemo(
@@ -88,9 +78,11 @@ export default function ChatInterface() {
           currentUser.role === "mentor"
             ? appointment.menteeUserName
             : appointment.mentorUserName,
-        avatar: "/images/avatar.png",
+        avatar: "/images/avatar/male-avatar.png",
         lastMessage: "",
         mentorUserName: appointment.mentorUserName,
+        duration: appointment.durationMinutes ?? 10,
+        selectedSlot: appointment.selectedSlot,
       }));
 
     const uniqueConfirmedAppointments = Array.from(
@@ -103,12 +95,13 @@ export default function ChatInterface() {
 
     return currentUser.role === "mentee"
       ? uniqueConfirmedAppointments.filter(
-          (contact) =>
+          (contact): contact is ChatContact =>
+            contact !== undefined &&
             contact.username ===
-            appointments.find(
-              (appointment) =>
-                appointment.menteeUserName === currentUser.username,
-            )?.mentorUserName,
+              appointments.find(
+                (appointment) =>
+                  appointment.menteeUserName === currentUser.username,
+              )?.mentorUserName,
         )
       : uniqueConfirmedAppointments;
   }, [appointments, currentUser.role, currentUser.username, currentActiveUser]);
@@ -164,13 +157,12 @@ export default function ChatInterface() {
     const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL!, {
       auth: { username: currentUser.username },
     });
-
     setSocket(newSocket);
 
-    newSocket.on("users", (userList: ChatContact[]) => {
-      setUsers(userList);
-      setIsLoading(false);
-    });
+    // newSocket.on("users", (userList: ChatContact[]) => {
+    //   setUsers(userList);
+    //   setIsLoading(false);
+    // });
 
     newSocket.on("private message", (data: ReceivedMessage) => {
       if (
@@ -246,7 +238,7 @@ export default function ChatInterface() {
     );
 
     socket.on("call:accept", ({ roomId }) => {
-      router.push(`/chat/video-call?roomId=${roomId}&caller=false`);
+      setShowCallScreen({ roomId, isCaller: true });
     });
 
     socket.on("call:reject", () => {
@@ -254,26 +246,36 @@ export default function ChatInterface() {
     });
 
     return () => {
-      socket.off("call:accept");
-      socket.off("call:reject");
+      if (socket) {
+        socket.off("call:accept");
+        socket.off("call:reject");
+      }
     };
-  }, [socket, router]);
+  }, [socket]);
 
   const handleAcceptCall = () => {
     if (!incomingCall || !socket) return;
+
     CallService.acceptCall(socket, incomingCall.roomId);
     setIncomingCall(null);
-    router.push(`/chat/video-call?roomId=${incomingCall.roomId}&caller=false`);
+    setShowCallScreen({ roomId: incomingCall.roomId, isCaller: false });
   };
 
   const handleRejectCall = () => {
     if (!incomingCall || !socket) return;
+
     CallService.rejectCall(socket, incomingCall.roomId);
     setIncomingCall(null);
   };
 
   const handlePhoneClick = () => {
     if (!socket || !selectedUser) return;
+
+    toast({
+      title: "Calling...",
+      description: `Calling ${selectedUser.username}`,
+    });
+
     const roomId = CallService.generateRoomId();
     const invitation: CallInvitation = {
       roomId,
@@ -281,17 +283,21 @@ export default function ChatInterface() {
       to: selectedUser.username,
       type: "audio",
     };
+
     CallService.sendCallInvitation(socket, invitation);
-    router.push(`/chat/video-call?roomId=${roomId}&caller=true`);
+  };
+
+  const handleEndCall = () => {
+    setShowCallScreen(null);
   };
 
   if (!currentActiveUser?.userName) {
     return <Loading />;
   }
 
-  return (
+  return !showCallScreen ? (
     <div className="flex h-screen bg-background">
-      <aside className="hidden md:flex w-full max-w-[20vw] flex-col border-r">
+      <aside className="hidden md:flex w-full max-w-[16vw] flex-col border-r">
         {/* {isLoading ? (
           <Skeleton className="w-full h-full" />
         ) : (
@@ -347,5 +353,14 @@ export default function ChatInterface() {
         />
       )}
     </div>
+  ) : socket ? (
+    <VoiceCall
+      socket={socket}
+      roomId={showCallScreen.roomId}
+      isCaller={showCallScreen.isCaller}
+      onEndCall={handleEndCall}
+    />
+  ) : (
+    <div>Socket connection failed. Please try again later.</div>
   );
 }

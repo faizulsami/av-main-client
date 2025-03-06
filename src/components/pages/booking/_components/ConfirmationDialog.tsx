@@ -16,7 +16,7 @@ interface BookingConfirmationProps {
   onClose: () => void;
   onConfirm: () => void;
   sessionType: AppointmentType;
-  duration: string;
+  duration: number;
   isLoading: boolean;
 }
 

@@ -17,9 +17,12 @@ export function useAuth() {
   const login = async (userName: string, password: string) => {
     try {
       setLoading(true);
+      setError(null);
       const response = await AuthService.login({ userName, password });
       const storedUser = AuthService.getStoredUser();
-      setUser(storedUser);
+      if (storedUser) {
+        setUser(storedUser);
+      }
       return response;
     } catch (err) {
       setError(err as Error);
@@ -37,11 +40,16 @@ export function useAuth() {
   ) => {
     try {
       setLoading(true);
+      setError(null);
       const response = await AuthService.createMentee({
         userName,
         password,
         mentee: { gender, age },
       });
+      const storedUser = AuthService.getStoredUser();
+      if (storedUser) {
+        setUser(storedUser);
+      }
       return response;
     } catch (err) {
       setError(err as Error);
@@ -65,7 +73,7 @@ export function useAuth() {
     login,
     register,
     logout,
-    isAuthenticated: AuthService.isAuthenticated(),
+    isAuthenticated: !!user,
     userRole,
   };
 }

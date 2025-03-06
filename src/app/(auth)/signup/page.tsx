@@ -34,8 +34,14 @@ import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 
 const signupSchema = z.object({
-  userName: z.string().min(3, "Username must be at least 3 characters"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  userName: z
+    .string()
+    .min(3, "Username must be at least 3 characters")
+    .regex(
+      /^[a-z0-9]+$/,
+      "Username must be in lowercase and contain no spaces",
+    ),
+  password: z.string().min(6, "Password must be at least 8 characters"),
   gender: z.enum(["male", "female"]),
   age: z.number().min(18, "Must be at least 18").max(100, "Must be under 100"),
 });

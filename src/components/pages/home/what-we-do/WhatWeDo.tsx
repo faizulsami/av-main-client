@@ -85,15 +85,21 @@ export default function WhatWeDo() {
 
   return (
     <section className="w-full mx-auto px-4 py-12 md:py-16 lg:py-20">
+      <h2 className="text-lg md:text-2xl font-bold text-violet text-center mb-4 lg:mb-8">
+        {title}
+      </h2>
+
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center"
+        className="flex flex-col lg:flex-row items-end gap-4"
       >
-        <motion.div variants={itemVariants} className="space-y-6">
+        <motion.div
+          variants={itemVariants}
+          className="space-y-6 w-full lg:w-2/3"
+        >
           <div className="space-y-2 text-center lg:text-left">
-            <h2 className="text-2xl font-bold text-violet">{title}</h2>
             <h3 className="text-xl md:text-3xl font-bold text-soft-paste">
               {subtitle}
             </h3>
@@ -129,8 +135,11 @@ export default function WhatWeDo() {
           </div>
         </motion.div>
 
-        <motion.div variants={itemVariants} className="hidden lg:block">
-          <div className="relative aspect-video rounded-2xl overflow-hidden">
+        <motion.div
+          variants={itemVariants}
+          className="hidden lg:block lg:w-1/3"
+        >
+          <div className="relative w-full aspect-[4/2] lg:aspect-[12/9] max-w-2xl rounded-2xl overflow-hidden bg-violet-200 p-2">
             <Image
               src={videoThumbnail}
               alt="Volunteer training video thumbnail"

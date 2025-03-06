@@ -75,6 +75,8 @@ export const useBookSession = () => {
     status:
       bookingStore.appointmentType === "Booking Call" ? "pending" : "confirmed",
     content: createAppointmentContent(bookingStore.appointmentType),
+    // selectedDuration: bookingStore.selectedDuration,
+    durationMinutes: bookingStore.selectedDuration,
     selectedSlot: {
       time:
         bookingStore.appointmentType === "Booking Call"

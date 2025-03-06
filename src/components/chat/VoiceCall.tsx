@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Socket } from "socket.io-client";
 import { CallService } from "@/lib/call/call-service";
 import { Button } from "@/components/ui/button";
@@ -20,21 +20,25 @@ export const VoiceCall: React.FC<VoiceCallProps> = ({
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<string>("");
 
+  const audioRef = useRef<HTMLAudioElement>(null);
+
   useEffect(() => {
     let peerConnection: RTCPeerConnection;
 
     const initializeCall = async () => {
       try {
-        peerConnection = await CallService.initializeCall(
-          socket,
-          isCaller,
-          roomId,
-        );
+        peerConnection = await CallService.initializeCall(socket, roomId);
         setIsConnected(true);
 
         if (isCaller) {
           await CallService.createOffer(peerConnection, socket, roomId);
         }
+
+        peerConnection.ontrack = (event) => {
+          if (event.streams[0] && audioRef.current) {
+            audioRef.current.srcObject = event.streams[0];
+          }
+        };
 
         // Handle incoming offer
         socket.on("call-offer", async ({ offer, roomId: incomingRoomId }) => {
@@ -67,6 +71,11 @@ export const VoiceCall: React.FC<VoiceCallProps> = ({
             console.error("Error adding ICE candidate:", e);
           }
         });
+
+        socket.on("call:end", async () => {
+          onEndCall();
+          CallService.endCall();
+        });
       } catch (err) {
         setError("Failed to initialize call");
         console.error(err);
@@ -80,12 +89,15 @@ export const VoiceCall: React.FC<VoiceCallProps> = ({
       socket.off("call-offer");
       socket.off("call-answer");
       socket.off("ice-candidate");
+      CallService.endCall();
     };
-  }, [socket, roomId, isCaller]);
+  }, [isCaller, onEndCall, roomId, socket]);
+  // }, [socket, roomId, isCaller]);
 
   const handleEndCall = () => {
     socket.emit("call:end", { roomId });
     onEndCall();
+    CallService.endCall();
   };
 
   return (

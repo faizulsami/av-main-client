@@ -8,12 +8,12 @@ import { Button } from "@/components/ui/button";
 import { ChatHeader } from "@/components/chat/ChatHeader";
 import { cn } from "@/lib/utils";
 import { useChatContactsStore } from "@/store/chat-contacts.store";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useChatStore } from "@/store/useChatStore";
 import { AuthService } from "@/services/auth.service";
 import Link from "next/link";
 import { ChatContact } from "@/types/chat.types";
+import { getMatchedContacts } from "@/utils/getMatchedContacts";
 
 interface currentMentorUser {
   username: string;
@@ -86,6 +86,21 @@ const ChatMessages = ({
   const router = useRouter();
   const searchParams = useSearchParams();
   const { setSession, setChatSelectedUser } = useChatStore();
+
+  const currentActiveuser = React.useMemo(() => {
+    try {
+      return AuthService.getStoredUser();
+    } catch {
+      return null;
+    }
+  }, []);
+
+  const matchedContacts = React.useMemo(() => {
+    return getMatchedContacts(
+      filteredContacts,
+      currentActiveuser?.role === "mentor" ? currentActiveuser.userName : null,
+    );
+  }, [filteredContacts, currentActiveuser]);
 
   const handleContactSelect = (contact: ChatContact) => {
     const currentActiveuser = AuthService.getStoredUser();
@@ -164,15 +179,6 @@ const ChatMessages = ({
                           : "justify-start",
                       )}
                     >
-                      {message.sentBy !== currentActiveUser?.userName && (
-                        <Avatar className="h-6 w-6">
-                          <AvatarImage
-                            src="/images/avatar.png"
-                            alt={message.sentBy}
-                          />
-                          <AvatarFallback>{message.sentBy[0]}</AvatarFallback>
-                        </Avatar>
-                      )}
                       <div
                         className={cn(
                           "max-w-[80%] rounded-2xl px-4 py-2 shadow-sm",
@@ -219,6 +225,19 @@ const ChatMessages = ({
     );
   };
 
+  const renderPlaceholder = () => (
+    <div className="hidden md:flex items-center justify-center flex-1">
+      <div className="text-center">
+        <h2 className="text-xl font-semibold text-muted-foreground mb-2">
+          Select a Conversation
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Choose from your contacts to start chatting
+        </p>
+      </div>
+    </div>
+  );
+
   const renderContactList = () => (
     <div className="flex flex-col h-full lg:hidden bg-background">
       <header className="py-4 px-8 border-b flex items-center justify-between sticky top-0 bg-background/80 backdrop-blur-sm z-10">
@@ -232,20 +251,13 @@ const ChatMessages = ({
 
       <div className="flex-1">
         <ScrollArea className="h-full overflow-y-auto">
-          {filteredContacts.map((contact) => (
+          {matchedContacts.map((contact) => (
             <div
               key={contact.id}
               className="hover:bg-muted/50 cursor-pointer transition-colors"
               onClick={() => handleContactSelect(contact)}
             >
               <div className="flex items-center gap-3 p-4 border-b">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage
-                    src="/images/avatar.png"
-                    alt={contact.username}
-                  />
-                  <AvatarFallback>{contact.username[0]}</AvatarFallback>
-                </Avatar>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
                     <h3 className="font-medium truncate">{contact.username}</h3>
@@ -269,23 +281,13 @@ const ChatMessages = ({
           ))}
         </ScrollArea>
       </div>
-
-      <div className="hidden md:flex items-center justify-center flex-1">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-muted-foreground mb-2">
-            Select a Conversation
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Choose from your contacts to start chatting
-          </p>
-        </div>
-      </div>
     </div>
   );
 
   return (
     <main className="flex-1 flex flex-col">
-      {selectedUser ? renderChatView() : renderContactList()}
+      {selectedUser ? renderChatView() : renderPlaceholder()}
+      {selectedUser ? null : renderContactList()}
     </main>
   );
 };

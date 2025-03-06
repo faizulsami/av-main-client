@@ -4,14 +4,19 @@ import { useAppointments } from "@/hooks/useAppointments";
 import { AppointmentService } from "@/services/appointment.service";
 import { AppointmentSection } from "./_components/AppointmentSection";
 import { AppointmentSectionSkeleton } from "./_components/AppointmentSectionSkeleton";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function BookedCallsPage() {
   const { appointments, isLoading, refetch } = useAppointments();
+  const { user: currentUser } = useAuth();
+  console.log("Current User", currentUser);
 
   const bookingCallAppointments = appointments.filter(
-    (appointment) => appointment.appointmentType === "Booking Call",
+    (appointment) =>
+      appointment.appointmentType === "Booking Call" &&
+      appointment.mentorUserName === currentUser?.userName,
   );
-  console.log("Appointments:", appointments);
+
   const appointmentsByStatus = {
     pending: bookingCallAppointments.filter(
       (appointment) => appointment.status === "pending",
@@ -26,6 +31,9 @@ export default function BookedCallsPage() {
       (appointment) => appointment.status === "cancelled",
     ),
   };
+
+  console.log("Appointments - BookedCallsPage", appointments);
+  console.log("Appointments by status - BookedCallsPage", appointmentsByStatus);
 
   const handleAccept = async (appointmentId: string) => {
     await AppointmentService.updateAppointment(appointmentId, {
@@ -62,13 +70,13 @@ export default function BookedCallsPage() {
         emptyMessage="No pending requests"
       />
 
-      {/* <AppointmentSection
+      <AppointmentSection
         title="Confirmed User"
         description="List of confirmed and running calls"
         appointments={appointmentsByStatus.confirmed}
         appointmentType="Booking Call"
         emptyMessage="No confirmed bookings"
-      /> */}
+      />
 
       {/* <AppointmentSection
         title="Completed Calls"

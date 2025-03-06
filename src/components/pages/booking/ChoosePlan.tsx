@@ -2,11 +2,12 @@
 
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useBookingStore } from "@/store/useBookingStore";
 import { useBookingLogic } from "@/hooks/booking/useBookingLogic";
 import { PlanField } from "./_components/PlanField";
 import { formatDateToLocale } from "@/lib/date";
-import { AppointmentType, SessionConfig } from "@/types/booking";
+import type { AppointmentType, SessionConfig } from "@/types/booking";
 import { BookingConfirmationDialog } from "./_components/ConfirmationDialog";
 
 interface ChoosePlanProps {
@@ -29,6 +30,7 @@ export default function ChoosePlan({
     handleConfirmBooking,
     isBookingDisabled,
   } = useBookingLogic(mentorUsername, sessionType);
+
   const setMentorUsername = useBookingStore((state) => state.setMentorUsername);
   const selectedTimeSlot = useBookingStore((state) => state.selectedTimeSlot);
   const selectedDate = useBookingStore((state) => state.selectedDate);
@@ -38,16 +40,18 @@ export default function ChoosePlan({
   }, [mentorUsername, setMentorUsername]);
 
   return (
-    <div className="w-full my-10">
-      <h1 className="text-center text-xl md:text-2xl font-bold text-violet-hover mb-8">
-        Choose Plan
-      </h1>
-      <div className="">
-        <div className="flex justify-center gap-4 lg:gap-8 items-end">
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-center text-lg font-semibold text-primary">
+          Session Details
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-4 items-end">
           {sessionConfig.requiresDuration && (
             <PlanField
               label="Duration"
-              value={`${duration} min`}
+              value={duration}
               onDurationChange={handleDurationChange}
               hasDropdown={true}
             />
@@ -60,22 +64,30 @@ export default function ChoosePlan({
           )}
 
           <Button
+            className="w-full md:w-auto"
             onClick={() => setShowConfirmDialog(true)}
             disabled={isBookingDisabled}
           >
-            Book {sessionType}
+            {isLoading ? (
+              <span className="flex items-center gap-2">
+                <span className="animate-spin">⏳</span>
+                Processing...
+              </span>
+            ) : (
+              `Book ${sessionType}`
+            )}
           </Button>
-
-          <BookingConfirmationDialog
-            isOpen={showConfirmDialog}
-            onClose={() => setShowConfirmDialog(false)}
-            onConfirm={handleConfirmBooking}
-            sessionType={sessionType}
-            duration={duration}
-            isLoading={isLoading}
-          />
         </div>
-      </div>
-    </div>
+
+        <BookingConfirmationDialog
+          isOpen={showConfirmDialog}
+          onClose={() => setShowConfirmDialog(false)}
+          onConfirm={handleConfirmBooking}
+          sessionType={sessionType}
+          duration={duration}
+          isLoading={isLoading}
+        />
+      </CardContent>
+    </Card>
   );
 }

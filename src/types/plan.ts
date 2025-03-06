@@ -1,6 +1,6 @@
 export interface PlanOption {
   type: string;
-  duration: string;
+  duration: number;
   time: string;
   date: string;
   validity: string;
@@ -15,6 +15,8 @@ export interface AppointmentPayload {
     time: string;
     isAvailable: boolean;
   };
+  // selectedDuration: number;
+  durationMinutes: number;
   mentorUserName: string;
   menteeUserName: string;
 }

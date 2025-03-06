@@ -68,9 +68,9 @@ const mainNavItems: NavItem[] = [
       //   link: "/get-a-quote",
       // },
       {
-        id: "mentor",
-        label: "Apply for Mentor",
-        link: "/mentor-registration",
+        id: "listener",
+        label: "Apply for listener",
+        link: "/listener-registration",
       },
     ],
   },
@@ -238,7 +238,7 @@ const Header: React.FC = () => {
               {
                 id: "dashboard",
                 name: "Dashboard",
-                href: "/dashboard/mentors",
+                href: "/dashboard/listeners",
               },
             ]
           : user.role === "mentor"

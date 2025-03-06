@@ -22,6 +22,12 @@ export interface Message {
   timestamp: number;
 }
 
+export interface AppointmentSlot {
+  time: string;
+  isAvailable: boolean;
+  _id: string;
+}
+
 export interface ChatContact {
   id: string;
   username: string;
@@ -32,4 +38,6 @@ export interface ChatContact {
   hasHeart?: boolean;
   mentorName?: string;
   mentorUserName: string;
+  duration: number;
+  selectedSlot?: AppointmentSlot[];
 }

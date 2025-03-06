@@ -28,7 +28,7 @@ export const useBookingLogic = (
     );
   }, [mentorUsername, sessionType, setMentorUsername, setAppointmentType]);
 
-  const handleDurationChange = (value: string) => {
+  const handleDurationChange = (value: number) => {
     bookingStore.setDuration(value);
   };
 
