@@ -13,6 +13,7 @@ export interface UserInfo {
   userName: string;
   isVerified?: boolean;
   role: UserRole;
+  adminApproval?: boolean;
   userDetails?: string;
 }
 

@@ -11,7 +11,7 @@ export default function BookedCallsPage() {
   const bookingCallAppointments = appointments.filter(
     (appointment) => appointment.appointmentType === "Booking Call",
   );
-
+  console.log("Appointments:", appointments);
   const appointmentsByStatus = {
     pending: bookingCallAppointments.filter(
       (appointment) => appointment.status === "pending",

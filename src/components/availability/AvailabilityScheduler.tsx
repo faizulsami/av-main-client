@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 "use client";
 
 import { Card } from "@/components/ui/card";
@@ -129,11 +130,14 @@ export function AvailabilityScheduler({
                       <SelectValue placeholder="End Time" />
                     </SelectTrigger>
                     <SelectContent>
-                      {TIME_SLOTS.map((time) => (
-                        <SelectItem key={time} value={time}>
-                          {time}
-                        </SelectItem>
-                      ))}
+                      {TIME_SLOTS.map((time) => {
+                        console.log({ time });
+                        return (
+                          <SelectItem key={time} value={time}>
+                            {time}
+                          </SelectItem>
+                        );
+                      })}
                     </SelectContent>
                   </Select>
                 </div>

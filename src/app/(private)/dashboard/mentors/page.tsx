@@ -98,7 +98,7 @@ export default function ApprovedMentors() {
   const handleConfirmDelete = async () => {
     if (selectedMentor) {
       try {
-        // await deleteMentor(selectedMentor.id)
+        await deleteMentor(selectedMentor.id);
         setDeleteDialogOpen(false);
         setSelectedMentor(null);
       } catch (error) {
@@ -174,7 +174,6 @@ export default function ApprovedMentors() {
                         size="icon"
                         variant="ghost"
                         className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50 cursor-not-allowed"
-                        disabled
                         onClick={() => handleDeleteClick(mentor)}
                       >
                         <Trash2 className="h-4 w-4" />
