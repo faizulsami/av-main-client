@@ -84,7 +84,7 @@ export default function PendingMentorRegApproval() {
               <li className="flex items-start space-x-2">
                 <CheckCircle className="w-5 h-5 text-[#4CB5C3] mt-0.5" />
                 <span>
-                  If approved, you&apos;ll get access to your mentor dashboard
+                  If approved, you&apos;ll get access to your Listener dashboard
                 </span>
               </li>
             </ul>

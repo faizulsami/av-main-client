@@ -47,12 +47,12 @@ const mentorNavItems: NavItem[] = [
 
 const adminNavItems: NavItem[] = [
   {
-    title: "All Mentors",
+    title: "All Listeners",
     href: "/dashboard/mentors",
     icon: <Users size={20} />,
   },
   {
-    title: "Mentor Requests",
+    title: "Listener Requests",
     href: "/dashboard/mentor-requests",
     icon: <UserPlus size={20} />,
   },

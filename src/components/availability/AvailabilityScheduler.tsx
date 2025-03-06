@@ -64,7 +64,8 @@ export function AvailabilityScheduler({
       }
       return slot;
     });
-    onChange(updatedSlots);
+    console.log({ updatedSlots });
+    // onChange(updatedSlots);
   };
 
   const handleAvailabilityToggle = (day: string) => {
