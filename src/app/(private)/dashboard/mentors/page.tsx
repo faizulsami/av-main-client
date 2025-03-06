@@ -53,7 +53,7 @@ const LoadingTableRow = () => (
 );
 
 export default function ApprovedMentors() {
-  const { approvedMentors, isLoading } = useApprovedMentors();
+  const { approvedMentors, isLoading, deleteMentor } = useApprovedMentors();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedMentor, setSelectedMentor] = useState<MentorRequest | null>(
@@ -98,7 +98,8 @@ export default function ApprovedMentors() {
   const handleConfirmDelete = async () => {
     if (selectedMentor) {
       try {
-        // await deleteMentor(selectedMentor.id);
+        console.log({ _id: selectedMentor.id });
+        await deleteMentor(selectedMentor.id);
         setDeleteDialogOpen(false);
         setSelectedMentor(null);
       } catch (error) {
