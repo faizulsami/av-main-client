@@ -34,7 +34,7 @@ export const MentorTable = ({
       ) : !mentorRequests.length ? (
         <TableRow>
           <TableCell colSpan={3} className="text-center text-gray-500 py-8">
-            No mentor requests found
+            No listener requests found
           </TableCell>
         </TableRow>
       ) : (
