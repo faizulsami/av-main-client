@@ -36,15 +36,15 @@ const TIME_SLOTS = [
   { hours: 11, minutes: 30 },
   { hours: 12, minutes: 0 },
   { hours: 12, minutes: 30 },
-  { hours: 13, minutes: 0 },
-  { hours: 13, minutes: 30 },
-  { hours: 14, minutes: 0 },
-  { hours: 14, minutes: 30 },
-  { hours: 15, minutes: 0 },
-  { hours: 15, minutes: 30 },
-  { hours: 16, minutes: 0 },
-  { hours: 16, minutes: 30 },
-  { hours: 17, minutes: 0 },
+  { hours: 1, minutes: 0 },
+  { hours: 1, minutes: 30 },
+  { hours: 2, minutes: 0 },
+  { hours: 2, minutes: 30 },
+  { hours: 3, minutes: 0 },
+  { hours: 3, minutes: 30 },
+  { hours: 4, minutes: 0 },
+  { hours: 4, minutes: 30 },
+  { hours: 5, minutes: 0 },
 ];
 
 const formatTime = (time: { hours: number; minutes: number }) => {
@@ -160,7 +160,7 @@ export function AvailabilityScheduler({
                           key={formatTime(time)}
                           value={formatTime(time)}
                         >
-                          {formatTime(time)}
+                          {formatTime(time).toString()}
                         </SelectItem>
                       ))}
                     </SelectContent>

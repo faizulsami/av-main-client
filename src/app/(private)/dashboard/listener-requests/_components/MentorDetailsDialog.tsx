@@ -182,29 +182,53 @@ export function MentorDetailsDialog({
                         {mentor?.scheduleId?.schedule?.length ? (
                           <div className="grid gap-2">
                             {mentor?.scheduleId.schedule.map(
-                              (schedule, index) => (
-                                <div
-                                  key={schedule._id || index}
-                                  className="flex items-center justify-between p-2 rounded-md bg-muted/50 hover:bg-muted/80 transition-colors"
-                                >
-                                  <span className="capitalize text-xs flex items-center gap-2">
-                                    <Clock className="w-3.5 h-3.5 text-primary" />
-                                    {schedule.day}
-                                  </span>
-                                  <Badge
-                                    variant={
-                                      schedule.isAvailable
-                                        ? "default"
-                                        : "destructive"
-                                    }
-                                    className="text-[10px] px-2 py-0"
+                              (schedule, index) => {
+                                console.log({ schedule });
+                                return (
+                                  <div
+                                    key={schedule._id || index}
+                                    className="grid grid-cols-3 p-2 rounded-md bg-muted/50 hover:bg-muted/80 transition-colors"
                                   >
-                                    {schedule.isAvailable
-                                      ? "Available"
-                                      : "Unavailable"}
-                                  </Badge>
-                                </div>
-                              ),
+                                    <span className="capitalize text-xs flex items-center gap-2">
+                                      {schedule.day}
+                                    </span>
+
+                                    <div>
+                                      <span className="text-xs font-medium flex items-center justify-end gap-2">
+                                        <Clock className="w-3.5 h-3.5 text-primary" />
+                                        {schedule.startTime.hours}:
+                                        {schedule.startTime.minutes == 0
+                                          ? "00"
+                                          : schedule.startTime.minutes}{" "}
+                                        {schedule.startTime.hours <= 5
+                                          ? "PM"
+                                          : "AM"}
+                                        - {schedule.endTime.hours}:
+                                        {schedule.endTime.minutes == 0
+                                          ? "00"
+                                          : schedule.endTime.minutes}{" "}
+                                        {schedule.startTime.hours <= 5
+                                          ? "PM"
+                                          : "AM"}
+                                      </span>
+                                    </div>
+                                    <div className="flex justify-end">
+                                      <Badge
+                                        variant={
+                                          schedule.isAvailable
+                                            ? "default"
+                                            : "destructive"
+                                        }
+                                        className="text-[10px] px-2 py-0 w-[70px] text-center"
+                                      >
+                                        {schedule.isAvailable
+                                          ? "Available"
+                                          : "Unavailable"}
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                );
+                              },
                             )}
                           </div>
                         ) : (
