@@ -75,11 +75,11 @@ export function useApprovedMentors(): UseApprovedMentorsReturn {
     }
   };
 
-  const deleteMentor = async (userName: string) => {
-    console.log("USERNAME - deleteMentor", userName)
+  const deleteMentor = async (id: string) => {
+    console.log("USERNAME - deleteMentor", id);
     try {
       setIsLoading(true);
-      await api.delete(`/api/v1/mentors/${userName}`);
+      await api.delete(`/api/v1/mentors/${id}`);
 
       await fetchApprovedMentors();
     } catch (err) {

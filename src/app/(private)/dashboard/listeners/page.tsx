@@ -89,7 +89,7 @@ export default function ApprovedMentors() {
     if (selectedMentor) {
       try {
         // await deleteMentor(selectedMentor?.id)
-        await deleteMentor(selectedMentor.userName);
+        await deleteMentor(selectedMentor.id);
         setDeleteDialogOpen(false);
         setSelectedMentor(null);
       } catch (error) {
