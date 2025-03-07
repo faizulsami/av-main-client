@@ -13,7 +13,7 @@ export default function Page() {
     <div className="[url('/images/watermark_bg.png')] bg-cover bg-center bg-no-repeat">
       <Hero />
       <div
-        className="bg-cover bg-center bg-no-repeat border"
+        className="bg-cover bg-center bg-no-repeat border w-full  overflow-x-hidden"
         style={{ backgroundImage: "url('/images/overlay/grainy-overlay.png')" }}
       >
         <div className="container w-full mx-auto px-2 md:px-8 lg:px-16 xl:px-24">

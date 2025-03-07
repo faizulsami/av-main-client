@@ -82,7 +82,7 @@ export default function Hero() {
   );
 
   return (
-    <section className="relative lg:min-h-[90vh] w-[100vw] flex justify-center items-center overflow-hidden bg-gradient-to-b from-purple-400 via-purple-300 to-blue-300 border">
+    <section className="relative lg:min-h-[90vh] w-[calc(100vw-16px)]  overflow-x-hidden flex justify-center items-center overflow-hidden bg-gradient-to-b from-purple-400 via-purple-300 to-blue-300 border">
       <div className="absolute inset-0 z-0">
         <Image
           src="/images/av-hero.webp"
