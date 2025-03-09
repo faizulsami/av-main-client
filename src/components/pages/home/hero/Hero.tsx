@@ -49,13 +49,7 @@ export default function Hero() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handleAction = (actionType: ActionType) => {
-    if (actionType === "quick-call" || actionType === "booking") {
-      // Redirect to the "coming-soon" page for quick-call and booking actions
-      // router.push("/coming-soon");
-    } else {
-      // Handle other actions as needed
-      router.push(`/sessions?action=${actionType}`);
-    }
+    router.push(`/sessions?action=${actionType}`);
   };
 
   const ActionButton: React.FC<ActionButtonProps> = ({

@@ -3,7 +3,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-// import { CallButton } from "../call/call-button";
+import { CallButton } from "../call/call-button";
 import { useChatContactsStore } from "@/store/chat-contacts.store";
 import { ScrollArea } from "../ui/scroll-area";
 import { cn } from "@/lib/utils";
@@ -35,9 +35,9 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   setSelectedUser,
   isSidebarOpen,
   setIsSidebarOpen,
-  // lastActiveTime,
-  // currentUser,
-  // onPhoneClick,
+  lastActiveTime,
+  currentUser,
+  onPhoneClick,
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -204,9 +204,9 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         </p> */}
       </div>
 
-      {/* {currentUser.role === "mentor" && (
-        <CallButton menteeId={selectedUser.id} />
-      )} */}
+      {currentUser.role === "mentor" && (
+        <CallButton menteeId={selectedUser.id} onPhoneClick={onPhoneClick} />
+      )}
       {/* {currentUser.role === "mentor" && (
         <CallButton onPhoneClick={onPhoneClick} />
       )} */}

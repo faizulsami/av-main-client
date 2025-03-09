@@ -19,7 +19,7 @@ export class CallService {
 
     this.peerConnection = new RTCPeerConnection(configuration);
 
-    // Handle ICE candidates
+    // Handle ICE  candidates
     this.peerConnection.onicecandidate = (event) => {
       if (event.candidate) {
         socket.emit("ice-candidate", {

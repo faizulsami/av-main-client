@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface CallInvitation {
   // caller: string;
   // callee: string;
@@ -5,6 +6,7 @@ export interface CallInvitation {
   from: string;
   to: string;
   type: "video" | "audio";
+  signal: any;
 }
 
 export interface CallParticipant {

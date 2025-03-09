@@ -18,6 +18,7 @@ import { useChatStore } from "@/store/useChatStore";
 import { ChatContact } from "@/types/chat.types";
 import { VoiceCall } from "@/components/chat/VoiceCall";
 import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Message {
   id: string;
@@ -51,12 +52,18 @@ export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [selectedUser, setSelectedUser] = useState<ChatContact | null>(null);
   const [messageInput, setMessageInput] = useState("");
-  const [incomingCall, setIncomingCall] = useState<CallInvitation | null>(null);
+  const [incomingCall, setIncomingCall] = useState<CallInvitation | null>({
+    roomId: "sdf",
+    from: "sd",
+    to: "sf",
+    type: "audio",
+  });
   const { addMessage } = useChatStore();
   const [showCallScreen, setShowCallScreen] = useState<{
     roomId: string;
     isCaller: boolean;
   } | null>(null);
+  // { roomId: "some-room", isCaller: true }
 
   const currentActiveUser = useMemo(() => AuthService.getStoredUser(), []);
   const currentUser = useMemo(
@@ -230,6 +237,7 @@ export default function ChatInterface() {
   useEffect(() => {
     if (!socket) return;
 
+    socket.emit("join", { fromUsername: currentUser.username });
     CallService.listenForCallInvitations(
       socket,
       (invitation: CallInvitation) => {
@@ -251,7 +259,7 @@ export default function ChatInterface() {
         socket.off("call:reject");
       }
     };
-  }, [socket]);
+  }, [socket, currentUser.username]);
 
   const handleAcceptCall = () => {
     if (!incomingCall || !socket) return;
@@ -279,6 +287,7 @@ export default function ChatInterface() {
     const roomId = CallService.generateRoomId();
     const invitation: CallInvitation = {
       roomId,
+      signal: currentUser.username,
       from: currentUser.username,
       to: selectedUser.username,
       type: "audio",

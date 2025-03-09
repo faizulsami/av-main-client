@@ -67,7 +67,7 @@ export default function VolunteerCard({
 
   return (
     <Card className="overflow-hidden transition-all hover:shadow-md bg-soft-paste-light-hover">
-      <CardContent className="p-5">
+      <CardContent className="p-5 ">
         <div className="flex flex-col items-center gap-4">
           <div className="relative">
             <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-to-br from-primary/10 to-muted">
@@ -112,7 +112,7 @@ export default function VolunteerCard({
           {!isDisabled && (
             <div className="grid grid-cols-1 gap-2 w-full">
               <Button
-                className="hidden h-9 text-xs font-bold bg-soft-paste hover:bg-soft-paste-dark text-white"
+                className=" h-9 text-xs font-bold bg-soft-paste hover:bg-soft-paste-dark text-white"
                 onClick={() => handleAction("quick-call")}
                 disabled={!isButtonEnabled("quick-call")}
               >
@@ -130,7 +130,7 @@ export default function VolunteerCard({
               </Button>
 
               <Button
-                className="hidden h-9 text-xs font-bold bg-soft-paste hover:bg-soft-paste-dark text-white"
+                className=" h-9 text-xs font-bold bg-soft-paste hover:bg-soft-paste-dark text-white"
                 onClick={() => handleAction("booking")}
                 disabled={!isButtonEnabled("booking")}
               >
