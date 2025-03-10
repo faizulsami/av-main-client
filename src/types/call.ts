@@ -6,7 +6,7 @@ export interface CallInvitation {
   from: string;
   to: string;
   type: "video" | "audio";
-  signal: any;
+  signal?: any;
 }
 
 export interface CallParticipant {

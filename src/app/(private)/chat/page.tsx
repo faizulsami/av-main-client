@@ -52,12 +52,7 @@ export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [selectedUser, setSelectedUser] = useState<ChatContact | null>(null);
   const [messageInput, setMessageInput] = useState("");
-  const [incomingCall, setIncomingCall] = useState<CallInvitation | null>({
-    roomId: "sdf",
-    from: "sd",
-    to: "sf",
-    type: "audio",
-  });
+  const [incomingCall, setIncomingCall] = useState<CallInvitation | null>(null);
   const { addMessage } = useChatStore();
   const [showCallScreen, setShowCallScreen] = useState<{
     roomId: string;
@@ -237,7 +232,10 @@ export default function ChatInterface() {
   useEffect(() => {
     if (!socket) return;
 
+    console.log({ socket });
+
     socket.emit("join", { fromUsername: currentUser.username });
+
     CallService.listenForCallInvitations(
       socket,
       (invitation: CallInvitation) => {

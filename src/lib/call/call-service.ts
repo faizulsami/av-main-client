@@ -34,9 +34,9 @@ export class CallService {
       this.localStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
       });
-      this.localStream.getTracks().forEach((track) => {
-        this.peerConnection?.addTrack(track, this.localStream!);
-      });
+      // this.localStream.getTracks().forEach((track) => {
+      //   this.peerConnection?.addTrack(track, this.localStream!);
+      // });
       // const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       // stream.getTracks().forEach((track) => {
       //   this.peerConnection?.addTrack(track, stream);
