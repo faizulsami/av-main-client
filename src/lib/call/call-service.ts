@@ -1,8 +1,9 @@
 import { Socket } from "socket.io-client";
 import { CallInvitation } from "./types";
-
+import Peer from "simple-peer";
+import { CallInvitationExtends } from "@/types/call";
 export class CallService {
-  private static peerConnection: RTCPeerConnection | null = null;
+  private static peerConnection: Peer.Instance | null = null;
   static localStream: MediaStream | null = null;
 
   static generateRoomId(): string {
@@ -10,14 +11,16 @@ export class CallService {
   }
 
   static async initializeCall(socket: Socket, roomId: string) {
-    const configuration = {
-      iceServers: [
-        { urls: "stun:stun.l.google.com:19302" },
-        { urls: "stun:stun1.l.google.com:19302" },
-      ],
-    };
+    if (!this.localStream) return;
+    this.peerConnection = new Peer({
+      initiator: false,
+      trickle: false,
+      stream: this.localStream,
+    });
 
-    this.peerConnection = new RTCPeerConnection(configuration);
+    this.peerConnection.on("signal", (data: Peer.SignalData) => {
+      socket.emit("call_to_user", { name: user, signal: data, from: me });
+    });
 
     // Handle ICE  candidates
     this.peerConnection.onicecandidate = (event) => {
@@ -94,8 +97,22 @@ export class CallService {
     socket.emit("call:invite", invitation);
   }
 
-  static acceptCall(socket: Socket, roomId: string) {
-    socket.emit("call:accept", { roomId });
+  static acceptCall(
+    socket: Socket,
+    { username, me }: { username: string; me: string },
+  ) {
+    if (!this.localStream) return;
+    this.peerConnection = new Peer({
+      initiator: false,
+      trickle: false,
+      stream: this.localStream,
+    });
+
+    this.peerConnection.on("signal", (data: Peer.SignalData) => {
+      socket.emit("call:accept", { username, signal: data, from: me });
+    });
+
+    // socket.emit("call:accept", { roomId });
   }
 
   static rejectCall(socket: Socket, roomId: string) {
@@ -104,7 +121,7 @@ export class CallService {
 
   static listenForCallInvitations(
     socket: Socket,
-    callback: (invitation: CallInvitation) => void,
+    callback: (invitation: CallInvitationExtends) => void,
   ) {
     socket.on("call:invite", callback);
   }

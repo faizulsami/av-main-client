@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import * as React from "react";
@@ -10,7 +11,7 @@ import { useAppointments } from "@/hooks/useAppointments";
 import ChatSidebar from "@/components/chat/ChatSidebar";
 import ChatMessages from "@/components/chat/ChatMessages";
 import UserProfile from "@/components/chat/chat-user-profile/ChatUserProfile";
-import { CallInvitation } from "@/types/call";
+import { CallInvitation, CallInvitationExtends } from "@/types/call";
 import CallInviteDialog from "@/components/chat/CallInviteDialog";
 import { CallService } from "@/lib/call/call-service";
 import { useChatContactsStore } from "@/store/chat-contacts.store";
@@ -18,7 +19,7 @@ import { useChatStore } from "@/store/useChatStore";
 import { ChatContact } from "@/types/chat.types";
 import { VoiceCall } from "@/components/chat/VoiceCall";
 import { useToast } from "@/hooks/use-toast";
-import { Skeleton } from "@/components/ui/skeleton";
+import Peer from "simple-peer";
 
 interface Message {
   id: string;
@@ -52,12 +53,18 @@ export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [selectedUser, setSelectedUser] = useState<ChatContact | null>(null);
   const [messageInput, setMessageInput] = useState("");
-  const [incomingCall, setIncomingCall] = useState<CallInvitation | null>(null);
+  const [stream, setStream] = useState<MediaStream>();
+  const [incomingCall, setIncomingCall] = useState<{
+    signal: any;
+    receiverSocketId: string;
+    callerSocketId: string;
+  } | null>(null);
   const { addMessage } = useChatStore();
   const [showCallScreen, setShowCallScreen] = useState<{
-    roomId: string;
     isCaller: boolean;
   } | null>(null);
+  const [me, setMe] = useState("");
+  const [callerSocketId, setCallerSocketId] = useState("");
   // { roomId: "some-room", isCaller: true }
 
   const currentActiveUser = useMemo(() => AuthService.getStoredUser(), []);
@@ -229,22 +236,32 @@ export default function ChatInterface() {
     scrollToBottom();
   }, [messages]);
 
+  //#region calling
   useEffect(() => {
     if (!socket) return;
 
-    console.log({ socket });
+    navigator.mediaDevices
+      .getUserMedia({ audio: true }) // Request only audio
+      .then((stream) => {
+        setStream(stream);
+      });
 
     socket.emit("join", { fromUsername: currentUser.username });
+    socket.on("me", (me: string) => setMe(me));
 
-    CallService.listenForCallInvitations(
-      socket,
-      (invitation: CallInvitation) => {
+    socket.on(
+      "call:invite",
+      (invitation: {
+        signal: any;
+        receiverSocketId: string;
+        callerSocketId: string;
+      }) => {
         setIncomingCall(invitation);
       },
     );
 
-    socket.on("call:accept", ({ roomId }) => {
-      setShowCallScreen({ roomId, isCaller: true });
+    socket.on("call:accept", () => {
+      setShowCallScreen({ isCaller: true });
     });
 
     socket.on("call:reject", () => {
@@ -260,11 +277,33 @@ export default function ChatInterface() {
   }, [socket, currentUser.username]);
 
   const handleAcceptCall = () => {
-    if (!incomingCall || !socket) return;
+    if (!incomingCall || !socket || !currentUser.username) return;
 
-    CallService.acceptCall(socket, incomingCall.roomId);
+    const peer = new Peer({
+      initiator: false,
+      trickle: false,
+      stream: stream,
+    });
+
+    peer.on("signal", (signal) => {
+      socket.emit("call:accept", {
+        receiverSocketId: incomingCall.callerSocketId,
+        callerSocketId: me,
+        signal,
+      });
+    });
+
+    peer.on("stream", (stream) => {
+      const audio = new Audio();
+      audio.srcObject = stream;
+      audio.play();
+    });
+
+    if (!incomingCall?.signal) return;
+    peer.signal(incomingCall.signal as any);
+
     setIncomingCall(null);
-    setShowCallScreen({ roomId: incomingCall.roomId, isCaller: false });
+    setShowCallScreen({ isCaller: false });
   };
 
   const handleRejectCall = () => {
@@ -273,26 +312,43 @@ export default function ChatInterface() {
     CallService.rejectCall(socket, incomingCall.roomId);
     setIncomingCall(null);
   };
-
+  // #region call function
   const handlePhoneClick = () => {
-    if (!socket || !selectedUser) return;
+    if (!socket || !selectedUser || !stream) return;
 
     toast({
       title: "Calling...",
       description: `Calling ${selectedUser.username}`,
     });
 
-    const roomId = CallService.generateRoomId();
-    const invitation: CallInvitation = {
-      roomId,
-      signal: currentUser.username,
-      from: currentUser.username,
-      to: selectedUser.username,
-      type: "audio",
-    };
+    const peer = new Peer({
+      initiator: true,
+      trickle: false,
+      stream: stream,
+    });
 
-    CallService.sendCallInvitation(socket, invitation);
+    peer.on("signal", (signal) => {
+      socket.emit("call:invite", {
+        signal,
+        receiverUsername: selectedUser.username,
+        callerSocketId: me,
+      });
+    });
+
+    peer.on("stream", (stream) => {
+      const audio = new Audio();
+      audio.srcObject = stream;
+      audio.play();
+    });
+
+    socket.once("call:accept", (data) => {
+      setShowCallScreen({ isCaller: true });
+      setCallerSocketId(data.from);
+      if (data.signal) peer.signal(data.signal);
+    });
   };
+
+  //#endregion
 
   const handleEndCall = () => {
     setShowCallScreen(null);
@@ -302,7 +358,7 @@ export default function ChatInterface() {
     return <Loading />;
   }
 
-  return !showCallScreen ? (
+  return (
     <div className="flex h-screen bg-background">
       <aside className="hidden md:flex w-full max-w-[16vw] flex-col border-r">
         {/* {isLoading ? (
@@ -318,7 +374,6 @@ export default function ChatInterface() {
           selectedUser={selectedUser}
         />
       </aside>
-
       <ChatMessages
         selectedUser={selectedUser}
         setSelectedUser={setSelectedUser}
@@ -336,7 +391,6 @@ export default function ChatInterface() {
         currentUser={currentUser}
         onPhoneClick={handlePhoneClick}
       />
-
       {selectedUser && currentUser.role === "mentor" && (
         <aside className="hidden lg:block w-80 xl:w-96 border-l">
           <UserProfile
@@ -348,7 +402,6 @@ export default function ChatInterface() {
           />
         </aside>
       )}
-
       {incomingCall && (
         <CallInviteDialog
           isOpen={!!incomingCall}
@@ -359,15 +412,25 @@ export default function ChatInterface() {
           onReject={handleRejectCall}
         />
       )}
+      {showCallScreen && socket ? (
+        <VoiceCall
+          socket={socket}
+          roomId={showCallScreen.roomId}
+          username={selectedUser!.username}
+          invitation={incomingCall!}
+          me={me}
+          isCaller={showCallScreen.isCaller}
+          onEndCall={handleEndCall}
+        />
+      ) : (
+        <>
+          {!socket && (
+            <div className="fixed bottom-10 right-4 bg-background p-4 rounded-lg shadow-lg">
+              connection failed.
+            </div>
+          )}
+        </>
+      )}
     </div>
-  ) : socket ? (
-    <VoiceCall
-      socket={socket}
-      roomId={showCallScreen.roomId}
-      isCaller={showCallScreen.isCaller}
-      onEndCall={handleEndCall}
-    />
-  ) : (
-    <div>Socket connection failed. Please try again later.</div>
   );
 }
