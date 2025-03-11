@@ -50,6 +50,7 @@ export default function ChatInterface() {
   const [isLoading, setIsLoading] = useState(true);
   const [socket, setSocket] = useState<Socket | null>(null);
   // const [users, setUsers] = useState<ChatContact[]>([]);
+  const user_video = useRef<HTMLVideoElement>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [selectedUser, setSelectedUser] = useState<ChatContact | null>(null);
   const [messageInput, setMessageInput] = useState("");
@@ -64,7 +65,7 @@ export default function ChatInterface() {
     isCaller: boolean;
   } | null>(null);
   const [me, setMe] = useState("");
-  const [callerSocketId, setCallerSocketId] = useState("");
+
   // { roomId: "some-room", isCaller: true }
 
   const currentActiveUser = useMemo(() => AuthService.getStoredUser(), []);
@@ -241,7 +242,7 @@ export default function ChatInterface() {
     if (!socket) return;
 
     navigator.mediaDevices
-      .getUserMedia({ audio: true }) // Request only audio
+      .getUserMedia({ audio: true, video: true }) // Request only audio
       .then((stream) => {
         setStream(stream);
       });
@@ -277,7 +278,7 @@ export default function ChatInterface() {
   }, [socket, currentUser.username]);
 
   const handleAcceptCall = () => {
-    if (!incomingCall || !socket || !currentUser.username) return;
+    if (!incomingCall || !socket || !currentUser.username || !stream) return;
 
     const peer = new Peer({
       initiator: false,
@@ -294,9 +295,7 @@ export default function ChatInterface() {
     });
 
     peer.on("stream", (stream) => {
-      const audio = new Audio();
-      audio.srcObject = stream;
-      audio.play();
+      if (user_video.current) user_video.current.srcObject = stream;
     });
 
     if (!incomingCall?.signal) return;
@@ -336,14 +335,11 @@ export default function ChatInterface() {
     });
 
     peer.on("stream", (stream) => {
-      const audio = new Audio();
-      audio.srcObject = stream;
-      audio.play();
+      if (user_video.current) user_video.current.srcObject = stream;
     });
 
     socket.once("call:accept", (data) => {
       setShowCallScreen({ isCaller: true });
-      setCallerSocketId(data.from);
       if (data.signal) peer.signal(data.signal);
     });
   };
@@ -413,15 +409,25 @@ export default function ChatInterface() {
         />
       )}
       {showCallScreen && socket ? (
-        <VoiceCall
-          socket={socket}
-          roomId={showCallScreen.roomId}
-          username={selectedUser!.username}
-          invitation={incomingCall!}
-          me={me}
-          isCaller={showCallScreen.isCaller}
-          onEndCall={handleEndCall}
-        />
+        <>
+          <video
+            width={500}
+            // src=""
+            height={300}
+            ref={user_video}
+            autoPlay
+            // hidden
+          ></video>
+          <VoiceCall
+            socket={socket}
+            roomId={showCallScreen.roomId}
+            username={selectedUser!.username}
+            invitation={incomingCall!}
+            me={me}
+            isCaller={showCallScreen.isCaller}
+            onEndCall={handleEndCall}
+          />
+        </>
       ) : (
         <>
           {!socket && (
