@@ -1,4 +1,4 @@
-import React from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -7,14 +7,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Video, Phone } from "lucide-react";
+import { Phone } from "lucide-react";
+import React from "react";
 
 interface CallInviteDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   caller: string;
-  callType: "video" | "audio";
+
   onAccept: () => void;
   onReject: () => void;
 }
@@ -23,7 +23,6 @@ const CallInviteDialog: React.FC<CallInviteDialogProps> = ({
   isOpen,
   onOpenChange,
   caller,
-  callType,
   onAccept,
   onReject,
 }) => {
@@ -31,13 +30,9 @@ const CallInviteDialog: React.FC<CallInviteDialogProps> = ({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Incoming {callType} Call</DialogTitle>
+          <DialogTitle>Incoming audio Call</DialogTitle>
           <DialogDescription className="flex items-center gap-2">
-            {callType === "video" ? (
-              <Video className="h-4 w-4" />
-            ) : (
-              <Phone className="h-4 w-4" />
-            )}
+            <Phone className="h-4 w-4" />
             {caller} is calling you
           </DialogDescription>
         </DialogHeader>
