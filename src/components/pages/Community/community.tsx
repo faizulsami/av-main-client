@@ -81,3 +81,61 @@ const initialPosts: Post[] = [
       createdAt: new Date("2023-05-14T15:45:00"),
     },
   ]
+
+  export function Community() {
+    const [posts, setPosts] = useState<Post[]>(initialPosts)
+    const [newPostContent, setNewPostContent] = useState("")
+    const [selectedPost, setSelectedPost] = useState<Post | null>(null)
+    const [newComment, setNewComment] = useState("")
+  
+    // Format date to a readable string
+    const formatDate = (date: Date) => {
+      return new Intl.DateTimeFormat("en-US", {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(date)
+    }
+  
+    // Create a new post
+    const handleCreatePost = () => {
+      if (!newPostContent.trim()) return
+  
+      const newPost: Post = {
+        id: Date.now().toString(),
+        content: newPostContent,
+        user: currentUser,
+        comments: [],
+        createdAt: new Date(),
+      }
+  
+      setPosts([newPost, ...posts])
+      setNewPostContent("")
+    }
+  
+    // Add a comment to a post
+    const handleAddComment = () => {
+      if (!newComment.trim() || !selectedPost) return
+  
+      const newCommentObj: Comment = {
+        id: Date.now().toString(),
+        content: newComment,
+        user: currentUser,
+        createdAt: new Date(),
+      }
+  
+      const updatedPosts = posts.map((post) => {
+        if (post.id === selectedPost.id) {
+          return {
+            ...post,
+            comments: [...post.comments, newCommentObj],
+          }
+        }
+        return post
+      })
+  
+      setPosts(updatedPosts)
+      setSelectedPost(updatedPosts.find((post) => post.id === selectedPost.id) || null)
+      setNewComment("")
+    }
