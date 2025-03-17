@@ -239,3 +239,57 @@ const initialPosts: Post[] = [
                     <p className="whitespace-pre-line">{selectedPost.content}</p>
                   </div>
                 </div>
+
+                {/* Comments Section */}
+                <div className="border-t pt-4 mt-4">
+                  <h3 className="font-medium mb-4">Comments ({selectedPost.comments.length})</h3>
+
+                  {/* Comments List */}
+                  <div className="space-y-4 mb-4">
+                    {selectedPost.comments.map((comment) => (
+                      <div key={comment.id} className="flex items-start gap-3">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={comment.user.avatar} alt={comment.user.name} />
+                          <AvatarFallback>{comment.user.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 bg-muted p-3 rounded-lg">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-semibold text-sm">{comment.user.name}</span>
+                            <Badge variant="outline" className="text-xs">
+                              {comment.user.role}
+                            </Badge>
+                          </div>
+                          <p className="text-sm">{comment.content}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{formatDate(comment.createdAt)}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Add Comment Form */}
+                  <div className="flex items-center gap-2">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={currentUser.avatar} alt={currentUser.name} />
+                      <AvatarFallback>{currentUser.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 flex gap-2">
+                      <Input
+                        placeholder="Write a comment..."
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                        className="flex-1"
+                      />
+                      <Button size="icon" onClick={handleAddComment}>
+                        <Send className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
+}
