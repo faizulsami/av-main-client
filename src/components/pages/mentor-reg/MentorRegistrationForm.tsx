@@ -319,7 +319,7 @@ const MentorRegistrationForm = () => {
                 Creating Account...
               </>
             ) : (
-              "Register as Mentor"
+              "Register as Listener"
             )}
           </Button>
         </CardFooter>
