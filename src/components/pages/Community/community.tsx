@@ -139,3 +139,37 @@ const initialPosts: Post[] = [
       setSelectedPost(updatedPosts.find((post) => post.id === selectedPost.id) || null)
       setNewComment("")
     }
+
+    return (
+        <div className="container mx-auto py-6 max-w-3xl">
+          <h1 className="text-2xl font-bold mb-6">Community Feed</h1>
+    
+          {/* Create Post Form */}
+          <Card className="mb-6 overflow-hidden">
+            <CardHeader className="pb-3 border-b">
+              <h2 className="text-lg font-semibold">Create Post</h2>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <div className="flex items-start gap-4">
+                <Avatar className="mt-1">
+                  <AvatarImage src={currentUser.avatar} alt={currentUser.name} />
+                  <AvatarFallback>{currentUser.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">{currentUser.name}</span>
+                    <Badge variant="outline" className="text-xs">
+                      {currentUser.role}
+                    </Badge>
+                  </div>
+                  <Textarea
+                    placeholder="What would you like to share with the community today?"
+                    value={newPostContent}
+                    onChange={(e) => setNewPostContent(e.target.value)}
+                    className="min-h-[100px] focus:ring-2 focus:ring-primary/20 transition-all"
+                  />
+                  {newPostContent.length > 0 && (
+                    <div className="text-xs text-muted-foreground text-right">{newPostContent.length} characters</div>
+                  )}
+                </div>
+              </div>
