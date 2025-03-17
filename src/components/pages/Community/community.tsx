@@ -212,3 +212,30 @@ const initialPosts: Post[] = [
           </Card>
         ))}
       </div>
+      {/* Post Modal */}
+      <Dialog open={!!selectedPost} onOpenChange={(open) => !open && setSelectedPost(null)}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          {selectedPost && (
+            <>
+              <DialogHeader>
+                <DialogTitle>Post</DialogTitle>
+              </DialogHeader>
+
+              {/* Post Content */}
+              <div className="py-4">
+                <div className="flex items-start gap-4 mb-4">
+                  <Avatar>
+                    <AvatarImage src={selectedPost.user.avatar} alt={selectedPost.user.name} />
+                    <AvatarFallback>{selectedPost.user.name.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold">{selectedPost.user.name}</span>
+                      <Badge variant="outline" className="text-xs">
+                        {selectedPost.user.role}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-2">{formatDate(selectedPost.createdAt)}</p>
+                    <p className="whitespace-pre-line">{selectedPost.content}</p>
+                  </div>
+                </div>
