@@ -11,7 +11,7 @@ export function useStats() {
     setLoading(true);
     try {
       const response = await axios.get<ApiResponse>(
-        "http://localhost:5000/api/v1/categories",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/categories`,
       );
       const categoryData = response.data.data[0];
       setCategoryId(categoryData?.id ?? null);
@@ -31,7 +31,7 @@ export function useStats() {
         throw new Error("Category ID is not available");
       }
       const response = await axios.patch<ApiResponse>(
-        `http://localhost:5000/api/v1/categories/${categoryId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/categories/${categoryId}`,
         values,
       );
       if (response.status !== 200) {

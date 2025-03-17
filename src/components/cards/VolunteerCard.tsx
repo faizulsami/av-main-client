@@ -111,32 +111,35 @@ export default function VolunteerCard({
         <TooltipProvider>
           {!isDisabled && (
             <div className="grid grid-cols-1 gap-2 w-full">
-              <Button
-                className=" h-9 text-xs font-bold bg-soft-paste hover:bg-soft-paste-dark text-white"
-                onClick={() => handleAction("quick-call")}
-                disabled={!isButtonEnabled("quick-call")}
-              >
-                <Phone className="w-3.5 h-3.5 mr-1.5" />
-                Quick Call
-              </Button>
+              {isButtonEnabled("quick-call") && (
+                <Button
+                  className=" h-9 text-xs font-bold bg-soft-paste hover:bg-soft-paste-dark text-white"
+                  onClick={() => handleAction("quick-call")}
+                >
+                  <Phone className="w-3.5 h-3.5 mr-1.5" />
+                  Quick Call
+                </Button>
+              )}
 
-              <Button
-                className="h-9 text-xs font-bold bg-violet hover:bg-violet-dark text-white"
-                onClick={() => handleAction("chat")}
-                disabled={!isButtonEnabled("chat")}
-              >
-                <MessageCircle className="w-3.5 h-3.5 mr-1.5" />
-                Chat
-              </Button>
+              {isButtonEnabled("chat") && (
+                <Button
+                  className="h-9 text-xs font-bold bg-violet hover:bg-violet-dark text-white"
+                  onClick={() => handleAction("chat")}
+                >
+                  <MessageCircle className="w-3.5 h-3.5 mr-1.5" />
+                  Chat
+                </Button>
+              )}
 
-              <Button
-                className=" h-9 text-xs font-bold bg-soft-paste hover:bg-soft-paste-dark text-white"
-                onClick={() => handleAction("booking")}
-                disabled={!isButtonEnabled("booking")}
-              >
-                <CalendarCheck className="w-3.5 h-3.5 mr-1.5" />
-                Book
-              </Button>
+              {isButtonEnabled("booking") && (
+                <Button
+                  className=" h-9 text-xs font-bold bg-soft-paste hover:bg-soft-paste-dark text-white"
+                  onClick={() => handleAction("booking")}
+                >
+                  <CalendarCheck className="w-3.5 h-3.5 mr-1.5" />
+                  Book A Call
+                </Button>
+              )}
             </div>
           )}
         </TooltipProvider>

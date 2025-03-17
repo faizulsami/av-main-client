@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-
+import crypto from "crypto";
 import Loading from "@/app/loading";
 import CallInviteDialog from "@/components/chat/CallInviteDialog";
 import ChatMessages from "@/components/chat/ChatMessages";
@@ -247,6 +247,33 @@ export default function ChatInterface() {
     scrollToBottom();
   }, [messages]);
 
+  //#region testing
+  useEffect(() => {
+    (async () => {
+      const secret = process.env.NEXT_PUBLIC_TURN_SECRET!; // Your static-auth-secret
+      const timestamp = Math.floor(Date.now() / 1000) + 3600; // Valid for 1 hour (can adjust duration)
+      const username = `${timestamp}`; // The username is the timestamp
+      const password = crypto
+        .createHmac("sha1", secret)
+        .update(username)
+        .digest("base64");
+      let config = {
+        iceServers: [
+          {
+            urls: "stun:198.23.217.44:3478",
+            username: username,
+            credential: password,
+          },
+        ],
+      };
+      let conn = new RTCPeerConnection(config);
+      conn.createDataChannel("test");
+      conn.onicecandidate = (e) => console.log("ICE Candidate:", e.candidate);
+      await conn.createOffer().then((o) => conn.setLocalDescription(o));
+    })();
+  }, []);
+  // #endregion
+
   //#region calling
   useEffect(() => {
     if (!socket) return;
@@ -320,11 +347,38 @@ export default function ChatInterface() {
   const handleAcceptCall = () => {
     if (!incomingCall || !socket || !currentUser.username || !stream || !me)
       return;
-
+    const secret = process.env.NEXT_PUBLIC_TURN_SECRET!; // Your static-auth-secret
+    const timestamp = Math.floor(Date.now() / 1000) + 3600; // Valid for 1 hour (can adjust duration)
+    const username = `${timestamp}`; // The username is the timestamp
+    const password = crypto
+      .createHmac("sha1", secret)
+      .update(username.toString())
+      .digest("base64");
     const peer = new Peer({
       initiator: false,
       trickle: false,
       stream: stream,
+      config: {
+        iceServers: [
+          {
+            urls: `stun:stun.anonymousvoicesav.com`,
+          },
+          {
+            urls: `turn:stun.anonymousvoicesav.com`,
+            // username: username.toString(),
+            // credential: password,
+            username: "guest",
+            credential: "somepassword",
+          },
+          { urls: "stun:stun1.l.google.com:19302" },
+          { urls: "stun:stun2.l.google.com:19302" },
+          { urls: "stun:stun3.l.google.com:19302" },
+          { urls: "stun:stun4.l.google.com:19302" },
+          { urls: "stun:stun.sipgate.net" },
+          { urls: "stun:stun.ekiga.net" },
+          { urls: "stun:stunserver.org" },
+        ],
+      },
     });
 
     peer.on("signal", (signal) => {
@@ -335,7 +389,21 @@ export default function ChatInterface() {
       });
     });
 
+    //#region testing
+    peer.on("icecandidate", (event) => {
+      if (event.candidate) {
+        console.log("ICE candidate:", event.candidate);
+      } else {
+        console.log("All ICE candidates sent.");
+      }
+    });
+    peer.on("connectionstatechange", () => {
+      console.log("Connection state:", peer.connectionState);
+    });
+    //#endregion
+
     peer.on("stream", (remoteStream) => {
+      console.log({ remoteStream });
       const audioCtx = new AudioContext();
       const analyser = audioCtx.createAnalyser();
       const source = audioCtx.createMediaStreamSource(remoteStream);
@@ -380,12 +448,41 @@ export default function ChatInterface() {
       title: "Calling...",
       description: `Calling ${selectedUser.username}`,
     });
-
+    const secret = process.env.NEXT_PUBLIC_TURN_SECRET!; // Your static-auth-secret
+    const timestamp = Math.floor(Date.now() / 1000) + 3600; // Valid for 1 hour (can adjust duration)
+    const username = `${timestamp}`; // The username is the timestamp
+    const password = crypto
+      .createHmac("sha1", secret)
+      .update(username.toString())
+      .digest("base64");
     const peer = new Peer({
       initiator: true,
       trickle: false,
       stream: stream,
+      config: {
+        iceServers: [
+          {
+            urls: `stun:stun.anonymousvoicesav.com`,
+          },
+          {
+            urls: `turn:stun.anonymousvoicesav.com`,
+            // username: username.toString(),
+            // credential: password,
+            username: "guest",
+            credential: "somepassword",
+          },
+          { urls: "stun:stun1.l.google.com:19302" },
+          { urls: "stun:stun2.l.google.com:19302" },
+          { urls: "stun:stun3.l.google.com:19302" },
+          { urls: "stun:stun4.l.google.com:19302" },
+          { urls: "stun:stun.sipgate.net" },
+          { urls: "stun:stun.ekiga.net" },
+          { urls: "stun:stunserver.org" },
+        ],
+      },
     });
+
+    console.log("host id = ", process.env.NEXT_PUBLIC_HOST);
 
     peer.on("signal", (signal) => {
       socket.emit("call:invite", {
@@ -396,15 +493,41 @@ export default function ChatInterface() {
       });
     });
 
+    //#region testing
+    peer.on("icecandidate", (event) => {
+      if (event.candidate) {
+        console.log("ICE candidate:", event.candidate);
+      } else {
+        console.log("All ICE candidates sent.");
+      }
+    });
+    peer.on("connectionstatechange", () => {
+      console.log("Connection state:", peer.connectionState);
+    });
+    //#endregion
     peer.on("stream", (remoteStream) => {
+      console.log({ remoteStream });
+
       const audioCtx = new AudioContext();
       const analyser = audioCtx.createAnalyser();
       const source = audioCtx.createMediaStreamSource(remoteStream);
       source.connect(analyser);
       const dataArray = new Uint8Array(analyser.frequencyBinCount);
       analyser.getByteFrequencyData(dataArray);
-
+      // new code
       if (user_audio.current) {
+        user_audio.current.onloadedmetadata = () => {
+          console.log("Remote audio is loaded");
+          user_audio
+            .current!.play()
+            .then(() => {
+              console.log("Remote audio is playing");
+            })
+            .catch((error) => {
+              console.error("Error playing remote audio:", error);
+            });
+        };
+
         dismiss(toastId.id);
         user_audio.current.srcObject = remoteStream;
         user_audio.current.volume = 1.0;

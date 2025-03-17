@@ -176,7 +176,7 @@ export default function Profile() {
   async function updateIsOnlineStatus(newStatus: boolean) {
     try {
       const response = await axios.patch(
-        `http://localhost:5000/api/v1/mentors/${mentor?.userName}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/mentors/${mentor?.userName}`,
         {
           isOnline: newStatus,
           adminApproval: mentor?.adminApproval || false,
@@ -198,7 +198,7 @@ export default function Profile() {
   async function onSubmit(data: ProfileFormValues) {
     try {
       const response = await axios.patch(
-        `http://localhost:5000/api/v1/mentors/${mentor?._id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/mentors/${mentor?._id}`,
         {
           ...data,
           isOnline: isOnline,
