@@ -142,7 +142,7 @@ const initialPosts: Post[] = [
 
     return (
         <div className="container mx-auto py-6 max-w-3xl">
-          <h1 className="text-2xl font-bold mb-6">Community Feed</h1>
+          <h1 className="text-2xl font-bold mb-6">Community</h1>
     
           {/* Create Post Form */}
           <Card className="mb-6 overflow-hidden">
@@ -175,7 +175,7 @@ const initialPosts: Post[] = [
               </div>
               </CardContent>
         <CardFooter className="flex justify-end bg-muted/30 border-t">
-          <Button onClick={handleCreatePost} disabled={!newPostContent.trim()} className="px-6">
+          <Button onClick={handleCreatePost} disabled={!newPostContent.trim()} className="px-6" variant={"default"}>
             Post
           </Button>
         </CardFooter>

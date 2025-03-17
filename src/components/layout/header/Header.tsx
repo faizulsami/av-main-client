@@ -85,6 +85,11 @@ const mainNavItems: NavItem[] = [
     href: "/donate",
   },
   {
+    id: "community",
+    name: "Community",
+    href: "/community",
+  },
+  {
     id: "more",
     name: "More",
     href: "#",
