@@ -173,3 +173,42 @@ const initialPosts: Post[] = [
                   )}
                 </div>
               </div>
+              </CardContent>
+        <CardFooter className="flex justify-end bg-muted/30 border-t">
+          <Button onClick={handleCreatePost} disabled={!newPostContent.trim()} className="px-6">
+            Post
+          </Button>
+        </CardFooter>
+      </Card>
+
+      {/* Posts List */}
+      <div className="space-y-4">
+        {posts.map((post) => (
+          <Card key={post.id} className="cursor-pointer hover:bg-muted/50 transition-colors">
+            <CardHeader className="flex flex-row items-start gap-4 pb-2">
+              <Avatar>
+                <AvatarImage src={post.user.avatar} alt={post.user.name} />
+                <AvatarFallback>{post.user.name.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold">{post.user.name}</span>
+                  <Badge variant="outline" className="text-xs">
+                    {post.user.role}
+                  </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground">{formatDate(post.createdAt)}</p>
+              </div>
+            </CardHeader>
+            <CardContent onClick={() => setSelectedPost(post)}>
+              <p className="whitespace-pre-line">{post.content}</p>
+            </CardContent>
+            <CardFooter className="flex justify-between">
+              <Button variant="ghost" size="sm" className="text-muted-foreground" onClick={() => setSelectedPost(post)}>
+                <MessageSquare className="h-4 w-4 mr-2" />
+                {post.comments.length} {post.comments.length === 1 ? "Comment" : "Comments"}
+              </Button>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
