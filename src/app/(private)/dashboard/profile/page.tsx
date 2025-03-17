@@ -287,8 +287,8 @@ export default function Profile() {
                     <AvatarImage
                       src={
                         mentor?.gender === "male"
-                          ? "/images/avatar/male-avatar.png"
-                          : "/images/avatar/female-avatar.jpg"
+                          ? "/images/avatar/man.png"
+                          : "/images/avatar/woman.jpg"
                       }
                       alt={mentor?.name}
                     />

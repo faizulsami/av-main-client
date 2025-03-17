@@ -98,7 +98,7 @@ export const mentorFormSchema = z.object({
     .string()
     .min(8, "Password must be at least 8 characters")
     .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/,
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
       "Password must contain at least one uppercase letter, one lowercase letter, and one number",
     ),
   userName: z.string().min(3, "Username must be at least 3 characters"),

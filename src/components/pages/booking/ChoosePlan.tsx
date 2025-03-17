@@ -56,12 +56,12 @@ export default function ChoosePlan({
               hasDropdown={true}
             />
           )}
-          {sessionConfig.requiresTimeSlot && (
+          {/* {sessionConfig.requiresTimeSlot && (
             <PlanField label="Time" value={selectedTimeSlot || "Select time"} />
           )}
           {sessionConfig.requiresDate && (
             <PlanField label="Date" value={formatDateToLocale(selectedDate)} />
-          )}
+          )} */}
 
           <Button
             className="w-full md:w-auto"

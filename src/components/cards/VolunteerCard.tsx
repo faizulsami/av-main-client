@@ -74,8 +74,8 @@ export default function VolunteerCard({
               <Image
                 src={
                   gender === "male"
-                    ? "/images/avatar/male-avatar.png"
-                    : "/images/avatar/female-avatar.jpg"
+                    ? "/images/avatar/man.png"
+                    : "/images/avatar/woman.jpg"
                 }
                 alt={name}
                 width={200}

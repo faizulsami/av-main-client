@@ -77,8 +77,8 @@ export default function BookedCallsPage() {
         appointmentType="Booking Call"
         emptyMessage="No confirmed bookings"
       />
-
-      {/* <AppointmentSection
+      {/* 
+      <AppointmentSection
         title="Completed Calls"
         description="List of completed calls"
         appointments={appointmentsByStatus.completed}
