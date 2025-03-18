@@ -171,7 +171,6 @@ export default function Availability({ schedule }: AvailabilityProps) {
     <div className="w-full mx-auto space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-soft-paste text-lg font-normal">Availability</h2>
-        <span className="text-sm font-normal">{formattedDate}</span>
       </div>
 
       <Separator className="bg-soft-paste" />
