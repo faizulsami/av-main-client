@@ -156,10 +156,8 @@ export function Community() {
   };
 
   return (
-    <div >
+    <div>
       <div className="container mx-auto max-w-4xl px-16 py-8">
-        
-
         {/* Create Post Form */}
         <Card className="mb-6 overflow-hidden">
           <CardHeader className="pb-3 border-b">

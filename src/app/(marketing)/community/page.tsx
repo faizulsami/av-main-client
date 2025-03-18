@@ -4,7 +4,7 @@ import React from "react";
 export const metadata = {
   title: "Community",
 };
-const page = () => {
+const CommunityPage = () => {
   return (
     <div
       className="w-full"
@@ -18,4 +18,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default CommunityPage;
