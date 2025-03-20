@@ -64,7 +64,7 @@ export default function ChoosePlan({
           )} */}
 
           <Button
-            className="w-full md:w-auto"
+            className="w-full md:w-auto "
             onClick={() => setShowConfirmDialog(true)}
             disabled={isBookingDisabled}
           >

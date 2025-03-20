@@ -81,6 +81,7 @@ export function useAppointments(): UseAppointmentsReturn {
       const appointmentData = response.data as AppointmentResponse;
       setAppointments(appointmentData.data);
       setMeta(appointmentData.meta);
+
       setError(null);
     } catch (err) {
       setError(

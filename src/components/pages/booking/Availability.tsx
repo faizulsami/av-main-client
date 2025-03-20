@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useSearchParams } from "next/navigation";
 interface AvailabilityProps {
   schedule: DaySchedule[];
 }
@@ -72,7 +73,6 @@ function generateTimeSlots(
   while (currentStart < endMinutes) {
     const currentEnd = currentStart + 30;
 
-    console.log("86 => inside while loop ");
     // Format start time
     const startHours = Math.floor(currentStart / 60);
     const startMins = currentStart % 60;
@@ -95,11 +95,23 @@ function generateTimeSlots(
   return slots;
 }
 
+type SelectedTimeSlot = {
+  formatted: string;
+  day: string;
+  available: boolean;
+};
+
 export default function Availability({ schedule }: AvailabilityProps) {
   const { toast } = useToast();
   const [currentDaySchedule, setCurrentDaySchedule] =
     useState<DaySchedule | null>(null);
   const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([]);
+  const [selectedSlot, setSelectedSlot] = useState<SelectedTimeSlot | null>(
+    null,
+  );
+  const query = useSearchParams();
+  const mentorUserName = query.get("mentor");
+  console.log({ mentorUserName });
   const {
     selectedTimeSlot,
     setSelectedTimeSlot,
@@ -110,11 +122,16 @@ export default function Availability({ schedule }: AvailabilityProps) {
 
   // Filter Booking Call appointments and extract their time slots
   const bookedCallSlots = appointments
-    .filter((appointment) => appointment.appointmentType === "Booking Call")
+    .filter(
+      (appointment) =>
+        appointment.appointmentType === "Booking Call" &&
+        appointment.mentorUserName === mentorUserName,
+    )
     .flatMap(
       (appointment) => appointment.selectedSlot?.map((slot) => slot.time) || [],
     );
 
+  console.log(135, { selectedSlot });
   // Combine Zustand bookedSlots with appointments' booked slots
   const allBookedSlots = [...bookedSlots, ...bookedCallSlots];
 
@@ -168,9 +185,8 @@ export default function Availability({ schedule }: AvailabilityProps) {
                 daySchedule.startTime,
                 daySchedule.endTime,
               );
-              const isSelected = selectedTimeSlot === daySchedule.day;
-              // const isBooked = allBookedSlots.includes(daySchedule.day);
-              const isBooked = false;
+              const isSelected = selectedSlot?.day === daySchedule.day;
+              console.log(189, { selectedTimeSlot, day: daySchedule.day });
 
               const isTodayUnavailable = (day: string) => {
                 const today = new Date();
@@ -186,7 +202,19 @@ export default function Availability({ schedule }: AvailabilityProps) {
                   </h4>
 
                   <div className="col-span-3">
-                    <Select>
+                    <Select
+                      onValueChange={(value: string) => {
+                        const isAvailable = !bookedCallSlots.find(
+                          (item) => item === value,
+                        );
+                        setSelectedSlot({
+                          day: daySchedule.day,
+                          formatted: value,
+                          available: isAvailable,
+                        });
+                        if (isAvailable) setSelectedDate(value);
+                      }}
+                    >
                       <SelectTrigger className="w-[130px]">
                         <SelectValue
                           placeholder={`${daySchedule.startTime.hours} ${daySchedule.startTime.hours < 12 && daySchedule.startTime.hours > 5 ? "am" : "pm"} - ${daySchedule.endTime.hours} ${daySchedule.endTime.hours < 12 && daySchedule.endTime.hours > 5 ? "am" : "pm"}`}
@@ -195,19 +223,8 @@ export default function Availability({ schedule }: AvailabilityProps) {
                       <SelectContent>
                         <SelectGroup>
                           {slots.map((slot, index) => {
-                            const isBooked = allBookedSlots.includes(
-                              slot.formatted,
-                            );
                             return (
                               <>
-                                {/* <TimeSlotItem
-                                key={index}
-                                slot={slot}
-                                onSelect={() => handleSlotSelect(slot)}
-                                isSelected={selectedTimeSlot === slot.formatted}
-                                isBooked={isBooked}
-                              /> */}
-
                                 <SelectItem key={index} value={slot.formatted}>
                                   {slot.formatted}{" "}
                                   {Number(slot.formatted.split(":")[0]) < 12 &&
@@ -222,32 +239,23 @@ export default function Availability({ schedule }: AvailabilityProps) {
                       </SelectContent>
                     </Select>
                   </div>
-                  {/* {slots.map((slot, index) => {
-                    const isBooked = allBookedSlots.includes(slot.formatted);
-                    return (
-                      <TimeSlotItem
-                        key={index}
-                        slot={slot}
-                        onSelect={() => handleSlotSelect(slot)}
-                        isSelected={selectedTimeSlot === slot.formatted}
-                        isBooked={isBooked}
-                      />
-                    );
-                  })} */}
+
                   <div className="flex items-center justify-between gap-2 col-span-3">
                     <Badge
                       className={`px-2 py-1  rounded-md text-white font-semibold ${
+                        (!selectedSlot?.available &&
+                          selectedSlot?.day === daySchedule.day) ||
                         !daySchedule.isAvailable ||
-                        isTodayUnavailable(daySchedule.day) ||
-                        isBooked
+                        isTodayUnavailable(daySchedule.day)
                           ? "bg-gray-400"
                           : "bg-[#34D399]"
                       }`}
                     >
                       <span className="text-sm text-center w-full font-medium">
-                        {!daySchedule.isAvailable ||
-                        isTodayUnavailable(daySchedule.day) ||
-                        isBooked
+                        {(!selectedSlot?.available &&
+                          selectedSlot?.day === daySchedule.day) ||
+                        !daySchedule.isAvailable ||
+                        isTodayUnavailable(daySchedule.day)
                           ? "Unavailable"
                           : "Available"}
                       </span>
@@ -255,16 +263,21 @@ export default function Availability({ schedule }: AvailabilityProps) {
                     <input
                       type="checkbox"
                       checked={isSelected}
-                      onChange={() => handleSlotSelect(slot)}
+                      onChange={() =>
+                        handleSlotSelect({
+                          start: daySchedule.startTime,
+                          end: daySchedule.endTime,
+                          formatted: selectedSlot?.formatted || "",
+                        })
+                      }
                       disabled={
                         !daySchedule.isAvailable ||
-                        isTodayUnavailable(daySchedule.day) ||
-                        isBooked
+                        isTodayUnavailable(daySchedule.day)
                       }
                       className={`w-5 h-5 rounded-none border-gray-300 text-soft-paste-active
           focus:ring-soft-paste-active cursor-pointer
           checked:bg-soft-paste-active checked:border-soft-paste-active
-          ${isBooked ? "opacity-50 cursor-not-allowed" : ""}`}
+          ${!daySchedule.isAvailable ? "opacity-50 cursor-not-allowed" : ""}`}
                     />
                   </div>
                 </div>
