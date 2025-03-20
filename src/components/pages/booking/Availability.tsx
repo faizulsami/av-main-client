@@ -109,6 +109,7 @@ export default function Availability({ schedule }: AvailabilityProps) {
   const [selectedSlot, setSelectedSlot] = useState<SelectedTimeSlot | null>(
     null,
   );
+  const [isSelected, setIsSelected] = useState(false);
   const query = useSearchParams();
   const mentorUserName = query.get("mentor");
   console.log({ mentorUserName });
@@ -185,8 +186,6 @@ export default function Availability({ schedule }: AvailabilityProps) {
                 daySchedule.startTime,
                 daySchedule.endTime,
               );
-              const isSelected = selectedSlot?.day === daySchedule.day;
-              console.log(189, { selectedTimeSlot, day: daySchedule.day });
 
               const isTodayUnavailable = (day: string) => {
                 const today = new Date();
@@ -262,14 +261,25 @@ export default function Availability({ schedule }: AvailabilityProps) {
                     </Badge>
                     <input
                       type="checkbox"
-                      checked={isSelected}
-                      onChange={() =>
-                        handleSlotSelect({
-                          start: daySchedule.startTime,
-                          end: daySchedule.endTime,
-                          formatted: selectedSlot?.formatted || "",
-                        })
+                      checked={
+                        !(
+                          !selectedSlot?.available &&
+                          selectedSlot?.day === daySchedule.day
+                        ) && isSelected
                       }
+                      onChange={() => {
+                        if (!!selectedSlot) {
+                          const isSelected =
+                            selectedSlot?.day === daySchedule.day &&
+                            daySchedule.isAvailable;
+                          setIsSelected(isSelected);
+                          handleSlotSelect({
+                            start: daySchedule.startTime,
+                            end: daySchedule.endTime,
+                            formatted: selectedSlot?.formatted || "",
+                          });
+                        }
+                      }}
                       disabled={
                         !daySchedule.isAvailable ||
                         isTodayUnavailable(daySchedule.day)
