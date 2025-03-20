@@ -118,26 +118,26 @@ export default function Availability({ schedule }: AvailabilityProps) {
   // Combine Zustand bookedSlots with appointments' booked slots
   const allBookedSlots = [...bookedSlots, ...bookedCallSlots];
 
-  useEffect(() => {
-    const today = new Date();
-    const currentDay = daysOfWeek[today.getDay()];
-    const todaySchedule = schedule?.find(
-      (day) => day.day.toLowerCase() === currentDay,
-    );
+  // useEffect(() => {
+  //   const today = new Date();
+  //   const currentDay = daysOfWeek[today.getDay()];
+  //   const todaySchedule = schedule?.find(
+  //     (day) => day.day.toLowerCase() === currentDay,
+  //   );
 
-    setCurrentDaySchedule(todaySchedule || null);
+  //   setCurrentDaySchedule(todaySchedule || null);
 
-    if (todaySchedule && todaySchedule.isAvailable) {
-      const slots = generateTimeSlots(
-        todaySchedule.startTime,
-        todaySchedule.endTime,
-      );
-      console.log("145 inside if ", slots);
-      setAvailableSlots(slots);
-    } else {
-      setAvailableSlots([]);
-    }
-  }, [schedule]);
+  //   if (todaySchedule && todaySchedule.isAvailable) {
+  //     const slots = generateTimeSlots(
+  //       todaySchedule.startTime,
+  //       todaySchedule.endTime,
+  //     );
+
+  //     setAvailableSlots(slots);
+  //   } else {
+  //     setAvailableSlots([]);
+  //   }
+  // }, [schedule]);
 
   const handleSlotSelect = (slot: TimeSlot) => {
     if (!bookedSlots.includes(slot.formatted)) {
@@ -158,7 +158,6 @@ export default function Availability({ schedule }: AvailabilityProps) {
     year: "numeric",
   }).format(new Date());
 
-  console.log(175, { schedule });
   return (
     <div className="w-full mx-auto space-y-4">
       <ScrollArea className="h-60">
@@ -171,7 +170,15 @@ export default function Availability({ schedule }: AvailabilityProps) {
               );
               const isSelected = selectedTimeSlot === daySchedule.day;
               // const isBooked = allBookedSlots.includes(daySchedule.day);
-              const isBooked = true;
+              const isBooked = false;
+
+              const isTodayUnavailable = (day: string) => {
+                const today = new Date();
+                return (
+                  today.getHours() > 17 && daysOfWeek[today.getDay()] === day
+                );
+              };
+
               return (
                 <div key={index} className="grid grid-cols-9 pr-2">
                   <h4 className=" col-span-3 text-lg font-semibold uppercase">
@@ -201,7 +208,7 @@ export default function Availability({ schedule }: AvailabilityProps) {
                                 isBooked={isBooked}
                               /> */}
 
-                                <SelectItem value={slot.formatted}>
+                                <SelectItem key={index} value={slot.formatted}>
                                   {slot.formatted}{" "}
                                   {Number(slot.formatted.split(":")[0]) < 12 &&
                                   Number(slot.formatted.split(":")[0]) > 5
@@ -227,21 +234,33 @@ export default function Availability({ schedule }: AvailabilityProps) {
                       />
                     );
                   })} */}
-                  <div className="flex items-center gap-2 col-span-3">
+                  <div className="flex items-center justify-between gap-2 col-span-3">
                     <Badge
                       className={`px-2 py-1  rounded-md text-white font-semibold ${
-                        isBooked ? "bg-gray-400" : "bg-[#34D399]"
+                        !daySchedule.isAvailable ||
+                        isTodayUnavailable(daySchedule.day) ||
+                        isBooked
+                          ? "bg-gray-400"
+                          : "bg-[#34D399]"
                       }`}
                     >
                       <span className="text-sm text-center w-full font-medium">
-                        {isBooked ? "Unavailable" : "Available"}
+                        {!daySchedule.isAvailable ||
+                        isTodayUnavailable(daySchedule.day) ||
+                        isBooked
+                          ? "Unavailable"
+                          : "Available"}
                       </span>
                     </Badge>
                     <input
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => handleSlotSelect(slot)}
-                      disabled={isBooked}
+                      disabled={
+                        !daySchedule.isAvailable ||
+                        isTodayUnavailable(daySchedule.day) ||
+                        isBooked
+                      }
                       className={`w-5 h-5 rounded-none border-gray-300 text-soft-paste-active
           focus:ring-soft-paste-active cursor-pointer
           checked:bg-soft-paste-active checked:border-soft-paste-active
