@@ -8,7 +8,15 @@ import { useBookingStore } from "@/store/useBookingStore";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { useAppointments } from "@/hooks/useAppointments";
-
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 interface AvailabilityProps {
   schedule: DaySchedule[];
 }
@@ -41,34 +49,13 @@ const TimeSlotItem = ({
   isBooked: boolean;
 }) => {
   return (
-    <div className="flex items-center justify-between gap-2">
+    <>
       <div className="relative">
         <div className="flex items-center justify-center gap-4 px-6 py-1 border border-soft-paste-light-active rounded-lg text-sm">
           <span className="tracking-wide text-md">{slot.formatted}</span>
         </div>
       </div>
-
-      <Badge
-        className={`px-4 py-1 min-w-32 rounded-md text-white font-semibold ${
-          isBooked ? "bg-gray-400" : "bg-[#34D399]"
-        }`}
-      >
-        <span className="text-sm text-center w-full font-medium">
-          {isBooked ? "Unavailable" : "Available"}
-        </span>
-      </Badge>
-
-      <input
-        type="checkbox"
-        checked={isSelected}
-        onChange={onSelect}
-        disabled={isBooked}
-        className={`w-5 h-5 rounded-none border-gray-300 text-soft-paste-active
-          focus:ring-soft-paste-active cursor-pointer
-          checked:bg-soft-paste-active checked:border-soft-paste-active
-          ${isBooked ? "opacity-50 cursor-not-allowed" : ""}`}
-      />
-    </div>
+    </>
   );
 };
 
@@ -78,25 +65,28 @@ function generateTimeSlots(
 ): TimeSlot[] {
   const slots: TimeSlot[] = [];
   let currentStart = startTime.hours * 60 + startTime.minutes;
-  const endMinutes = endTime.hours * 60 + endTime.minutes;
+  const endMinutes = 13 * 60 + endTime.minutes;
+  // endTime.hours
+  console.log(83, currentStart < endMinutes, currentStart, " ", endMinutes);
 
   while (currentStart < endMinutes) {
     const currentEnd = currentStart + 30;
 
+    console.log("86 => inside while loop ");
     // Format start time
     const startHours = Math.floor(currentStart / 60);
     const startMins = currentStart % 60;
-    const formattedStart = `${String(startHours).padStart(2, "0")}:${String(startMins).padStart(2, "0")}`;
+    const formattedStart = `${String(startHours).padStart(2, "0")} : ${String(startMins).padStart(2, "0")}`;
 
     // Format end time
     const endHours = Math.floor(currentEnd / 60);
     const endMins = currentEnd % 60;
-    const formattedEnd = `${String(endHours).padStart(2, "0")}:${String(endMins).padStart(2, "0")}`;
+    const formattedEnd = `${String(endHours).padStart(2, "0")} : ${String(endMins).padStart(2, "0")}`;
 
     slots.push({
       start: { hours: startHours, minutes: startMins },
       end: { hours: endHours, minutes: endMins },
-      formatted: `${formattedStart} - ${formattedEnd}`,
+      formatted: `${formattedStart}`,
     });
 
     currentStart += 30;
@@ -117,7 +107,6 @@ export default function Availability({ schedule }: AvailabilityProps) {
     setSelectedDate,
   } = useBookingStore();
   const { appointments } = useAppointments();
-  console.log("Schedule", schedule);
 
   // Filter Booking Call appointments and extract their time slots
   const bookedCallSlots = appointments
@@ -135,6 +124,7 @@ export default function Availability({ schedule }: AvailabilityProps) {
     const todaySchedule = schedule?.find(
       (day) => day.day.toLowerCase() === currentDay,
     );
+
     setCurrentDaySchedule(todaySchedule || null);
 
     if (todaySchedule && todaySchedule.isAvailable) {
@@ -142,6 +132,7 @@ export default function Availability({ schedule }: AvailabilityProps) {
         todaySchedule.startTime,
         todaySchedule.endTime,
       );
+      console.log("145 inside if ", slots);
       setAvailableSlots(slots);
     } else {
       setAvailableSlots([]);
@@ -167,17 +158,106 @@ export default function Availability({ schedule }: AvailabilityProps) {
     year: "numeric",
   }).format(new Date());
 
+  console.log(175, { schedule });
   return (
     <div className="w-full mx-auto space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-soft-paste text-lg font-normal">Availability</h2>
-      </div>
-
-      <Separator className="bg-soft-paste" />
-
       <ScrollArea className="h-60">
         <div className="space-y-4">
-          {currentDaySchedule ? (
+          {schedule && schedule.length > 0 ? (
+            schedule.map((daySchedule, index) => {
+              const slots = generateTimeSlots(
+                daySchedule.startTime,
+                daySchedule.endTime,
+              );
+              const isSelected = selectedTimeSlot === daySchedule.day;
+              // const isBooked = allBookedSlots.includes(daySchedule.day);
+              const isBooked = true;
+              return (
+                <div key={index} className="grid grid-cols-9 pr-2">
+                  <h4 className=" col-span-3 text-lg font-semibold uppercase">
+                    {daySchedule.day}
+                  </h4>
+
+                  <div className="col-span-3">
+                    <Select>
+                      <SelectTrigger className="w-[130px]">
+                        <SelectValue
+                          placeholder={`${daySchedule.startTime.hours} ${daySchedule.startTime.hours < 12 && daySchedule.startTime.hours > 5 ? "am" : "pm"} - ${daySchedule.endTime.hours} ${daySchedule.endTime.hours < 12 && daySchedule.endTime.hours > 5 ? "am" : "pm"}`}
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {slots.map((slot, index) => {
+                            const isBooked = allBookedSlots.includes(
+                              slot.formatted,
+                            );
+                            return (
+                              <>
+                                {/* <TimeSlotItem
+                                key={index}
+                                slot={slot}
+                                onSelect={() => handleSlotSelect(slot)}
+                                isSelected={selectedTimeSlot === slot.formatted}
+                                isBooked={isBooked}
+                              /> */}
+
+                                <SelectItem value={slot.formatted}>
+                                  {slot.formatted}{" "}
+                                  {Number(slot.formatted.split(":")[0]) < 12 &&
+                                  Number(slot.formatted.split(":")[0]) > 5
+                                    ? "am"
+                                    : "pm"}
+                                </SelectItem>
+                              </>
+                            );
+                          })}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {/* {slots.map((slot, index) => {
+                    const isBooked = allBookedSlots.includes(slot.formatted);
+                    return (
+                      <TimeSlotItem
+                        key={index}
+                        slot={slot}
+                        onSelect={() => handleSlotSelect(slot)}
+                        isSelected={selectedTimeSlot === slot.formatted}
+                        isBooked={isBooked}
+                      />
+                    );
+                  })} */}
+                  <div className="flex items-center gap-2 col-span-3">
+                    <Badge
+                      className={`px-2 py-1  rounded-md text-white font-semibold ${
+                        isBooked ? "bg-gray-400" : "bg-[#34D399]"
+                      }`}
+                    >
+                      <span className="text-sm text-center w-full font-medium">
+                        {isBooked ? "Unavailable" : "Available"}
+                      </span>
+                    </Badge>
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => handleSlotSelect(slot)}
+                      disabled={isBooked}
+                      className={`w-5 h-5 rounded-none border-gray-300 text-soft-paste-active
+          focus:ring-soft-paste-active cursor-pointer
+          checked:bg-soft-paste-active checked:border-soft-paste-active
+          ${isBooked ? "opacity-50 cursor-not-allowed" : ""}`}
+                    />
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <p className="text-center text-gray-500 text-xs">
+              No time slots available for today.
+            </p>
+          )}
+
+          {/* {currentDaySchedule ? (
             availableSlots.map((slot, index) => {
               const isBooked = allBookedSlots.includes(slot.formatted);
               return (
@@ -194,7 +274,7 @@ export default function Availability({ schedule }: AvailabilityProps) {
             <p className="text-center text-gray-500 text-xs">
               No time slots available for today.
             </p>
-          )}
+          )} */}
         </div>
       </ScrollArea>
     </div>
