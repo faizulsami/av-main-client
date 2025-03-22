@@ -3,6 +3,8 @@ import { useRouter } from "next/navigation";
 import { useBookingStore } from "@/store/useBookingStore";
 import { useBookSession } from "@/hooks/useBookSession";
 import { AppointmentType } from "@/types/booking";
+import { get_socket } from "@/utils/get-socket";
+import api from "@/config/axios.config";
 
 export const useBookingLogic = (
   mentorUsername: string,
@@ -32,12 +34,28 @@ export const useBookingLogic = (
     bookingStore.setDuration(value);
   };
 
-  const handleConfirmBooking = async () => {
+  const handleConfirmBooking = async (username: string, type: string) => {
     const response = await bookSession();
+
     if (response?.data?.data._id) {
       setShowConfirmDialog(false);
       bookingStore.resetBooking();
       router.push(`/booking/confirmation?id=${response.data.data._id}`);
+
+      const socket = get_socket();
+      await api.post("/api/v1/notifications/create-notification", {
+        receiver: "listener",
+        type: `${type}_request`,
+        listenerUsername: username,
+        content: `A new chat request has been created by ${response?.data?.data?.menteeUserName}.`,
+        isSeen: false,
+      });
+      socket.emit("notification", {
+        receiver: "listener",
+        receiver_username: username,
+        type: `${type}_request`,
+        content: `A new ${type} request has been created by ${response?.data?.data?.menteeUserName}.`,
+      });
     }
   };
 

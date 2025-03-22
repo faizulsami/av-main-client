@@ -25,7 +25,7 @@ const ProfileSection = ({
               src={
                 gender === "male"
                   ? "/images/avatar/man.png"
-                  : "/images/avatar/woman.jpg"
+                  : "/images/avatar/woman.png"
               }
               alt={name}
               width={400}

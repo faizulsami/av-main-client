@@ -1,9 +1,15 @@
 import api from "@/config/axios.config";
 
-export async function fetchNotifications(receiver: string) {
+export async function fetchNotifications(
+  receiver: string,
+  mentorUsername?: string,
+) {
   if (!receiver) return [];
 
-  const apiUrl = `/api/v1/notifications?receiver=${receiver}`;
+  let apiUrl;
+  if (mentorUsername)
+    apiUrl = `/api/v1/notifications?receiver=${receiver}&listenerUsername=${mentorUsername}`;
+  else apiUrl = `/api/v1/notifications?receiver=${receiver}`;
 
   try {
     const response = await api.get(apiUrl);

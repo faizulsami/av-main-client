@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Providers } from "@/providers";
+import SocketCom from "./Socket";
 
 const comfortaa = localFont({
   src: [
@@ -84,6 +85,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${comfortaa.variable} antialiased`}>
+        <SocketCom />
         <Providers>{children}</Providers>
       </body>
     </html>

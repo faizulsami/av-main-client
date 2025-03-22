@@ -296,7 +296,7 @@ export default function Profile() {
                       src={
                         mentor?.gender === "male"
                           ? "/images/avatar/man.png"
-                          : "/images/avatar/woman.jpg"
+                          : "/images/avatar/woman.png"
                       }
                       alt={mentor?.name}
                     />
