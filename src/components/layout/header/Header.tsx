@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -242,6 +243,7 @@ const Header: React.FC = () => {
 
   const [notifications, setNotifications] = useState<any[]>([]);
   const [notificationsLoading, setNotificationsLoading] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const [socket, setSocket] = useState<any>(null);
   useEffect(() => {
     const socket = get_socket();
@@ -256,14 +258,11 @@ const Header: React.FC = () => {
   }, [user?.role, loading, socket]);
 
   useEffect(() => {
-    const fetchUserNotifications = async ({
-      role,
-    }: {
-      role: "admin" | "mentor";
-    }) => {
+    const fetchUserNotifications = async (role: "admin" | "mentor") => {
+      console.log(266, { role });
       setNotificationsLoading(true);
       try {
-        const data = await fetchNotifications(role || "admin");
+        const data = await fetchNotifications(role);
         setNotifications(data);
       } catch (error) {
         console.error("Failed to fetch notifications:", error);
@@ -271,9 +270,11 @@ const Header: React.FC = () => {
         setNotificationsLoading(false);
       }
     };
-    if (!loading && user && (user?.role === "admin" || user?.role === "mentor"))
+
+    if (user && (user?.role === "admin" || user?.role === "mentor")) {
       fetchUserNotifications(user.role as any);
-  }, [user?.role, loading, user]);
+    }
+  }, [user?.role, user]);
   // User navigation items
   const userNavItems: NavItem[] = user
     ? [
@@ -327,10 +328,11 @@ const Header: React.FC = () => {
           )}
 
           {user?.role !== "mentee" && (
-            <Notifications>
+            <>
               <Button
                 variant="none"
                 size="none"
+                onClick={() => setShowNotifications(!showNotifications)}
                 className="relative bg-teal-100 p-2 rounded-lg cursor-default"
               >
                 <svg
@@ -347,7 +349,9 @@ const Header: React.FC = () => {
                   />
                 </svg>
               </Button>
-            </Notifications>
+
+              {showNotifications && <Notifications />}
+            </>
           )}
 
           {/* <Button variant="ghost" size="icon">
@@ -367,54 +371,46 @@ const Header: React.FC = () => {
 
   // Notification
 
-  const Notifications = ({ children }: { children: React.ReactNode }) => (
-    <Sheet>
-      <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent
-        side="left"
-        className="bg-[#9e8cdd] text-white w-full md:w-auto"
-      >
-        <SheetHeader>
-          <SheetTitle className="text-white text-xl">Notifications</SheetTitle>
-        </SheetHeader>
-        {notificationsLoading ? (
-          <p>Loading notifications...</p>
-        ) : (
-          <ul className="flex flex-col gap-5 mt-10 h-[90vh] overflow-y-scroll">
-            {notifications.map((notification, index) => (
-              <li key={index} className="flex items-center gap-5">
-                <Image
-                  src={"/images/avatar/man.png"}
-                  alt={"man"}
-                  width={70}
-                  height={70}
-                  className={" bg-white"}
-                />
-                <div className="bg-white text-black">
-                  <p>{notification.content} </p>
+  const Notifications = () => (
+    <div className="absolute shadow-2xl top-[60px] md:top-14 right-0 p-5 rounded-md w-full md:w-[35rem] z-50 bg-[#9e8cdd] text-white">
+      <h2 className="text-white text-xl">Notifications</h2>
+      {notificationsLoading ? (
+        <p>Loading notifications...</p>
+      ) : (
+        <ul className="flex flex-col gap-5 mt-10 h-full max-h-[60vh] overflow-y-scroll">
+          {notifications.map((notification, index) => (
+            <li key={index} className="flex items-center gap-5">
+              <Image
+                src={"/images/avatar/man.png"}
+                alt={"man"}
+                width={70}
+                height={70}
+                className={" bg-white"}
+              />
+              <div className=" text-white">
+                <p>{notification.content} </p>
 
-                  <div className="text-sm text-gray-500 flex items-center gap-2">
-                    <span>{notification.type}</span>
-                    <div className="flex items-center gap-2">
-                      <Clock size={16} />
-                      <span>{moment(notification.createdAt).fromNow()}</span>
-                    </div>
+                <div className="text-sm text-white opacity-70 flex items-center gap-2">
+                  <span>{notification.type}</span>
+                  <div className="flex items-center gap-2">
+                    <Clock size={16} />
+                    <span>{moment(notification.createdAt).fromNow()}</span>
                   </div>
                 </div>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        {!notificationsLoading && notifications.length === 0 && (
-          <ul>
-            <li className="text-center mt-10 opacity-60">
-              notification not available
+              </div>
             </li>
-          </ul>
-        )}
-      </SheetContent>
-    </Sheet>
+          ))}
+        </ul>
+      )}
+
+      {!notificationsLoading && notifications.length === 0 && (
+        <ul>
+          <li className="text-center mt-6 py-8 opacity-60">
+            notification not available
+          </li>
+        </ul>
+      )}
+    </div>
   );
 
   // Mobile Navigation Sheet
@@ -511,7 +507,7 @@ const Header: React.FC = () => {
 
   // Desktop User Actions
   const DesktopUserActions = () => (
-    <div className="hidden lg:flex items-center space-x-3">
+    <div className="hidden lg:flex items-center space-x-3 relative">
       {user ? (
         <div className="flex items-center space-x-2">
           {user?.role !== "admin" && (
@@ -528,11 +524,11 @@ const Header: React.FC = () => {
           )}
 
           {user?.role !== "mentee" && (
-            <Notifications>
+            <>
               <Button
                 variant="none"
                 size="none"
-                // onClick={() => setShowNotification(!showNotification)}
+                onClick={() => setShowNotifications(!showNotifications)}
                 className="relative bg-teal-100 p-2 rounded-lg cursor-pointer"
               >
                 <svg
@@ -549,7 +545,9 @@ const Header: React.FC = () => {
                   />
                 </svg>
               </Button>
-            </Notifications>
+
+              {showNotifications && <Notifications />}
+            </>
           )}
 
           <UserDropdown
@@ -574,7 +572,7 @@ const Header: React.FC = () => {
 
   return (
     <header className="sticky top-0 left-0 w-full bg-white border-b py-1 z-50">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 relative">
         <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">

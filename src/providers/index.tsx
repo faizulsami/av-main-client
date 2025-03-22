@@ -9,7 +9,8 @@ interface ProvidersProps {
 export function Providers({ children }: ProvidersProps) {
   return (
     <>
-      <SmoothScrollProvider>{children}</SmoothScrollProvider>
+      {/* <SmoothScrollProvider>{children}</SmoothScrollProvider> */}
+      {children}
       <Toaster />
     </>
   );
