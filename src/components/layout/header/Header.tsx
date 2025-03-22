@@ -242,14 +242,18 @@ const Header: React.FC = () => {
 
   const [notifications, setNotifications] = useState<any[]>([]);
   const [notificationsLoading, setNotificationsLoading] = useState(false);
-
+  const [socket, setSocket] = useState<any>(null);
   useEffect(() => {
     const socket = get_socket();
+    setSocket(socket);
+  }, []);
+  useEffect(() => {
+    if (!socket) return;
     socket.on("notification", (data: any) => {
       if (!loading && (user?.role === "admin" || user?.role === "mentor"))
         setNotifications((prevNotifications) => [data, ...prevNotifications]);
     });
-  }, [user?.role, loading]);
+  }, [user?.role, loading, socket]);
 
   useEffect(() => {
     const fetchUserNotifications = async ({

@@ -3,20 +3,21 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import useVolunteers from "@/hooks/useVolunteers";
+
 import { Volunteer } from "@/types/volunteer";
 import Loading from "@/app/loading";
 import VolunteerCard from "@/components/cards/VolunteerCard";
 import { useSearchParams } from "next/navigation";
 import { ActionType } from "@/components/pages/home/hero/Hero";
 import TitleHeader from "@/components/common/TitleHeader";
+import useApprovedVolunteers from "@/hooks/useApprovedVolunteers";
 
 export default function Session() {
   const searchParams = useSearchParams();
   const actionParam = searchParams.get("action");
-  const { approvedVolunteers, loading, error } = useVolunteers<Volunteer[]>();
+  const { approvedVolunteers, loading, error } =
+    useApprovedVolunteers<Volunteer[]>();
   const [visibleCount, setVisibleCount] = useState(10);
-  console.log("Approved Volunteers", approvedVolunteers);
 
   if (loading) {
     return <Loading />;

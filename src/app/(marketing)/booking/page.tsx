@@ -3,7 +3,8 @@
 import Loading from "@/app/loading";
 import BookingDetailsCard from "@/components/pages/booking/BookingDetailsCard";
 import ChoosePlan from "@/components/pages/booking/ChoosePlan";
-import useVolunteers from "@/hooks/useVolunteers";
+import useApprovedVolunteers from "@/hooks/useApprovedVolunteers";
+
 import { AppointmentType, SESSION_CONFIG } from "@/types/booking";
 import { Volunteer } from "@/types/volunteer";
 import { useSearchParams } from "next/navigation";
@@ -11,7 +12,7 @@ import { useSearchParams } from "next/navigation";
 const DEFAULT_SESSION_TYPE: AppointmentType = "Booking Call";
 
 export default function Booking() {
-  const { volunteers, loading } = useVolunteers<Volunteer[]>();
+  const { approvedVolunteers, loading } = useApprovedVolunteers<Volunteer[]>();
   const searchParams = useSearchParams();
   const mentorUserName = searchParams.get("mentor") || "";
 
@@ -26,9 +27,6 @@ export default function Booking() {
   if (loading) return <Loading />;
 
   // Filter only adminApproved volunteers
-  const approvedVolunteers = volunteers.filter(
-    (volunteer) => volunteer.adminApproval,
-  );
 
   const selectedVolunteer = approvedVolunteers.find(
     (volunteer) => volunteer.userName === mentorUserName,

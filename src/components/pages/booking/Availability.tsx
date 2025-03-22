@@ -203,7 +203,7 @@ export default function Availability({ schedule }: AvailabilityProps) {
                   <div className="col-span-3">
                     <Select
                       onValueChange={(value: string) => {
-                        const isAvailable = !bookedCallSlots.find(
+                        const isAvailable = !allBookedSlots.find(
                           (item) => item === value,
                         );
                         setSelectedSlot({

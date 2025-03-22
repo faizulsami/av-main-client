@@ -7,6 +7,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import api from "@/config/axios.config";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import Image from "next/image";
 
 interface BookingConfirmation {
   id: string;
@@ -44,6 +45,7 @@ export default function BookingConfirmationPage() {
   const searchParams = useSearchParams();
   const bookingId = searchParams.get("id");
   const [show, setShow] = useState(false);
+  const [isDisagree, setIsDisagree] = useState(false);
 
   useEffect(() => {
     const fetchBookingDetails = async () => {
@@ -70,6 +72,14 @@ export default function BookingConfirmationPage() {
 
   if (!booking) return null;
 
+  const disagree = async () => {
+    setIsDisagree(true);
+    // bookingId
+    if (bookingId) {
+      await api.delete(`/api/v1/appointments/${bookingId}`);
+    }
+  };
+
   return (
     <>
       <div className="min-h-screen py-6 bg-background">
@@ -78,14 +88,29 @@ export default function BookingConfirmationPage() {
             <CardContent className="space-y-4">
               <div className="text-center">
                 <div className="h-16 w-16 bg-soft-paste/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Check size={24} className="text-soft-paste" />
+                  {!isDisagree ? (
+                    <Check size={24} className="text-soft-paste" />
+                  ) : (
+                    <Image
+                      src="/images/cross.png"
+                      width={24}
+                      height={24}
+                      alt="cross"
+                    />
+                  )}
                 </div>
                 <h1 className="text-xl font-bold text-violet-hover">
-                  Booking Confirmed!
+                  Booking {isDisagree ? "Cancelled" : "Confirmed"}
                 </h1>
-                <p className="text-sm text-soft-paste-darker mt-2">
-                  Your session has been successfully scheduled
-                </p>
+                {isDisagree ? (
+                  <p className="text-sm text-red-800 mt-2">
+                    Your session has been failed
+                  </p>
+                ) : (
+                  <p className="text-sm text-soft-paste-darker mt-2">
+                    Your session has been successfully scheduled
+                  </p>
+                )}
               </div>
 
               <div className="space-y-4">
@@ -174,7 +199,10 @@ export default function BookingConfirmationPage() {
                   Agree
                 </button>
                 <button
-                  onClick={() => setShow(false)}
+                  onClick={() => {
+                    setShow(false);
+                    disagree();
+                  }}
                   className="px-8 py-2 rounded-full border border-[#30a6b7] text-[#30a6b7] hover:bg-gray-50 transition-colors"
                 >
                   Disagree

@@ -115,7 +115,7 @@ export default function ApprovedMentors() {
         </h1>
       </div>
 
-      <div className="border rounded-sm">
+      <div className="border rounded-sm overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>

@@ -39,14 +39,11 @@ export function useApprovedMentors(): UseApprovedMentorsReturn {
       setIsLoading(true);
       setError(null);
 
-      const response =
-        await api.get<ApiResponse<MentorRequest>>("/api/v1/mentors");
-
-      const approvedMentorsList = response.data.data.filter(
-        (mentor) => mentor.adminApproval,
+      const response = await api.get<ApiResponse<MentorRequest>>(
+        "/api/v1/mentors?adminApproval=true",
       );
 
-      setApprovedMentors(approvedMentorsList);
+      setApprovedMentors(response.data.data);
       setMeta(response.data.meta);
     } catch (err) {
       setError(handleAxiosError(err));

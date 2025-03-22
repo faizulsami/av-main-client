@@ -49,6 +49,7 @@ import { ScheduleDisplay } from "./_components/schedule-display";
 import { Switch } from "@/components/ui/switch";
 import axios from "axios";
 import { useMentorStore } from "@/store/useMentorStore";
+import { get_socket } from "@/utils/get-socket";
 
 type Mentor = {
   _id: string;
@@ -183,6 +184,13 @@ export default function Profile() {
           phone: mentor?.phone || "",
         },
       );
+
+      const socket = get_socket();
+
+      socket.emit("mentor-online", {
+        username: mentor?.userName,
+        isOnline: newStatus,
+      });
       if (response.status === 200) {
         toast.success("Status updated successfully");
         setIsOnline(newStatus); // Update Zustand store
