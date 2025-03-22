@@ -8,12 +8,13 @@ import { ChatContact } from "@/types/chat.types";
 import UserInfo from "./UserInfo";
 import CompleteDialog from "./CompleteDialog";
 import CancelDialog from "./CancelDialog";
+import { get_socket } from "@/utils/get-socket";
 
 interface UserProfileProps {
   selectedUser: ChatContact;
   onStatusUpdate?: () => void;
 }
-
+// eslint-disable-next-line react/prop-types
 const UserProfile: React.FC<UserProfileProps> = ({
   selectedUser,
   onStatusUpdate,
@@ -27,6 +28,10 @@ const UserProfile: React.FC<UserProfileProps> = ({
     try {
       await AppointmentService.updateAppointment(selectedUser.id, {
         status: "completed",
+      });
+      const socket = get_socket();
+      socket.emit("appointment-completed", {
+        menteeUserName: selectedUser.username,
       });
       toast({
         title: "Success",

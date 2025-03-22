@@ -25,6 +25,10 @@ import * as React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Peer from "simple-peer";
 import { io, Socket } from "socket.io-client";
+import { useRouter } from "next/navigation";
+import { Star } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 interface Message {
   id: string;
@@ -62,6 +66,8 @@ export default function ChatInterface() {
   const [stream, setStream] = useState<MediaStream>();
   const [callEndedUsername, setCallEndedUsername] = useState("");
   const [callRejectUsername, setCallRejectUsername] = useState("");
+  const [isCompleted, setIsCompleted] = useState(false);
+  const router = useRouter();
   const [incomingCall, setIncomingCall] = useState<{
     signal: any;
     receiverSocketId: string;
@@ -247,32 +253,14 @@ export default function ChatInterface() {
     scrollToBottom();
   }, [messages]);
 
-  //#region testing
   useEffect(() => {
-    (async () => {
-      const secret = process.env.NEXT_PUBLIC_TURN_SECRET!; // Your static-auth-secret
-      const timestamp = Math.floor(Date.now() / 1000) + 3600; // Valid for 1 hour (can adjust duration)
-      const username = `${timestamp}`; // The username is the timestamp
-      const password = crypto
-        .createHmac("sha1", secret)
-        .update(username)
-        .digest("base64");
-      let config = {
-        iceServers: [
-          {
-            urls: "stun:198.23.217.44:3478",
-            username: username,
-            credential: password,
-          },
-        ],
-      };
-      let conn = new RTCPeerConnection(config);
-      conn.createDataChannel("test");
-      conn.onicecandidate = (e) => console.log("ICE Candidate:", e.candidate);
-      await conn.createOffer().then((o) => conn.setLocalDescription(o));
-    })();
-  }, []);
-  // #endregion
+    if (!socket) return;
+
+    socket.on("appointment-completed", () => {
+      console.log("274 completed");
+      setIsCompleted(true);
+    });
+  }, [socket]);
 
   //#region calling
   useEffect(() => {
@@ -389,21 +377,7 @@ export default function ChatInterface() {
       });
     });
 
-    //#region testing
-    peer.on("icecandidate", (event) => {
-      if (event.candidate) {
-        console.log("ICE candidate:", event.candidate);
-      } else {
-        console.log("All ICE candidates sent.");
-      }
-    });
-    peer.on("connectionstatechange", () => {
-      console.log("Connection state:", peer.connectionState);
-    });
-    //#endregion
-
     peer.on("stream", (remoteStream) => {
-      console.log({ remoteStream });
       const audioCtx = new AudioContext();
       const analyser = audioCtx.createAnalyser();
       const source = audioCtx.createMediaStreamSource(remoteStream);
@@ -482,8 +456,6 @@ export default function ChatInterface() {
       },
     });
 
-    console.log("host id = ", process.env.NEXT_PUBLIC_HOST);
-
     peer.on("signal", (signal) => {
       socket.emit("call:invite", {
         signal,
@@ -493,21 +465,7 @@ export default function ChatInterface() {
       });
     });
 
-    //#region testing
-    peer.on("icecandidate", (event) => {
-      if (event.candidate) {
-        console.log("ICE candidate:", event.candidate);
-      } else {
-        console.log("All ICE candidates sent.");
-      }
-    });
-    peer.on("connectionstatechange", () => {
-      console.log("Connection state:", peer.connectionState);
-    });
-    //#endregion
     peer.on("stream", (remoteStream) => {
-      console.log({ remoteStream });
-
       const audioCtx = new AudioContext();
       const analyser = audioCtx.createAnalyser();
       const source = audioCtx.createMediaStreamSource(remoteStream);
@@ -517,15 +475,10 @@ export default function ChatInterface() {
       // new code
       if (user_audio.current) {
         user_audio.current.onloadedmetadata = () => {
-          console.log("Remote audio is loaded");
           user_audio
             .current!.play()
-            .then(() => {
-              console.log("Remote audio is playing");
-            })
-            .catch((error) => {
-              console.error("Error playing remote audio:", error);
-            });
+            .then(() => {})
+            .catch((error) => {});
         };
 
         dismiss(toastId.id);
@@ -655,6 +608,35 @@ export default function ChatInterface() {
             </div>
           )}
         </>
+      )}
+
+      {isCompleted && (
+        <div className="border p-10 fixed text-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-background rounded-2xl shadow-2xl flex flex-col gap-3">
+          <h2 className="text-xl font-bold">
+            &quot;Hope your conversation with your mentor <br /> went well! How
+            would your rate the <br /> experience?
+          </h2>
+          <div className="flex items-center gap-2 justify-center">
+            <Star fill="#FFD700" className="text-[#FFD700]" />
+            <Star fill="#FFD700" className="text-[#FFD700]" />
+            <Star fill="#FFD700" className="text-[#FFD700]" />
+            <Star fill="#FFD700" className="text-[#FFD700]" />
+            <Star fill="#FFD700" className="text-[#FFD700]" />
+          </div>
+          <p className="text-lg">Wishing your success on your journey!&quot;</p>
+          <p className="text-lg">Give us your precious review here:</p>
+          <Link
+            className="text-[#78bfc8]"
+            href="https://workspace.google.com/product/sheets/"
+          >
+            https://workspace.google.com/product/sheets/
+          </Link>
+          <Link className="mt-5" href="/">
+            <Button className="rounded-xl px-6 py-2 text-white bg-[#78bec6]">
+              Back to Homepage
+            </Button>
+          </Link>
+        </div>
       )}
     </div>
   );
