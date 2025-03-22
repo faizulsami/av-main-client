@@ -1,361 +1,413 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { MessageSquare, Send } from "lucide-react";
-import TitleHeader from "@/components/common/TitleHeader";
+import type React from "react"
+import { useState } from "react"
+import { Facebook, MessageSquare, ThumbsUp, Link2, X, Flame, Trash2 } from "lucide-react"
 
-// Types for our data
-type UserRole = "Admin" | "Moderator" | "Member" | "Guest";
-
-interface User {
-  id: string;
-  name: string;
-  role: UserRole;
-  avatar?: string;
-}
-
-interface Comment {
-  id: string;
-  content: string;
-  user: User;
-  createdAt: Date;
-}
-
-interface Post {
-  id: string;
-  content: string;
-  user: User;
-  comments: Comment[];
-  createdAt: Date;
-}
-
-// Sample data
-const currentUser: User = {
-  id: "1",
-  name: "John Doe",
-  role: "Member",
-  avatar: "/placeholder.svg?height=40&width=40",
-};
-const initialPosts: Post[] = [
-  {
-    id: "1",
-    content:
-      "Hello everyone! Welcome to our new community platform. Feel free to share your thoughts and ideas here.",
-    user: {
-      id: "2",
-      name: "Jane Smith",
-      role: "Admin",
-      avatar: "/placeholder.svg?height=40&width=40",
-    },
-    comments: [
-      {
-        id: "1",
-        content:
-          "This is awesome! Looking forward to connecting with everyone.",
-        user: {
-          id: "3",
-          name: "Mike Johnson",
-          role: "Moderator",
-          avatar: "/placeholder.svg?height=40&width=40",
-        },
-        createdAt: new Date("2023-05-15T10:30:00"),
+// This is a self-contained component with all necessary UI elements
+export default function Community() {
+  const [activeTab, setActiveTab] = useState("popular")
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null)
+  const [newPostContent, setNewPostContent] = useState("")
+  const [newComment, setNewComment] = useState("")
+  const [posts, setPosts] = useState<Post[]>([
+    {
+      id: "1",
+      author: {
+        name: "Team Dropout Skool",
+        avatar: "/placeholder.svg?height=40&width=40",
+        role: "Moderator",
       },
-    ],
-    createdAt: new Date("2023-05-15T09:00:00"),
-  },
-  {
-    id: "2",
-    content:
-      "Just finished reading an amazing book on community building. Would highly recommend it to everyone interested in this topic!",
-    user: {
-      id: "4",
-      name: "Sarah Williams",
-      role: "Member",
-      avatar: "/placeholder.svg?height=40&width=40",
+      date: "Jan 4, 2025, 09:20 PM",
+      title: "☠️ War against piracy ☠️",
+      content: `Hey everyone! 👋
+
+You might have noticed some people trying to pirate our course on Facebook or other social media platforms.
+
+Wherever you see such links, please drop them in the comments below or send them directly to the admins. 📩 Your small help will play a big role in our war against piracy.
+
+Thank you so much for your support! 🙏 ❤️
+Together, we can keep this community safe and strong! 🚀`,
+      votes: 65,
+      comments: [
+        {
+          id: "c1",
+          author: {
+            name: "Nageeb",
+            avatar: "/placeholder.svg?height=40&width=40",
+          },
+          date: "3/10/2025",
+          content: "hi I am nageeb mohammad from team14. I am having payment problems. Pls help. 01706368011",
+        },
+        {
+          id: "c2",
+          author: {
+            name: "Waliur Rahman",
+            avatar: "/placeholder.svg?height=40&width=40",
+          },
+          date: "3/6/2025",
+          content: "",
+        },
+      ],
     },
-    comments: [],
-    createdAt: new Date("2023-05-14T15:45:00"),
-  },
-];
+  ])
 
-export function Community() {
-  const [posts, setPosts] = useState<Post[]>(initialPosts);
-  const [newPostContent, setNewPostContent] = useState("");
-  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-  const [newComment, setNewComment] = useState("");
+  const handleOpenPost = (post: Post) => {
+    setSelectedPost(post)
+  }
 
-  // Format date to a readable string
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat("en-US", {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).format(date);
-  };
+  const handleClosePost = () => {
+    setSelectedPost(null)
+  }
 
-  // Create a new post
-  const handleCreatePost = () => {
-    if (!newPostContent.trim()) return;
+  const handlePostSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newPostContent.trim()) return
 
     const newPost: Post = {
       id: Date.now().toString(),
+      author: {
+        name: "You",
+        avatar: "/placeholder.svg?height=40&width=40",
+      },
+      date: new Date().toLocaleString(),
+      title: newPostContent.split("\n")[0] || "New Post",
       content: newPostContent,
-      user: currentUser,
+      votes: 0,
       comments: [],
-      createdAt: new Date(),
-    };
+    }
 
-    setPosts([newPost, ...posts]);
-    setNewPostContent("");
-  };
+    setPosts([newPost, ...posts])
+    setNewPostContent("")
+  }
 
-  // Add a comment to a post
-  const handleAddComment = () => {
-    if (!newComment.trim() || !selectedPost) return;
+  const handleCommentSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!selectedPost || !newComment.trim()) return
 
     const newCommentObj: Comment = {
       id: Date.now().toString(),
+      author: {
+        name: "You",
+        avatar: "/placeholder.svg?height=40&width=40",
+      },
+      date: new Date().toLocaleString(),
       content: newComment,
-      user: currentUser,
-      createdAt: new Date(),
-    };
+    }
 
-    const updatedPosts = posts.map((post) => {
-      if (post.id === selectedPost.id) {
-        return {
-          ...post,
-          comments: [...post.comments, newCommentObj],
-        };
-      }
-      return post;
-    });
+    const updatedPost = {
+      ...selectedPost,
+      comments: [...selectedPost.comments, newCommentObj],
+    }
 
-    setPosts(updatedPosts);
-    setSelectedPost(
-      updatedPosts.find((post) => post.id === selectedPost.id) || null,
-    );
-    setNewComment("");
-  };
+    setPosts(posts.map((post) => (post.id === selectedPost.id ? updatedPost : post)))
+    setSelectedPost(updatedPost)
+    setNewComment("")
+  }
+
+  const handleDeletePost = (e: React.MouseEvent, postId: string) => {
+    e.stopPropagation() // Prevent opening the post modal
+    setPosts(posts.filter((post) => post.id !== postId))
+    if (selectedPost?.id === postId) {
+      setSelectedPost(null)
+    }
+  }
 
   return (
-    <div>
-      <div className="container mx-auto max-w-4xl px-16 py-8">
-        {/* Create Post Form */}
-        <Card className="mb-6 overflow-hidden">
-          <CardHeader className="pb-3 border-b">
-            <h2 className="text-lg font-semibold">Create Your Post</h2>
-          </CardHeader>
-          <CardContent className="pt-4">
-            <div className="flex items-start gap-4">
-              <Avatar className="mt-1">
-                <AvatarImage src={currentUser.avatar} alt={currentUser.name} />
-                <AvatarFallback>{currentUser.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1 space-y-2">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">{currentUser.name}</span>
-                  <Badge variant="outline" className="text-xs">
-                    {currentUser.role}
-                  </Badge>
-                </div>
-                <Textarea
-                  placeholder="What would you like to share with the community today?"
-                  value={newPostContent}
-                  onChange={(e) => setNewPostContent(e.target.value)}
-                  className="min-h-[100px] focus:ring-2 focus:ring-primary/20 transition-all"
-                />
-                {newPostContent.length > 0 && (
-                  <div className="text-xs text-muted-foreground text-right">
-                    {newPostContent.length} characters
+    <div className="min-h-screen bg-black text-white p-4 py-12 rounded">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Left Column - Posts */}
+          <div className="w-full lg:w-2/3">
+            <h1 className="text-2xl font-bold mb-6">
+              Dropouts <span className="text-red-500">Community</span>
+            </h1>
+
+            {/* Post Input - Replacing "Community Posting Disabled" */}
+            <div className="mb-8 bg-gray-900 border border-gray-800 rounded-lg overflow-hidden">
+              <div className="p-6">
+                <form onSubmit={handlePostSubmit}>
+                  <textarea
+                    placeholder="Share something with the community..."
+                    className="w-full min-h-[80px] bg-gray-800 border border-gray-700 rounded-md p-3 text-white resize-none mb-4 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    value={newPostContent}
+                    onChange={(e) => setNewPostContent(e.target.value)}
+                    rows={4}
+                  />
+                  <div className="flex justify-end">
+                    <button
+                      type="submit"
+                      className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md font-medium text-sm"
+                    >
+                      Post to Community
+                    </button>
                   </div>
-                )}
+                </form>
               </div>
             </div>
-          </CardContent>
-          <CardFooter className="flex justify-end bg-muted/30 border-t">
-            <Button
-              onClick={handleCreatePost}
-              disabled={!newPostContent.trim()}
-              className="px-6"
-              variant={"default"}
-            >
-              Post
-            </Button>
-          </CardFooter>
-        </Card>
 
-        {/* Posts List */}
-        <div className="space-y-4">
-          {posts.map((post) => (
-            <Card
-              key={post.id}
-              className="cursor-pointer hover:bg-muted/50 transition-colors"
-            >
-              <CardHeader className="flex flex-row items-start gap-4 pb-2">
-                <Avatar>
-                  <AvatarImage src={post.user.avatar} alt={post.user.name} />
-                  <AvatarFallback>{post.user.name.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold">{post.user.name}</span>
-                    <Badge variant="outline" className="text-xs">
-                      {post.user.role}
-                    </Badge>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {formatDate(post.createdAt)}
-                  </p>
-                </div>
-              </CardHeader>
-              <CardContent onClick={() => setSelectedPost(post)}>
-                <p className="whitespace-pre-line">{post.content}</p>
-              </CardContent>
-              <CardFooter className="flex justify-between">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-muted-foreground"
-                  onClick={() => setSelectedPost(post)}
+            {/* Tabs */}
+            <div className="flex mb-6 overflow-x-auto border-b border-gray-800">
+              <button
+                onClick={() => setActiveTab("popular")}
+                className={`px-4 py-2 flex items-center ${activeTab === "popular" ? "text-white border-b-2 border-orange-500" : "text-gray-400 hover:text-white"}`}
+              >
+                <Flame className="h-4 w-4 mr-2" /> Popular
+              </button>
+              <button
+                onClick={() => setActiveTab("recent")}
+                className={`px-4 py-2 ${activeTab === "recent" ? "text-white border-b-2 border-orange-500" : "text-gray-400 hover:text-white"}`}
+              >
+                Recent
+              </button>
+              <button
+                onClick={() => setActiveTab("my-posts")}
+                className={`px-4 py-2 ${activeTab === "my-posts" ? "text-white border-b-2 border-orange-500" : "text-gray-400 hover:text-white"}`}
+              >
+                My Posts
+              </button>
+              <button
+                onClick={() => setActiveTab("all-categories")}
+                className={`px-4 py-2 ${activeTab === "all-categories" ? "text-white border-b-2 border-orange-500" : "text-gray-400 hover:text-white"}`}
+              >
+                All Categories
+              </button>
+            </div>
+
+            {/* Category Pills */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              <span className="inline-flex items-center rounded-full border border-gray-700 bg-gray-800 px-2.5 py-0.5 text-xs font-semibold text-white hover:bg-gray-700 cursor-pointer">
+                Video Editing Tricks
+              </span>
+              <span className="inline-flex items-center rounded-full border border-gray-700 bg-gray-800 px-2.5 py-0.5 text-xs font-semibold text-white hover:bg-gray-700 cursor-pointer">
+                Student Wins
+              </span>
+              <span className="inline-flex items-center rounded-full border border-gray-700 bg-gray-800 px-2.5 py-0.5 text-xs font-semibold text-white hover:bg-gray-700 cursor-pointer">
+                Learned Something New Today
+              </span>
+              <span className="inline-flex items-center rounded-full border border-gray-700 bg-gray-800 px-2.5 py-0.5 text-xs font-semibold text-white hover:bg-gray-700 cursor-pointer">
+                Introduce Yourself
+              </span>
+            </div>
+
+            {/* Pinned Posts */}
+            <div className="mb-6 flex items-center gap-2 text-orange-500">
+              <Flame className="h-4 w-4" />
+              <span>Pinned Posts (1)</span>
+            </div>
+
+            {/* Posts List */}
+            <div className="space-y-6">
+              {posts.map((post) => (
+                <div
+                  key={post.id}
+                  className="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden cursor-pointer hover:border-gray-700 relative"
+                  onClick={() => handleOpenPost(post)}
                 >
-                  <MessageSquare className="h-4 w-4 mr-2" />
-                  {post.comments.length}{" "}
-                  {post.comments.length === 1 ? "Comment" : "Comments"}
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-        {/* Post Modal */}
-        <Dialog
-          open={!!selectedPost}
-          onOpenChange={(open) => !open && setSelectedPost(null)}
-        >
-          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-            {selectedPost && (
-              <>
-                <DialogHeader>
-                  <DialogTitle>Post</DialogTitle>
-                </DialogHeader>
+                  {/* Delete Icon */}
+                  <button
+                    className="absolute top-2 right-2 text-gray-400 hover:text-red-500 z-10 p-1 rounded-full hover:bg-gray-800"
+                    onClick={(e) => handleDeletePost(e, post.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
 
-                {/* Post Content */}
-                <div className="py-4">
-                  <div className="flex items-start gap-4 mb-4">
-                    <Avatar>
-                      <AvatarImage
-                        src={selectedPost.user.avatar}
-                        alt={selectedPost.user.name}
+                  <div className="p-4 flex flex-row items-start gap-4">
+                    <div className="h-12 w-12 rounded-full border border-gray-700 overflow-hidden relative">
+                      <img
+                        src={post.author.avatar || "/placeholder.svg"}
+                        alt={post.author.name}
+                        className="h-full w-full object-cover"
                       />
-                      <AvatarFallback>
-                        {selectedPost.user.name.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
+                    </div>
+                    <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold">
-                          {selectedPost.user.name}
-                        </span>
-                        <Badge variant="outline" className="text-xs">
-                          {selectedPost.user.role}
-                        </Badge>
+                        <span className="font-semibold">{post.author.name}</span>
+                        {post.author.role && (
+                          <span className="inline-flex items-center rounded-full border border-blue-700 bg-blue-900 px-2.5 py-0.5 text-xs font-semibold text-blue-300">
+                            {post.author.role}
+                          </span>
+                        )}
                       </div>
-                      <p className="text-xs text-muted-foreground mb-2">
-                        {formatDate(selectedPost.createdAt)}
-                      </p>
-                      <p className="whitespace-pre-line">
-                        {selectedPost.content}
-                      </p>
+                      <p className="text-sm text-gray-400">{post.date}</p>
                     </div>
                   </div>
-
-                  {/* Comments Section */}
-                  <div className="border-t pt-4 mt-4">
-                    <h3 className="font-medium mb-4">
-                      Comments ({selectedPost.comments.length})
-                    </h3>
-
-                    {/* Comments List */}
-                    <div className="space-y-4 mb-4">
-                      {selectedPost.comments.map((comment) => (
-                        <div
-                          key={comment.id}
-                          className="flex items-start gap-3"
-                        >
-                          <Avatar className="h-8 w-8">
-                            <AvatarImage
-                              src={comment.user.avatar}
-                              alt={comment.user.name}
-                            />
-                            <AvatarFallback>
-                              {comment.user.name.charAt(0)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1 bg-muted p-3 rounded-lg">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="font-semibold text-sm">
-                                {comment.user.name}
-                              </span>
-                              <Badge variant="outline" className="text-xs">
-                                {comment.user.role}
-                              </Badge>
-                            </div>
-                            <p className="text-sm">{comment.content}</p>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              {formatDate(comment.createdAt)}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Add Comment Form */}
+                  <div className="px-4 pb-2">
+                    <h3 className="text-lg font-bold mb-2">{post.title}</h3>
+                    <p className="whitespace-pre-line">{post.content}</p>
+                  </div>
+                  <div className="flex justify-between border-t border-gray-800 pt-4 px-4 pb-4">
                     <div className="flex items-center gap-2">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage
-                          src={currentUser.avatar}
-                          alt={currentUser.name}
-                        />
-                        <AvatarFallback>
-                          {currentUser.name.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 flex gap-2">
-                        <Input
-                          placeholder="Write a comment..."
-                          value={newComment}
-                          onChange={(e) => setNewComment(e.target.value)}
-                          className="flex-1"
-                        />
-                        <Button size="icon" onClick={handleAddComment}>
-                          <Send className="h-4 w-4" />
-                        </Button>
-                      </div>
+                      <button className="flex items-center text-gray-400 hover:text-white text-sm">
+                        <ThumbsUp className="h-4 w-4 mr-1" />
+                        {post.votes}
+                      </button>
+                      <button className="flex items-center text-gray-400 hover:text-white text-sm">
+                        <MessageSquare className="h-4 w-4 mr-1" />
+                        {post.comments.length}
+                      </button>
                     </div>
+                    <button className="flex items-center text-gray-400 hover:text-white text-sm">
+                      <Link2 className="h-4 w-4 mr-1" />
+                      Share
+                    </button>
                   </div>
                 </div>
-              </>
-            )}
-          </DialogContent>
-        </Dialog>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Column - Community Info */}
+          <div className="w-full lg:w-1/3">
+            <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden">
+              <div className="aspect-video relative">
+                <img
+                  src="/placeholder.svg?height=300&width=500"
+                  alt="Community"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-6">
+                <h2 className="text-xl font-bold mb-2">Dropouts Community</h2>
+                <p className="text-gray-400 mb-4">built on real-world success and failure.</p>
+
+                <button className="w-full mb-4 flex items-center justify-start px-4 py-2 border border-gray-700 rounded-md text-white hover:bg-gray-800">
+                  <span className="mr-2">📜</span> Rules and Guidelines
+                </button>
+
+                <button className="w-full flex items-center justify-start px-4 py-2 border border-gray-700 rounded-md text-blue-400 hover:bg-gray-800">
+                  <Facebook className="h-4 w-4 mr-2" /> Follow Facebook
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* Post Modal */}
+      {selectedPost && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="bg-black border border-gray-800 rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex flex-row items-start gap-4 pb-2">
+                <div className="h-12 w-12 rounded-full border border-gray-700 overflow-hidden relative">
+                  <img
+                    src={selectedPost.author.avatar || "/placeholder.svg"}
+                    alt={selectedPost.author.name}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div className="flex-1">
+                  <div className="text-lg font-semibold flex items-center gap-2">
+                    {selectedPost.author.name}
+                    {selectedPost.author.role && (
+                      <span className="inline-flex items-center rounded-full border border-blue-700 bg-blue-900 px-2.5 py-0.5 text-xs font-semibold text-blue-300">
+                        {selectedPost.author.role}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-400">{selectedPost.date}</p>
+                </div>
+                <button
+                  className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800"
+                  onClick={handleClosePost}
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="py-4">
+                <h3 className="text-xl font-bold mb-4">{selectedPost.title}</h3>
+                <p className="whitespace-pre-line mb-6">{selectedPost.content}</p>
+
+                <div className="flex items-center gap-4 py-2 border-t border-b border-gray-800 mb-6">
+                  <button className="flex items-center text-gray-400 hover:text-white text-sm py-1">
+                    <ThumbsUp className="h-4 w-4 mr-1" />
+                    {selectedPost.votes}
+                  </button>
+                  <button className="flex items-center text-gray-400 hover:text-white text-sm py-1">
+                    <Link2 className="h-4 w-4 mr-1" />
+                    Copy Link
+                  </button>
+                </div>
+
+                <div className="mb-6">
+                  <h4 className="text-lg font-semibold mb-4">Comments ({selectedPost.comments.length})</h4>
+
+                  <div className="flex gap-4 mb-6">
+                    <div className="h-10 w-10 rounded-full overflow-hidden relative">
+                      <img src="/placeholder.svg?height=40&width=40" alt="You" className="h-full w-full object-cover" />
+                    </div>
+                    <form onSubmit={handleCommentSubmit} className="flex-1">
+                      <textarea
+                        placeholder="Write a comment..."
+                        className="w-full min-h-[80px] bg-gray-800 border border-gray-700 rounded-md p-3 text-white resize-none mb-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                      />
+                      <div className="flex justify-end">
+                        <button
+                          type="submit"
+                          className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md font-medium text-sm"
+                        >
+                          Post Comment
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+
+                  <div className="space-y-6">
+                    {selectedPost.comments.map((comment) => (
+                      <div key={comment.id} className="flex gap-4">
+                        <div className="h-10 w-10 rounded-full overflow-hidden relative">
+                          <img
+                            src={comment.author.avatar || "/placeholder.svg"}
+                            alt={comment.author.name}
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-semibold">{comment.author.name}</span>
+                            <span className="text-sm text-gray-400">{comment.date}</span>
+                          </div>
+                          <p>{comment.content}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-  );
+  )
 }
+
+// Types
+interface Post {
+  id: string
+  author: {
+    name: string
+    avatar: string
+    role?: string
+  }
+  date: string
+  title: string
+  content: string
+  votes: number
+  comments: Comment[]
+}
+
+interface Comment {
+  id: string
+  author: {
+    name: string
+    avatar: string
+  }
+  date: string
+  content: string
+}
+
