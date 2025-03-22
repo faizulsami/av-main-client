@@ -258,7 +258,6 @@ export default function Availability({ schedule }: AvailabilityProps) {
                         selectedSlot?.day === daySchedule.day && isSelected
                       }
                       onChange={() => {
-                        //#region Select Slot
                         if (!!selectedSlot) {
                           if (selectedSlot?.day !== daySchedule.day) {
                             toast({

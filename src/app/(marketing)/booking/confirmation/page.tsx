@@ -104,7 +104,7 @@ export default function BookingConfirmationPage() {
                 </h1>
                 {isDisagree ? (
                   <p className="text-sm text-red-800 mt-2">
-                    Your session has been failed
+                    Your session has been failed to scheduled
                   </p>
                 ) : (
                   <p className="text-sm text-soft-paste-darker mt-2">
