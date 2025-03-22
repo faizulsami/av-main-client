@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState } from "react";
@@ -234,6 +235,7 @@ const Header: React.FC = () => {
   const pathname = usePathname();
   const { user, loading, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
 
   // User navigation items
   const userNavItems: NavItem[] = user
@@ -286,6 +288,31 @@ const Header: React.FC = () => {
               <Mail size={18} />
             </Link>
           )}
+
+          {user?.role !== "mentee" && (
+            <Notifications>
+              <Button
+                variant="none"
+                size="none"
+                className="relative bg-teal-100 p-2 rounded-lg cursor-default"
+              >
+                <svg
+                  className="w-[22px] h-[22px] text-teal-600 animate-wiggle"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 21 21"
+                >
+                  <path
+                    fill="none"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15.585 15.5H5.415A1.65 1.65 0 0 1 4 13a10.526 10.526 0 0 0 1.5-5.415V6.5a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v1.085c0 1.907.518 3.78 1.5 5.415a1.65 1.65 0 0 1-1.415 2.5zm1.915-11c-.267-.934-.6-1.6-1-2s-1.066-.733-2-1m-10.912 3c.209-.934.512-1.6.912-2s1.096-.733 2.088-1M13 17c-.667 1-1.5 1.5-2.5 1.5S8.667 18 8 17"
+                  />
+                </svg>
+              </Button>
+            </Notifications>
+          )}
+
           {/* <Button variant="ghost" size="icon">
             <Bell size={20} />
           </Button> */}
@@ -299,6 +326,19 @@ const Header: React.FC = () => {
         </SheetTrigger>
       )}
     </div>
+  );
+
+  // Notification
+
+  const Notifications = ({ children }: { children: React.ReactNode }) => (
+    <Sheet>
+      <SheetTrigger asChild>{children}</SheetTrigger>
+      <SheetContent className="bg-[#9e8cdd] text-white">
+        <SheetHeader>
+          <SheetTitle className="text-white">Notifications</SheetTitle>
+        </SheetHeader>
+      </SheetContent>
+    </Sheet>
   );
 
   // Mobile Navigation Sheet
@@ -394,7 +434,13 @@ const Header: React.FC = () => {
   );
 
   // Desktop User Actions
-  const DesktopUserActions = () => (
+  const DesktopUserActions = ({
+    setShowNotification,
+    showNotification,
+  }: {
+    setShowNotification: any;
+    showNotification: boolean;
+  }) => (
     <div className="hidden lg:flex items-center space-x-3">
       {user ? (
         <div className="flex items-center space-x-2">
@@ -409,6 +455,31 @@ const Header: React.FC = () => {
                 <Bell size={22} />
               </Button> */}
             </>
+          )}
+
+          {user?.role !== "mentee" && (
+            <Notifications>
+              <Button
+                variant="none"
+                size="none"
+                // onClick={() => setShowNotification(!showNotification)}
+                className="relative bg-teal-100 p-2 rounded-lg cursor-pointer"
+              >
+                <svg
+                  className="h-[22px] w-[22px] text-teal-600 animate-wiggle"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 21 21"
+                >
+                  <path
+                    fill="none"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15.585 15.5H5.415A1.65 1.65 0 0 1 4 13a10.526 10.526 0 0 0 1.5-5.415V6.5a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v1.085c0 1.907.518 3.78 1.5 5.415a1.65 1.65 0 0 1-1.415 2.5zm1.915-11c-.267-.934-.6-1.6-1-2s-1.066-.733-2-1m-10.912 3c.209-.934.512-1.6.912-2s1.096-.733 2.088-1M13 17c-.667 1-1.5 1.5-2.5 1.5S8.667 18 8 17"
+                  />
+                </svg>
+              </Button>
+            </Notifications>
           )}
 
           <UserDropdown
@@ -450,7 +521,10 @@ const Header: React.FC = () => {
           <DesktopNavigation />
 
           {/* Desktop User Actions */}
-          <DesktopUserActions />
+          <DesktopUserActions
+            setShowNotification={setShowNotification}
+            showNotification={showNotification}
+          />
 
           {/* Mobile Navigation */}
           <MobileNavSheet />

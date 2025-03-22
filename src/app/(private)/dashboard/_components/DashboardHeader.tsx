@@ -113,7 +113,7 @@ export default function DashboardHeader() {
   const navItems =
     user?.role === "admin" ? getAdminNavItems() : getMentorNavItems();
   const dashboardTitle =
-    user?.role === "admin" ? "Admin Dashboard" : "Mentor Dashboard";
+    user?.role === "admin" ? "Admin Dashboard" : "Listener Dashboard";
 
   return (
     <header className="flex h-16 items-center justify-between border-b bg-white px-4 md:px-6">

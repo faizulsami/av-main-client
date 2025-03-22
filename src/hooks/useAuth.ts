@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { AuthService, UserInfo } from "@/services/auth.service";
+import { useRouter } from "next/navigation";
 
 export function useAuth() {
   const [user, setUser] = useState<UserInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-
+  const router = useRouter();
   useEffect(() => {
     const storedUser = AuthService.getStoredUser();
     if (storedUser) {
@@ -61,6 +62,7 @@ export function useAuth() {
 
   const logout = () => {
     AuthService.logout();
+    router.push("/");
     setUser(null);
   };
 
