@@ -113,6 +113,7 @@ export default function Availability({ schedule }: AvailabilityProps) {
   const [selectedSlot, setSelectedSlot] = useState<SelectedTimeSlot | null>(
     null,
   );
+
   const [isSelected, setIsSelected] = useState(false);
   const query = useSearchParams();
   const mentorUserName = query.get("mentor");
@@ -139,7 +140,11 @@ export default function Availability({ schedule }: AvailabilityProps) {
   // Combine Zustand bookedSlots with appointments' booked slots
   const allBookedSlots = [...bookedSlots, ...bookedCallSlots];
 
-  const handleSlotSelect = (slot: TimeSlot) => {
+  const handleSlotSelect = (slot: TimeSlot | null) => {
+    if (!slot) {
+      setSelectedTimeSlot(null);
+      return;
+    }
     if (!bookedSlots.includes(slot.formatted)) {
       setSelectedTimeSlot(slot.formatted);
       setSelectedDate(new Date().toISOString());
@@ -250,22 +255,36 @@ export default function Availability({ schedule }: AvailabilityProps) {
                     <input
                       type="checkbox"
                       checked={
-                        !(
-                          !selectedSlot?.available &&
-                          selectedSlot?.day === daySchedule.day
-                        ) && isSelected
+                        selectedSlot?.day === daySchedule.day && isSelected
                       }
                       onChange={() => {
+                        //#region Select Slot
                         if (!!selectedSlot) {
-                          const isSelected =
+                          if (selectedSlot?.day !== daySchedule.day) {
+                            toast({
+                              title: "Slot Unavailable",
+                              description:
+                                "You cannot select a slot for another day.",
+                              variant: "destructive",
+                            });
+                            return;
+                          }
+
+                          const selected =
                             selectedSlot?.day === daySchedule.day &&
                             daySchedule.isAvailable;
-                          setIsSelected(isSelected);
-                          handleSlotSelect({
-                            start: daySchedule.startTime,
-                            end: daySchedule.endTime,
-                            formatted: selectedSlot?.formatted || "",
-                          });
+                          if (isSelected) {
+                            setIsSelected(false);
+                            handleSlotSelect(null);
+                          } else {
+                            setIsSelected(selected);
+                            handleSlotSelect({
+                              start: daySchedule.startTime,
+                              end: daySchedule.endTime,
+                              formatted: selectedSlot?.formatted || "",
+                            });
+                          }
+                          // else setIsSelected(selected);
                         }
                       }}
                       disabled={
