@@ -1,6 +1,6 @@
 import api from "@/config/axios.config";
 import { MentorFormValues } from "@/types/mentor.types";
-import { socketService } from "../socket.service";
+import { get_socket } from "@/utils/get-socket";
 
 export async function registerMentor(values: MentorFormValues) {
   try {
@@ -31,12 +31,19 @@ export async function registerMentor(values: MentorFormValues) {
 
     const userName = responseData.userName;
 
+    console.log("Sending notification to admin");
+
     // Emit a socket event to notify the admin about the new mentor request
     if (userName) {
-      socketService.emit("newMentorRequest", {
-        userName: userName,
-        message: "A new listener request has been created.",
+      const socket = get_socket();
+
+      socket.emit("notification", {
+        receiver: "admin",
+        type: "mentor_request",
+        content: `A new listener request has been created by ${userName}.`,
       });
+
+      console.log({ socket });
 
       await api.post("/api/v1/notifications/create-notification", {
         receiver: "admin",

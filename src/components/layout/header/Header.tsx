@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -21,11 +21,15 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { ChevronDown, Mail, Menu } from "lucide-react";
+import { ChevronDown, Clock, Mail, Menu } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { UserDropdown } from "./UserDropdown";
 import Loading from "@/app/loading";
 import { AnimatePresence, motion } from "framer-motion";
+import { fetchNotifications } from "@/utils/fetchNotifications";
+import moment from "moment";
+import { socketService } from "@/services/socket.service";
+import { get_socket } from "@/utils/get-socket";
 
 // Advanced Navigation Types
 interface NavItemBase {
@@ -235,8 +239,37 @@ const Header: React.FC = () => {
   const pathname = usePathname();
   const { user, loading, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [showNotification, setShowNotification] = useState(false);
 
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notificationsLoading, setNotificationsLoading] = useState(false);
+
+  useEffect(() => {
+    const socket = get_socket();
+    socket.on("notification", (data: any) => {
+      if (!loading && (user?.role === "admin" || user?.role === "mentor"))
+        setNotifications((prevNotifications) => [data, ...prevNotifications]);
+    });
+  }, [user?.role, loading]);
+
+  useEffect(() => {
+    const fetchUserNotifications = async ({
+      role,
+    }: {
+      role: "admin" | "mentor";
+    }) => {
+      setNotificationsLoading(true);
+      try {
+        const data = await fetchNotifications(role || "admin");
+        setNotifications(data);
+      } catch (error) {
+        console.error("Failed to fetch notifications:", error);
+      } finally {
+        setNotificationsLoading(false);
+      }
+    };
+    if (!loading && user && (user?.role === "admin" || user?.role === "mentor"))
+      fetchUserNotifications(user.role as any);
+  }, [user?.role, loading, user]);
   // User navigation items
   const userNavItems: NavItem[] = user
     ? [
@@ -333,10 +366,49 @@ const Header: React.FC = () => {
   const Notifications = ({ children }: { children: React.ReactNode }) => (
     <Sheet>
       <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent className="bg-[#9e8cdd] text-white">
+      <SheetContent
+        side="left"
+        className="bg-[#9e8cdd] text-white w-full md:w-auto"
+      >
         <SheetHeader>
-          <SheetTitle className="text-white">Notifications</SheetTitle>
+          <SheetTitle className="text-white text-xl">Notifications</SheetTitle>
         </SheetHeader>
+        {notificationsLoading ? (
+          <p>Loading notifications...</p>
+        ) : (
+          <ul className="flex flex-col gap-5 mt-10 h-[90vh] overflow-y-scroll">
+            {notifications.map((notification, index) => (
+              <li key={index} className="flex items-center gap-5">
+                <Image
+                  src={"/images/avatar/man.png"}
+                  alt={"man"}
+                  width={70}
+                  height={70}
+                  className={" bg-white"}
+                />
+                <div className="bg-white text-black">
+                  <p>{notification.content} </p>
+
+                  <div className="text-sm text-gray-500 flex items-center gap-2">
+                    <span>{notification.type}</span>
+                    <div className="flex items-center gap-2">
+                      <Clock size={16} />
+                      <span>{moment(notification.createdAt).fromNow()}</span>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {!notificationsLoading && notifications.length === 0 && (
+          <ul>
+            <li className="text-center mt-10 opacity-60">
+              notification not available
+            </li>
+          </ul>
+        )}
       </SheetContent>
     </Sheet>
   );
@@ -434,13 +506,7 @@ const Header: React.FC = () => {
   );
 
   // Desktop User Actions
-  const DesktopUserActions = ({
-    setShowNotification,
-    showNotification,
-  }: {
-    setShowNotification: any;
-    showNotification: boolean;
-  }) => (
+  const DesktopUserActions = () => (
     <div className="hidden lg:flex items-center space-x-3">
       {user ? (
         <div className="flex items-center space-x-2">
@@ -521,10 +587,7 @@ const Header: React.FC = () => {
           <DesktopNavigation />
 
           {/* Desktop User Actions */}
-          <DesktopUserActions
-            setShowNotification={setShowNotification}
-            showNotification={showNotification}
-          />
+          <DesktopUserActions />
 
           {/* Mobile Navigation */}
           <MobileNavSheet />
