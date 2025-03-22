@@ -66,9 +66,13 @@ function generateTimeSlots(
 ): TimeSlot[] {
   const slots: TimeSlot[] = [];
   let currentStart = startTime.hours * 60 + startTime.minutes;
-  const endMinutes = 13 * 60 + endTime.minutes;
-  // endTime.hours
-  console.log(83, currentStart < endMinutes, currentStart, " ", endMinutes);
+  if (startTime.hours < 9) {
+    startTime.hours = startTime.hours + 12;
+  }
+  if (endTime.hours < 9) {
+    endTime.hours = endTime.hours + 12;
+  }
+  const endMinutes = endTime.hours * 60 + endTime.minutes;
 
   while (currentStart < endMinutes) {
     const currentEnd = currentStart + 30;
@@ -132,30 +136,8 @@ export default function Availability({ schedule }: AvailabilityProps) {
       (appointment) => appointment.selectedSlot?.map((slot) => slot.time) || [],
     );
 
-  console.log(135, { selectedSlot });
   // Combine Zustand bookedSlots with appointments' booked slots
   const allBookedSlots = [...bookedSlots, ...bookedCallSlots];
-
-  // useEffect(() => {
-  //   const today = new Date();
-  //   const currentDay = daysOfWeek[today.getDay()];
-  //   const todaySchedule = schedule?.find(
-  //     (day) => day.day.toLowerCase() === currentDay,
-  //   );
-
-  //   setCurrentDaySchedule(todaySchedule || null);
-
-  //   if (todaySchedule && todaySchedule.isAvailable) {
-  //     const slots = generateTimeSlots(
-  //       todaySchedule.startTime,
-  //       todaySchedule.endTime,
-  //     );
-
-  //     setAvailableSlots(slots);
-  //   } else {
-  //     setAvailableSlots([]);
-  //   }
-  // }, [schedule]);
 
   const handleSlotSelect = (slot: TimeSlot) => {
     if (!bookedSlots.includes(slot.formatted)) {
@@ -169,12 +151,6 @@ export default function Availability({ schedule }: AvailabilityProps) {
       });
     }
   };
-
-  const formattedDate = new Intl.DateTimeFormat("en-US", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(new Date());
 
   return (
     <div className="w-full mx-auto space-y-4">
@@ -216,20 +192,32 @@ export default function Availability({ schedule }: AvailabilityProps) {
                     >
                       <SelectTrigger className="w-[130px]">
                         <SelectValue
-                          placeholder={`${daySchedule.startTime.hours} ${daySchedule.startTime.hours < 12 && daySchedule.startTime.hours > 5 ? "am" : "pm"} - ${daySchedule.endTime.hours} ${daySchedule.endTime.hours < 12 && daySchedule.endTime.hours > 5 ? "am" : "pm"}`}
+                          placeholder={`${daySchedule.startTime.hours < 12 && daySchedule.startTime.hours > 5 ? daySchedule.startTime.hours : daySchedule.startTime.hours - 12} ${daySchedule.startTime.hours < 12 && daySchedule.startTime.hours > 5 ? "am" : "pm"} - ${daySchedule.endTime.hours < 12 && daySchedule.endTime.hours > 5 ? daySchedule.endTime.hours : daySchedule.endTime.hours - 12} ${daySchedule.endTime.hours < 12 && daySchedule.endTime.hours > 5 ? "am" : "pm"}`}
                         />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
                           {slots.map((slot, index) => {
+                            const formatTime = (time: string) => {
+                              const [hours, minutes] = time
+                                .split(":")
+                                .map(Number);
+                              const period =
+                                hours < 12 && hours > 5 ? "am" : "pm";
+                              const formattedHours =
+                                hours > 12 || hours <= 5
+                                  ? (hours - 12).toString().padStart(2, "0")
+                                  : hours.toString();
+
+                              return `${formattedHours} : ${minutes.toString().padStart(2, "0")} ${period}`;
+                            };
                             return (
                               <>
-                                <SelectItem key={index} value={slot.formatted}>
-                                  {slot.formatted}{" "}
-                                  {Number(slot.formatted.split(":")[0]) < 12 &&
-                                  Number(slot.formatted.split(":")[0]) > 5
-                                    ? "am"
-                                    : "pm"}
+                                <SelectItem
+                                  key={index}
+                                  value={formatTime(slot.formatted)}
+                                >
+                                  {formatTime(slot.formatted)}
                                 </SelectItem>
                               </>
                             );

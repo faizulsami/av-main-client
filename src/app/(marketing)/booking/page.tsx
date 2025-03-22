@@ -32,8 +32,6 @@ export default function Booking() {
     (volunteer) => volunteer.userName === mentorUserName,
   );
 
-  console.log("Selected Volunteer:", selectedVolunteer);
-
   return (
     <div className="max-w-4xl w-full mx-auto mt-4 px-2 gap-4 flex flex-col py-10">
       {selectedVolunteer && (
