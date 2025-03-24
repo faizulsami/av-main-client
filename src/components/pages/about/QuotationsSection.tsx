@@ -11,18 +11,18 @@ export default function QuotationsSection() {
     <section className="w-full">
       <div className="space-y-6">
         <h2 className="text-2xl md:text-3xl font-bold text-center text-violet">
-          Our Quotations
+        Anonymous Voices
         </h2>
 
-        <p className="text-center text-soft-paste font-semibold mb-12">
+        <p className="text-center text-soft-paste font-semibold mb-12 text-3xl">
           &quot;Every story deserves a listener.&quot;
         </p>
 
-        <div className="space-y-4 max-w-4xl mx-auto">
+        {/* <div className="space-y-4 max-w-4xl mx-auto">
           {quotes.map((quote, index) => (
             <QuoteCard key={index}>{quote}</QuoteCard>
           ))}
-        </div>
+        </div> */}
 
         {/* <div className="flex justify-center mt-8">
           <Button

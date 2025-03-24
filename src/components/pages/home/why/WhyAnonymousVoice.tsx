@@ -7,7 +7,7 @@ export default function WhyAnonymousVoice() {
   return (
     <section className="container mx-auto px-4 py-16 md:py-24 overflow-hidden">
       <h2 className="text-lg md:text-2xl font-bold text-violet text-center mb-4 lg:mb-8">
-        Why Anonymous Voice
+      What to Expect from Anonymous Voices?
       </h2>
 
       <div className="mx-auto">

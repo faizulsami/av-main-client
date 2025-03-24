@@ -4,13 +4,13 @@ export default function DonationDetails() {
   return (
     <section className="w-full py-16">
       <div className="">
-        <h1 className="text-2xl font-bold text-center text-violet mb-12">
+        {/* <h1 className="text-2xl font-bold text-center text-violet mb-12">
           Donation Details
-        </h1>
+        </h1> */}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Bank Details */}
-          <Card>
+          {/* <Card>
             <CardHeader>
               <CardTitle className="text-lg text-soft-paste">
                 Bank Details
@@ -37,10 +37,10 @@ export default function DonationDetails() {
                 <span className="font-medium">Routing No:</span> 092548183
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
 
           {/* Online Banking Details */}
-          <Card>
+          {/* <Card>
             <CardHeader>
               <CardTitle className="text-lg text-soft-paste">
                 Online Banking Details
@@ -64,7 +64,7 @@ export default function DonationDetails() {
                 <span className="font-medium">Upay:</span> 09254818353
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
 
         {/* Support Our Mission */}
@@ -73,9 +73,7 @@ export default function DonationDetails() {
             Support Our Mission
           </h2>
           <p>
-            Anonymous Voices is a growing platform, your generosity can help us
-            expand our reach and continue providing support to those in need.
-            Every contribution, no matter how small, can make a big impact.
+          Anonymous Voices is a growing platform, your generosity can help us expand our reach and continue providing support to those in need. Every contribution, no matter how small, can make a big impact. With your generous donation, we will be able to:
           </p>
           <ul className="list-disc list-inside mt-4">
             <li>Expand our services and reach even more individuals.</li>

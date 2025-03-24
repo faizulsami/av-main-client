@@ -9,12 +9,9 @@ export default function VisionSection() {
         <div className="flex flex-col items-center rounded-xl overflow-hidden text-center bg-soft-paste-light-hover p-4 gap-4 max-w-4xl mx-auto">
           <div className="prose prose-lg text-muted-foreground text-sm w-full">
             <p>
-              To create a world where every voice is heard, emotional well-being
-              is prioritised, and mental health awareness eliminates the stigma
-              around expressing one’s feelings, ensuring that no one faces their
-              emotions in isolation.
+            To create a world where every voice is heard, emotional well-being is prioritised, and mental health awareness eliminates the stigma around expressing one’s feelings, ensuring that no one faces their emotions in isolation.
             </p>
-            <br />
+            {/* <br />
             <p>
               We envision a future where everyone has access to the resources
               and support they need to achieve mental wellness. Our commitment
@@ -36,7 +33,7 @@ export default function VisionSection() {
               health. Through education, advocacy, and community engagement, we
               strive to create a world where mental health is treated with the
               same importance as physical health.
-            </p>
+            </p> */}
           </div>
         </div>
       </div>
