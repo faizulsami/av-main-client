@@ -61,8 +61,8 @@ export default function BookingDetailsCard({
 
           {showAvailability && (
             <div className="lg:w-1/2 space-y-4">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <CalendarDays className="w-4 h-4 text-primary" />
+              <div className="flex items-center font-bold text-xl gap-2  ">
+                <CalendarDays className="w-4  h-4 text-primary" />
                 Available Time Slots
               </div>
               <Availability schedule={props.scheduleId.schedule} />

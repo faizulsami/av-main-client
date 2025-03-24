@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
-import { AppointmentService } from "@/services/appointment.service";
+import {
+  AppointmentFilters,
+  AppointmentService,
+} from "@/services/appointment.service";
 
 type AppointmentStatus =
   | "pending"
@@ -64,7 +67,9 @@ interface UseAppointmentsReturn {
   refetch: () => Promise<void>;
 }
 
-export function useAppointments(): UseAppointmentsReturn {
+export function useAppointments(
+  filters?: AppointmentFilters,
+): UseAppointmentsReturn {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [meta, setMeta] = useState<AppointmentResponse["meta"]>({
     page: 1,
@@ -77,7 +82,7 @@ export function useAppointments(): UseAppointmentsReturn {
   const fetchAppointments = async () => {
     try {
       setIsLoading(true);
-      const response = await AppointmentService.getAppointments();
+      const response = await AppointmentService.getAppointments(filters);
       const appointmentData = response.data as AppointmentResponse;
       setAppointments(appointmentData.data);
       setMeta(appointmentData.meta);

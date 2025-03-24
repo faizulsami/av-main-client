@@ -114,7 +114,7 @@ export default function Availability({ schedule }: AvailabilityProps) {
     null,
   );
 
-  const [isSelected, setIsSelected] = useState(false);
+  const [isSelected, setIsSelected] = useState({ day: "", selected: false });
   const query = useSearchParams();
   const mentorUserName = query.get("mentor");
   console.log({ mentorUserName });
@@ -124,18 +124,19 @@ export default function Availability({ schedule }: AvailabilityProps) {
     bookedSlots,
     setSelectedDate,
   } = useBookingStore();
-  const { appointments } = useAppointments();
+
+  const { appointments } = useAppointments({
+    status: "pending",
+    mentorUserName: mentorUserName!,
+    appointmentType: "Booking Call",
+  });
 
   // Filter Booking Call appointments and extract their time slots
-  const bookedCallSlots = appointments
-    .filter(
-      (appointment) =>
-        appointment.appointmentType === "Booking Call" &&
-        appointment.mentorUserName === mentorUserName,
-    )
-    .flatMap(
-      (appointment) => appointment.selectedSlot?.map((slot) => slot.time) || [],
-    );
+  const bookedCallSlots = appointments.flatMap(
+    (appointment) => appointment.selectedSlot?.map((slot) => slot.time) || [],
+  );
+
+  console.log({ bookedCallSlots });
 
   // Combine Zustand bookedSlots with appointments' booked slots
   const allBookedSlots = [...bookedSlots, ...bookedCallSlots];
@@ -176,17 +177,25 @@ export default function Availability({ schedule }: AvailabilityProps) {
               };
 
               return (
-                <div key={index} className="grid grid-cols-9 pr-2">
-                  <h4 className=" col-span-3 text-lg font-semibold uppercase">
+                <div key={index} className="grid grid-cols-9 pr-2 items-center">
+                  <h4
+                    className={`${selectedSlot?.day === daySchedule.day ? "text-[#9E8CDD] " : ""} text-sm  col-span-2 font-semibold uppercase`}
+                  >
                     {daySchedule.day}
                   </h4>
 
-                  <div className="col-span-3">
+                  <div className={`col-span-4 `}>
                     <Select
                       onValueChange={(value: string) => {
                         const isAvailable = !allBookedSlots.find(
                           (item) => item === value,
                         );
+
+                        setIsSelected({
+                          day: daySchedule.day,
+                          selected: false,
+                        });
+                        handleSlotSelect(null);
                         setSelectedSlot({
                           day: daySchedule.day,
                           formatted: value,
@@ -195,7 +204,7 @@ export default function Availability({ schedule }: AvailabilityProps) {
                         if (isAvailable) setSelectedDate(value);
                       }}
                     >
-                      <SelectTrigger className="w-[130px]">
+                      <SelectTrigger className="mx-auto w-[70%] md:w-[80%]">
                         <SelectValue
                           placeholder={`${daySchedule.startTime.hours < 12 && daySchedule.startTime.hours > 5 ? daySchedule.startTime.hours : daySchedule.startTime.hours - 12} ${daySchedule.startTime.hours < 12 && daySchedule.startTime.hours > 5 ? "am" : "pm"} - ${daySchedule.endTime.hours < 12 && daySchedule.endTime.hours > 5 ? daySchedule.endTime.hours : daySchedule.endTime.hours - 12} ${daySchedule.endTime.hours < 12 && daySchedule.endTime.hours > 5 ? "am" : "pm"}`}
                         />
@@ -255,15 +264,23 @@ export default function Availability({ schedule }: AvailabilityProps) {
                     <input
                       type="checkbox"
                       checked={
-                        selectedSlot?.day === daySchedule.day && isSelected
+                        selectedSlot?.day === daySchedule.day &&
+                        isSelected.selected &&
+                        daySchedule?.day === isSelected.day &&
+                        selectedSlot?.available
                       }
                       onChange={() => {
                         if (!!selectedSlot) {
+                          if (!selectedSlot?.available) {
+                            toast({
+                              title: "Slot is not available",
+                              variant: "destructive",
+                            });
+                            return;
+                          }
                           if (selectedSlot?.day !== daySchedule.day) {
                             toast({
-                              title: "Slot Unavailable",
-                              description:
-                                "You cannot select a slot for another day.",
+                              title: "please try for selected day",
                               variant: "destructive",
                             });
                             return;
@@ -272,25 +289,33 @@ export default function Availability({ schedule }: AvailabilityProps) {
                           const selected =
                             selectedSlot?.day === daySchedule.day &&
                             daySchedule.isAvailable;
-                          if (isSelected) {
-                            setIsSelected(false);
+
+                          if (isSelected.selected) {
+                            setIsSelected({
+                              day: daySchedule.day,
+                              selected: false,
+                            });
                             handleSlotSelect(null);
                           } else {
-                            setIsSelected(selected);
+                            setIsSelected({ day: daySchedule.day, selected });
                             handleSlotSelect({
                               start: daySchedule.startTime,
                               end: daySchedule.endTime,
                               formatted: selectedSlot?.formatted || "",
                             });
                           }
-                          // else setIsSelected(selected);
+                        } else {
+                          toast({
+                            title: "Please select a time slot",
+                            variant: "destructive",
+                          });
                         }
                       }}
                       disabled={
                         !daySchedule.isAvailable ||
                         isTodayUnavailable(daySchedule.day)
                       }
-                      className={`w-5 h-5 rounded-none border-gray-300 text-soft-paste-active
+                      className={`w-5 h-5 pr-4 rounded-none border-gray-300 text-soft-paste-active
           focus:ring-soft-paste-active cursor-pointer
           checked:bg-soft-paste-active checked:border-soft-paste-active
           ${!daySchedule.isAvailable ? "opacity-50 cursor-not-allowed" : ""}`}
