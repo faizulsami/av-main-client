@@ -625,12 +625,13 @@ export default function ChatInterface() {
           </div>
           <p className="text-lg">Wishing your success on your journey!&quot;</p>
           <p className="text-lg">Give us your precious review here:</p>
-          <Link
+          <a
             className="text-[#78bfc8]"
             href="https://workspace.google.com/product/sheets/"
+            target="_blank"
           >
             https://workspace.google.com/product/sheets/
-          </Link>
+          </a>
           <Link className="mt-5" href="/">
             <Button className="rounded-xl px-6 py-2 text-white bg-[#78bec6]">
               Back to Homepage

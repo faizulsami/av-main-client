@@ -229,7 +229,7 @@ export default function Availability({ schedule }: AvailabilityProps) {
                               <>
                                 <SelectItem
                                   key={index}
-                                  value={formatTime(slot.formatted)}
+                                  value={`${daySchedule.day} ${formatTime(slot.formatted)}`}
                                 >
                                   {formatTime(slot.formatted)}
                                 </SelectItem>

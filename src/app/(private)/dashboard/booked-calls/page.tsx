@@ -9,7 +9,6 @@ import { useAuth } from "@/hooks/useAuth";
 export default function BookedCallsPage() {
   const { appointments, isLoading, refetch } = useAppointments();
   const { user: currentUser } = useAuth();
-  console.log("Current User", currentUser);
 
   const bookingCallAppointments = appointments.filter(
     (appointment) =>
