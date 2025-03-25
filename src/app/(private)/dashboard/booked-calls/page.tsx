@@ -1,51 +1,86 @@
 "use client";
 
-import { useAppointments } from "@/hooks/useAppointments";
+import {
+  Appointment,
+  AppointmentResponse,
+  useAppointments,
+} from "@/hooks/useAppointments";
 import { AppointmentService } from "@/services/appointment.service";
 import { AppointmentSection } from "./_components/AppointmentSection";
 import { AppointmentSectionSkeleton } from "./_components/AppointmentSectionSkeleton";
 import { useAuth } from "@/hooks/useAuth";
+import { useEffect, useState } from "react";
 
 export default function BookedCallsPage() {
-  const { appointments, isLoading, refetch } = useAppointments();
   const { user: currentUser } = useAuth();
 
-  const bookingCallAppointments = appointments.filter(
-    (appointment) =>
-      appointment.appointmentType === "Booking Call" &&
-      appointment.mentorUserName === currentUser?.userName,
-  );
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [meta, setMeta] = useState<AppointmentResponse["meta"]>({
+    page: 1,
+    limit: 10,
+    total: 0,
+  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const [refetch, setRefetch] = useState(false);
+
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        setIsLoading(true);
+        const response = await AppointmentService.getAppointments({
+          appointmentType: "Booking Call",
+          mentorUserName: currentUser?.userName,
+          limit: 200,
+        });
+        const appointmentData = response.data as AppointmentResponse;
+        setAppointments(appointmentData.data);
+        setMeta(appointmentData.meta);
+
+        setError(null);
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err
+            : new Error("Failed to fetch appointments"),
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    if (currentUser?.userName) fetchAppointments();
+  }, [currentUser?.userName, refetch]);
 
   const appointmentsByStatus = {
-    pending: bookingCallAppointments.filter(
+    pending: appointments.filter(
       (appointment) => appointment.status === "pending",
     ),
-    confirmed: bookingCallAppointments.filter(
+    confirmed: appointments.filter(
       (appointment) => appointment.status === "confirmed",
     ),
-    completed: bookingCallAppointments.filter(
+    completed: appointments.filter(
       (appointment) => appointment.status === "completed",
     ),
-    cancelled: bookingCallAppointments.filter(
+    cancelled: appointments.filter(
       (appointment) => appointment.status === "cancelled",
     ),
   };
 
-  console.log("Appointments - BookedCallsPage", appointments);
+  console.log("Appointments - BookedCallsPage", { appointments });
   console.log("Appointments by status - BookedCallsPage", appointmentsByStatus);
 
   const handleAccept = async (appointmentId: string) => {
     await AppointmentService.updateAppointment(appointmentId, {
       status: "confirmed",
     });
-    refetch();
+    setRefetch(!refetch);
   };
 
   const handleReject = async (appointmentId: string) => {
     await AppointmentService.updateAppointment(appointmentId, {
       status: "cancelled",
     });
-    refetch();
+    setRefetch(!refetch);
   };
 
   if (isLoading) {
@@ -76,10 +111,11 @@ export default function BookedCallsPage() {
         appointmentType="Booking Call"
         emptyMessage="No confirmed bookings"
       />
-      {/* 
+
       <AppointmentSection
         title="Completed Calls"
         description="List of completed calls"
+        appointmentType="Booking Call"
         appointments={appointmentsByStatus.completed}
         emptyMessage="No completed bookings"
       />
@@ -87,9 +123,10 @@ export default function BookedCallsPage() {
       <AppointmentSection
         title="Cancelled Calls"
         description="List of cancelled calls"
+        appointmentType="Booking Call"
         appointments={appointmentsByStatus.cancelled}
         emptyMessage="No cancelled bookings"
-      /> */}
+      />
     </div>
   );
 }

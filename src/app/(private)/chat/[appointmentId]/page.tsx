@@ -1,13 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import crypto from "crypto";
 import Loading from "@/app/loading";
 import CallInviteDialog from "@/components/chat/CallInviteDialog";
 import ChatMessages from "@/components/chat/ChatMessages";
-import ChatSidebar from "@/components/chat/ChatSidebar";
 import { VoiceCall } from "@/components/chat/VoiceCall";
 import UserProfile from "@/components/chat/chat-user-profile/ChatUserProfile";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -16,19 +15,22 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useAppointments } from "@/hooks/useAppointments";
+import { AppointmentService } from "@/services/appointment.service";
 import { AuthService } from "@/services/auth.service";
 import { socketService } from "@/services/socket.service";
 import { useChatContactsStore } from "@/store/chat-contacts.store";
 import { useChatStore } from "@/store/useChatStore";
 import { ChatContact } from "@/types/chat.types";
+import crypto from "crypto";
+import { Star } from "lucide-react";
+import Link from "next/link";
+import { useParams, useSearchParams } from "next/navigation";
 import * as React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Peer from "simple-peer";
 import { io, Socket } from "socket.io-client";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Star } from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import OneToOneChatMessages from "./_components/OneToOneChatMessages";
+import OneToOneChatUserProfile from "./_components/OneToOneChatUserProfile";
 
 interface Message {
   id: string;
@@ -48,8 +50,10 @@ interface ReceivedMessage {
   message: string;
 }
 
-export default function ChatInterface() {
+export default function OneToOneChatInterface() {
   const { toast, dismiss } = useToast();
+  const params = useParams();
+
   const { appointments, refetch } = useAppointments();
   const { setFilteredContacts } = useChatContactsStore();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -66,8 +70,8 @@ export default function ChatInterface() {
   const [stream, setStream] = useState<MediaStream>();
   const [callEndedUsername, setCallEndedUsername] = useState("");
   const [callRejectUsername, setCallRejectUsername] = useState("");
-  const [isCompleted, setIsCompleted] = useState(false);
-  const router = useRouter();
+
+  const [appointmentLoading, setAppointmentLoading] = useState(false);
   const [incomingCall, setIncomingCall] = useState<{
     signal: any;
     receiverSocketId: string;
@@ -83,52 +87,19 @@ export default function ChatInterface() {
   const connectionRef = useRef<any>(null);
 
   const currentActiveUser = useMemo(() => AuthService.getStoredUser(), []);
-  const currentUser = useMemo(
-    () => ({
-      username: currentActiveUser?.userName || "",
-      role: currentActiveUser?.role || "",
-    }),
-    [currentActiveUser],
-  );
 
-  const filteredContacts = useMemo(() => {
-    if (!currentActiveUser?.userName) return [];
+  useEffect(() => {
+    const getApplication = async () => {
+      setAppointmentLoading(true);
+      const res = await AppointmentService.getSingleAppointment(
+        params.appointmentId! as string,
+      );
 
-    const confirmedAppointments = appointments
-      .filter((appointment) => appointment.status === "confirmed")
-      .map((appointment) => ({
-        id: appointment._id,
-        username:
-          currentUser.role === "mentor"
-            ? appointment.menteeUserName
-            : appointment.mentorUserName,
-        avatar: "/images/avatar/male-avatar.png",
-        lastMessage: "",
-        mentorUserName: appointment.mentorUserName,
-        duration: appointment.durationMinutes ?? 10,
-        selectedSlot: appointment.selectedSlot,
-      }));
-
-    const uniqueConfirmedAppointments = Array.from(
-      new Set(confirmedAppointments.map((a) => a.username)),
-    )
-      .map((username) =>
-        confirmedAppointments.find((a) => a.username === username),
-      )
-      .filter((contact): contact is ChatContact => contact !== undefined);
-
-    return currentUser.role === "mentee"
-      ? uniqueConfirmedAppointments.filter(
-          (contact): contact is ChatContact =>
-            contact !== undefined &&
-            contact.username ===
-              appointments.find(
-                (appointment) =>
-                  appointment.menteeUserName === currentUser.username,
-              )?.mentorUserName,
-        )
-      : uniqueConfirmedAppointments;
-  }, [appointments, currentUser.role, currentUser.username, currentActiveUser]);
+      setAppointmentLoading(false);
+      setSelectedUser(res.data?.data);
+    };
+    if (params?.appointmentId) getApplication();
+  }, [params]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -140,8 +111,8 @@ export default function ChatInterface() {
 
     const newMessage = {
       id: `${Date.now()}`,
-      sentBy: currentUser.username,
-      sentTo: selectedUser.username,
+      sentBy: currentActiveUser?.userName || "",
+      sentTo: selectedUser?.menteeUserName,
       message: messageInput,
       isSeen: false,
       createdAt: new Date().toISOString(),
@@ -149,7 +120,7 @@ export default function ChatInterface() {
     };
 
     socket.emit("private message", {
-      to: selectedUser.username,
+      to: selectedUser?.menteeUserName,
       message: messageInput,
     });
 
@@ -158,8 +129,8 @@ export default function ChatInterface() {
 
     try {
       await socketService.saveMessage({
-        sentBy: currentUser.username,
-        sentTo: selectedUser.username,
+        sentBy: currentActiveUser?.userName || "",
+        sentTo: selectedUser.menteeUserName,
         message: messageInput,
         isSeen: false,
       });
@@ -172,27 +143,18 @@ export default function ChatInterface() {
   };
 
   useEffect(() => {
-    setFilteredContacts(filteredContacts);
-  }, [filteredContacts, setFilteredContacts]);
-
-  useEffect(() => {
-    if (!currentUser.username) return;
+    if (!currentActiveUser?.userName) return;
 
     const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL!, {
-      auth: { username: currentUser.username },
+      auth: { username: currentActiveUser?.userName },
     });
     setSocket(newSocket);
-
-    // newSocket.on("users", (userList: ChatContact[]) => {
-    //   setUsers(userList);
-    //   setIsLoading(false);
-    // });
 
     newSocket.on("private message", (data: ReceivedMessage) => {
       if (
         selectedUser &&
-        (data.fromUsername === selectedUser.username ||
-          data.toUsername === selectedUser.username)
+        (data.fromUsername === selectedUser.menteeUserName ||
+          data.toUsername === selectedUser.menteeUserName)
       ) {
         setMessages((prev) => [
           ...prev,
@@ -217,7 +179,7 @@ export default function ChatInterface() {
     return () => {
       newSocket.disconnect();
     };
-  }, [currentUser.username, selectedUser]);
+  }, [currentActiveUser?.userName, selectedUser]);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -226,14 +188,14 @@ export default function ChatInterface() {
       setIsLoading(true);
       try {
         const response = await socketService.getMessagesByUsername(
-          selectedUser.username,
+          selectedUser.menteeUserName,
         );
         const filteredMessages = response.data.filter(
           (message) =>
-            (message.sentBy === currentUser.username &&
-              message.sentTo === selectedUser.username) ||
-            (message.sentBy === selectedUser.username &&
-              message.sentTo === currentUser.username),
+            (message.sentBy === currentActiveUser?.userName &&
+              message.sentTo === selectedUser?.menteeUserName) ||
+            (message.sentBy === selectedUser?.menteeUserName &&
+              message.sentTo === currentActiveUser?.userName),
         );
         setMessages(filteredMessages.reverse());
         scrollToBottom();
@@ -245,19 +207,11 @@ export default function ChatInterface() {
     };
 
     fetchMessages();
-  }, [selectedUser, currentUser.username]);
+  }, [selectedUser, currentActiveUser?.userName]);
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  useEffect(() => {
-    if (!socket) return;
-
-    socket.on("appointment-completed", () => {
-      setIsCompleted(true);
-    });
-  }, [socket]);
 
   //#region calling
   useEffect(() => {
@@ -274,7 +228,7 @@ export default function ChatInterface() {
       .catch((err) => {
         console.error("Error getting user media:", err);
       });
-    socket.emit("join", { fromUsername: currentUser.username });
+    socket.emit("join", { fromUsername: currentActiveUser?.userName });
     socket.on("me", (me: string) => {
       setMe(me);
     });
@@ -327,10 +281,16 @@ export default function ChatInterface() {
         socket.off("me");
       }
     };
-  }, [socket, currentUser.username, incomingCall?.callerSocketId]);
+  }, [socket, currentActiveUser?.userName, incomingCall?.callerSocketId]);
 
   const handleAcceptCall = () => {
-    if (!incomingCall || !socket || !currentUser.username || !stream || !me)
+    if (
+      !incomingCall ||
+      !socket ||
+      !currentActiveUser?.userName ||
+      !stream ||
+      !me
+    )
       return;
     const secret = process.env.NEXT_PUBLIC_TURN_SECRET!; // Your static-auth-secret
     const timestamp = Math.floor(Date.now() / 1000) + 3600; // Valid for 1 hour (can adjust duration)
@@ -406,7 +366,7 @@ export default function ChatInterface() {
     if (!incomingCall || !socket) return;
 
     socket.emit("call:rejected", {
-      receiverUsername: currentUser.username,
+      receiverUsername: currentActiveUser?.userName,
       callerSocketId: incomingCall.callerSocketId,
     });
     setIncomingCall(null);
@@ -417,7 +377,7 @@ export default function ChatInterface() {
 
     const toastId = toast({
       title: "Calling...",
-      description: `Calling ${selectedUser.username}`,
+      description: `Calling ${selectedUser?.menteeUserName}`,
     });
     const secret = process.env.NEXT_PUBLIC_TURN_SECRET!; // Your static-auth-secret
     const timestamp = Math.floor(Date.now() / 1000) + 3600; // Valid for 1 hour (can adjust duration)
@@ -456,8 +416,8 @@ export default function ChatInterface() {
     peer.on("signal", (signal) => {
       socket.emit("call:invite", {
         signal,
-        receiverUsername: selectedUser.username,
-        callerUsername: currentUser.username,
+        receiverUsername: selectedUser?.menteeUserName,
+        callerUsername: currentActiveUser?.userName,
         callerSocketId: me,
       });
     });
@@ -508,7 +468,7 @@ export default function ChatInterface() {
 
     socket.emit("call:ended", {
       callerSocketId: callerSocketId,
-      callEndedUsername: currentUser.username,
+      callEndedUsername: currentActiveUser?.userName,
     });
   };
 
@@ -541,40 +501,27 @@ export default function ChatInterface() {
             </DialogContent>
           </Dialog>
         ))}
-      <aside className="hidden md:flex w-full max-w-[16vw] flex-col border-r">
-        {/* {isLoading ? (
-          <Skeleton className="w-full h-full" />
-        ) : (
-          <ChatSidebar
-            setSelectedUser={setSelectedUser}
-            selectedUser={selectedUser}
-          />
-        )} */}
-        <ChatSidebar
-          setSelectedUser={setSelectedUser}
+
+      {!appointmentLoading && (
+        <OneToOneChatMessages
           selectedUser={selectedUser}
+          setSelectedUser={setSelectedUser}
+          isSidebarOpen={isSidebarOpen}
+          setIsSidebarOpen={setIsSidebarOpen}
+          isProfileOpen={isProfileOpen}
+          setIsProfileOpen={setIsProfileOpen}
+          isLoading={isLoading}
+          messages={messages}
+          handleSendMessage={handleSendMessage}
+          messageInput={messageInput}
+          setMessageInput={setMessageInput}
+          messagesEndRef={messagesEndRef}
+          onPhoneClick={handlePhoneClick}
         />
-      </aside>
-      <ChatMessages
-        selectedUser={selectedUser}
-        setSelectedUser={setSelectedUser}
-        isSidebarOpen={isSidebarOpen}
-        setIsSidebarOpen={setIsSidebarOpen}
-        isProfileOpen={isProfileOpen}
-        setIsProfileOpen={setIsProfileOpen}
-        isLoading={isLoading}
-        messages={messages}
-        currentActiveUser={currentActiveUser}
-        handleSendMessage={handleSendMessage}
-        messageInput={messageInput}
-        setMessageInput={setMessageInput}
-        messagesEndRef={messagesEndRef}
-        currentUser={currentUser}
-        onPhoneClick={handlePhoneClick}
-      />
-      {selectedUser && currentUser.role === "mentor" && (
-        <aside className="hidden lg:block w-80 xl:w-96 border-l">
-          <UserProfile
+      )}
+      {selectedUser && (
+        <aside className="hidden  lg:block w-80 xl:w-96 border-l">
+          <OneToOneChatUserProfile
             selectedUser={selectedUser}
             onStatusUpdate={() => {
               setSelectedUser(null);
@@ -606,41 +553,6 @@ export default function ChatInterface() {
           )}
         </>
       )}
-
-      {isCompleted &&
-        !!searchParams.get("mentee") &&
-        !!searchParams.get("mentor") && (
-          <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50">
-            <div className="border p-10 fixed text-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-background rounded-2xl shadow-2xl flex flex-col gap-3">
-              <h2 className="text-2xl font-bold ">
-              Welcome to User Feedback Form
-              </h2>
-              <p className="text-center my-2">Here, at Anonymous Voices, we value our users’ opinions very highly and we are constantly working to improve our service to meet users’ satisfaction. <br />
-              Kindly fill out this short feedback form to help us understand how we can provide you with better service in the future. We thank you in advance for your time and patience filling out this form. 
-              </p>
-              <div className="flex items-center gap-2 justify-center">
-                <Star fill="#FFD700" className="text-[#FFD700]" />
-                <Star fill="#FFD700" className="text-[#FFD700]" />
-                <Star fill="#FFD700" className="text-[#FFD700]" />
-                <Star fill="#FFD700" className="text-[#FFD700]" />
-                <Star fill="#FFD700" className="text-[#FFD700]" />
-              </div>
-              <p className="text-lg">Give us your precious review here:</p>
-              <a
-                className="text-[#78bfc8]"
-                href="https://workspace.google.com/product/sheets/"
-                target="_blank"
-              >
-                https://workspace.google.com/product/sheets/
-              </a>
-              <Link className="mt-5" href="/">
-                <Button className="rounded-xl px-6 py-2 text-white bg-[#78bec6]">
-                  Back to Homepage
-                </Button>
-              </Link>
-            </div>
-          </div>
-        )}
     </div>
   );
 }

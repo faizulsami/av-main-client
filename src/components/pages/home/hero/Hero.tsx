@@ -154,7 +154,7 @@ export default function Hero() {
         </div>
 
         <div className="hidden lg:block mt-4">
-          <p className="text-[14px]">
+          <p className="text-3xl">
             “Every story deserves a listener”
           </p>
         </div>

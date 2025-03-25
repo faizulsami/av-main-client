@@ -21,7 +21,7 @@ const MentorRegistration = () => {
     <div className="container mx-auto px-4 py-8 space-y-10 md:space-y-20">
       <TitleHeader title="Become a Listener and Make a Change" />
       <ListenerSection />
-      <ListenerFAQ />
+      {/* <ListenerFAQ /> */}
       <HowToApplySection />
       {isAuthenticated ? (
         <div className="flex gap-2 justify-center font-medium bg-soft-paste-light-hover py-4 px-8 rounded-lg w-fit mx-auto">

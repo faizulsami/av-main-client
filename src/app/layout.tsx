@@ -27,13 +27,13 @@ const comfortaa = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Anonymous Voice",
+  title: "Anonymous Voices",
   description:
     "Your safe space for mental health support and anonymous communication",
   metadataBase: new URL("https://anonymous-voting.vercel.app"),
   keywords: ["mental health", "anonymous chat", "support", "counseling"],
-  authors: [{ name: "Anonymous Voice Team" }],
-  creator: "Anonymous Voice",
+  authors: [{ name: "Anonymous Voices Team" }],
+  creator: "Anonymous Voices",
   icons: {
     icon: "/favicon.ico",
     apple: "/images/apple-touch-icon.png",
@@ -43,22 +43,22 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://anonymous-voice.com",
-    title: "Anonymous Voice",
+    title: "Anonymous Voices",
     description:
       "Your safe space for mental health support and anonymous communication",
-    siteName: "Anonymous Voice",
+    siteName: "Anonymous Voices",
     images: [
       {
         url: "/images/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Anonymous Voice",
+        alt: "Anonymous Voices",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Anonymous Voice",
+    title: "Anonymous Voices",
     description:
       "Your safe space for mental health support and anonymous communication",
     images: ["/images/twitter-card.png"],

@@ -66,9 +66,11 @@ export const addCommentToPosts = async (id: string, comment: any) => {
     return [];
   }
 };
-export const addVote = async (id: string) => {
+export const addVote = async (id: string, type: "inc" | "dec") => {
   try {
-    const response = await api.put(`/api/v1/community/add-vote/${id}`);
+    const response = await api.put(
+      `/api/v1/community/add-vote/${id}?type=${type}`,
+    );
     return response.data;
   } catch (err: any) {
     return null;

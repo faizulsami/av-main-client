@@ -107,7 +107,7 @@ export default function DonationDetails() {
 
         {/* Thank You Message */}
         {/* <div className="rounded-xl p-6 text-muted-foreground bg-soft-paste-light-hover leading-relaxed text-md">
-          Thank you for your generous donation to Anonymous Voice. Your support
+          Thank you for your generous donation to Anonymous Voices. Your support
           is invaluable in our mission to promote mental health awareness and
           provide essential resources to those in need. With your contribution,
           we can continue to make a meaningful impact in our community and

@@ -2,15 +2,16 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { VideoSection } from "../stat/VideoSection";
 import ArrowHand from "@/components/buttons/ArrowHand";
+import Link from "next/link";
 
 export default function WhyAnonymousVoice() {
   return (
     <section className="container mx-auto px-4 py-16 md:py-24 overflow-hidden">
-      <h2 className="text-lg md:text-2xl font-bold text-violet text-center mb-4 lg:mb-8">
+      <h2 className="text-lg md:text-4xl font-bold text-violet text-center mb-4 lg:mb-8">
       What to Expect from Anonymous Voices?
       </h2>
 
-      <div className="mx-auto">
+      <div className="mx-auto pt-4">
         <div className="flex flex-col lg:flex-row gap-6 items-center">
           {/* Left Column */}
           <div className="w-2/3">
@@ -47,12 +48,15 @@ export default function WhyAnonymousVoice() {
               </h2>
 
               <p className="text-md opacity-60 leading-relaxed">
-              Use our call or chat services to vent your feelings, whether you're celebrating a success or facing a challenge
+              Use our call or chat services to vent your feelings, whether you{"'"}re celebrating a success or facing a challenge
               </p>
-              <Button className="bg-soft-paste rounded-md">
+              <div className="mt-4">
+              <Link href="/about"><Button className="bg-soft-paste rounded-md">
                 Learn More
                 <ArrowHand />
               </Button>
+              </Link>
+              </div>
             </div>
           </div>
 
