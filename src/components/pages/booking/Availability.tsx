@@ -113,7 +113,10 @@ export default function Availability({ schedule }: AvailabilityProps) {
   const [selectedSlot, setSelectedSlot] = useState<SelectedTimeSlot | null>(
     null,
   );
-
+  const [selectData, setSelectData] = useState({
+    day: "",
+    slot: "",
+  });
   const [isSelected, setIsSelected] = useState({ day: "", selected: false });
   const query = useSearchParams();
   const mentorUserName = query.get("mentor");
@@ -186,10 +189,17 @@ export default function Availability({ schedule }: AvailabilityProps) {
 
                   <div className={`col-span-4 `}>
                     <Select
+                      value={
+                        daySchedule.day === selectData.day
+                          ? selectData.slot
+                          : ""
+                      }
                       onValueChange={(value: string) => {
                         const isAvailable = !allBookedSlots.find(
                           (item) => item === value,
                         );
+
+                        setSelectData({ day: daySchedule.day, slot: value });
 
                         setIsSelected({
                           day: daySchedule.day,

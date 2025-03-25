@@ -31,6 +31,8 @@ import { fetchNotifications } from "@/utils/fetchNotifications";
 import moment from "moment";
 import { socketService } from "@/services/socket.service";
 import { get_socket } from "@/utils/get-socket";
+import { useAppointments } from "@/hooks/useAppointments";
+import { AppointmentService } from "@/services/appointment.service";
 
 // Advanced Navigation Types
 interface NavItemBase {
@@ -240,11 +242,35 @@ const Header: React.FC = () => {
   const pathname = usePathname();
   const { user, loading, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // const { appointments, refetch } = useAppointments({
+  //   menteeUserName: user?.userName,
+  //   status: "confirmed",
+  // });
 
+  const [appointments, setAppointments] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [notificationsLoading, setNotificationsLoading] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [socket, setSocket] = useState<any>(null);
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        setIsLoading(true);
+        const response = await AppointmentService.getAppointments({
+          menteeUserName: user?.userName,
+          status: "confirmed",
+          not: "Booking Call",
+        });
+        const appointmentData = response.data as any;
+        setAppointments(appointmentData.data);
+      } catch (err) {
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    if (user?.userName) fetchAppointments();
+  }, [user?.userName, user]);
   useEffect(() => {
     const socket = get_socket();
     setSocket(socket);
@@ -324,11 +350,22 @@ const Header: React.FC = () => {
     <div className="lg:hidden flex items-center">
       {user ? (
         <div className="flex items-center gap-4 text-soft-paste">
-          {user?.role !== "admin" && (
+          {user?.role !== "admin" && user?.role !== "mentee" && (
             <Link href="/chat">
               <Mail size={18} />
             </Link>
           )}
+          {user?.role === "mentee" &&
+            !isLoading &&
+            !!appointments?.find(
+              (item: any) =>
+                user?.userName === item?.menteeUserName &&
+                item?.status === "confirmed",
+            ) && (
+              <Link href="/chat">
+                <Mail size={18} />
+              </Link>
+            )}
 
           {user?.role !== "mentee" && (
             <>
@@ -515,18 +552,22 @@ const Header: React.FC = () => {
     <div className="hidden lg:flex items-center space-x-3 relative">
       {user ? (
         <div className="flex items-center space-x-2">
-          {user?.role !== "admin" && (
-            <>
-              <Link href="/chat">
-                <Button variant="ghost" size="icon">
-                  <Mail size={22} className="text-soft-paste-dark" />
-                </Button>
-              </Link>
-              {/* <Button variant="ghost" size="icon">
-                <Bell size={22} />
-              </Button> */}
-            </>
+          {user?.role !== "admin" && user?.role !== "mentee" && (
+            <Link href="/chat">
+              <Mail size={18} />
+            </Link>
           )}
+          {user?.role === "mentee" &&
+            !isLoading &&
+            !!appointments?.find(
+              (item: any) =>
+                user?.userName === item?.menteeUserName &&
+                item?.status === "confirmed",
+            ) && (
+              <Link href="/chat">
+                <Mail size={18} />
+              </Link>
+            )}
 
           {user?.role !== "mentee" && (
             <>

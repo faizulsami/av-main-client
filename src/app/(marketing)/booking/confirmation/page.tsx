@@ -75,20 +75,23 @@ export default function BookingConfirmationPage() {
 
   const agree = async () => {
     const socket = get_socket();
-
-    await api.post("/api/v1/notifications/create-notification", {
-      receiver: "listener",
-      type: `Booking Call_request`,
-      listenerUsername: booking.mentorUserName,
-      content: `A new chat request has been created by ${booking.menteeUserName}.`,
-      isSeen: false,
-    });
-    socket.emit("notification", {
-      receiver: "listener",
-      receiver_username: booking.mentorUserName,
-      type: `Booking Call_request`,
-      content: `A new Booking Call request has been created by ${booking.menteeUserName}.`,
-    });
+    const id = localStorage.getItem("application");
+    if (!id) {
+      await api.post("/api/v1/notifications/create-notification", {
+        receiver: "listener",
+        type: `Booking Call_request`,
+        listenerUsername: booking.mentorUserName,
+        content: `A new chat request has been created by ${booking.menteeUserName}.`,
+        isSeen: false,
+      });
+      socket.emit("notification", {
+        receiver: "listener",
+        receiver_username: booking.mentorUserName,
+        type: `Booking Call_request`,
+        content: `A new Booking Call request has been created by ${booking.menteeUserName}.`,
+      });
+      localStorage.setItem("application", booking._id);
+    }
   };
 
   const disagree = async () => {
@@ -176,6 +179,7 @@ export default function BookingConfirmationPage() {
           <div className="bg-white rounded-lg max-w-md w-full overflow-hidden shadow-xl">
             {/* Header */}
             <div className="bg-[#30a6b7] text-white p-4 flex justify-between items-center">
+<<<<<<< HEAD
               <h2 className="text-xl font-medium">Code of Ethics</h2>
               <button
                 onClick={() => setShow(false)}
@@ -183,6 +187,9 @@ export default function BookingConfirmationPage() {
               >
                 <X className="h-5 w-5" />
               </button>
+=======
+              <h2 className="text-xl font-medium">Terms And Conditions</h2>
+>>>>>>> b1e93bc53244885ae6517a23006bd7a782e5d1c4
             </div>
 
             {/* Content */}
