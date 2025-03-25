@@ -18,8 +18,8 @@ interface WhoWeAreProps {
 
 const whoWeAreData: WhoWeAreProps = {
   image: "/images/who-we-are.png",
-  altImg: "Who We Are",
-  title: "Who We Are",
+  altImg: "why choose us?",
+  title: "why choose us?",
   subtitle: "Committed to Your Mental Wellness with Compassionate Care",
   description:
     "At Anonymous Voice, we believe that every voice deserves to be heard, especially when it comes to mental health. We are dedicated to creating a safe, supportive space where individuals can seek guidance, share their experiences, and find solace without judgment.",

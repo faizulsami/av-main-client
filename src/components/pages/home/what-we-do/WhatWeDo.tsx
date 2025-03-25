@@ -18,7 +18,7 @@ interface WhatWeDoProps {
 }
 
 const whatWeDoData: WhatWeDoProps = {
-  title: "What We Do",
+  title: "",
   subtitle: "How Our Volunteers Are Trained",
   description:
     "A short paragraph introducing the work done by volunteers, highlighting the training they receive and how that equips them to help users.",

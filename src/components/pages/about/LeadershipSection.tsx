@@ -3,18 +3,18 @@ import { TeamMember } from "./types.about";
 
 const members: TeamMember[] = [
   {
-    name: "Sarah Thompson",
+    name: "Maria Aaka",
     role: "Volunteer",
     image: "/images/volunteers/volunteer1.png",
   },
   {
-    name: "Jessica Martinez",
+    name: "Farha Tasnim",
     role: "Volunteer",
     image: "/images/volunteers/volunteer2.png",
   },
   {
-    name: "Emily Chen",
-    role: "Volunteer",
+    name: "Nahin Rahman Sami",
+    role: "Co-director",
     image: "/images/volunteers/volunteer3.png",
   },
 ];

@@ -20,20 +20,20 @@ type Volunteer = {
 const volunteers: Volunteer[] = [
   {
     id: 1,
-    name: "Sarah Thompson",
+    name: "Maria Aaka",
     title: "Volunteer",
     image: "/images/sarah.png",
   },
   {
     id: 2,
-    name: "John Martinez",
+    name: "Farha Tasnim",
     title: "Volunteer",
     image: "/images/john.png",
   },
   {
     id: 3,
-    name: "Emily Chen",
-    title: "Volunteer",
+    name: "Nahin Rahman Sami",
+    title: "Co-director",
     image: "/images/emily.png",
   },
   {

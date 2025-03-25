@@ -9,12 +9,10 @@ export default function MissionSection() {
         <div className="flex flex-col items-center rounded-xl overflow-hidden text-center bg-soft-paste-light-hover p-4 gap-4 max-w-4xl mx-auto">
           <div className="prose prose-lg text-muted-foreground text-sm h-full w-full">
             <p>
-              To provide a safe, anonymous platform where individuals can freely
-              express their emotions, where every emotion is validated, and
-              sharing becomes a step toward emotional well-being.
+            To provide a safe, anonymous platform where individuals can freely express their emotions, where every emotion is validated, and sharing becomes a step toward emotional well-being.
             </p>
             <br />
-            <p>
+            {/* <p>
               We strive to offer personalized care, innovative therapies, and
               continuous support to help you achieve your mental health goals.
               Our team of professionals and volunteers is passionate about
@@ -28,7 +26,7 @@ export default function MissionSection() {
               health and seek the help they need. Our commitment extends beyond
               just providing care; we aim to be a catalyst for change in the way
               society views and addresses mental health.
-            </p>
+            </p> */}
           </div>
         </div>
       </div>
