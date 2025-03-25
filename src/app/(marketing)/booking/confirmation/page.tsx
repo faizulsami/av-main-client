@@ -179,42 +179,29 @@ export default function BookingConfirmationPage() {
           <div className="bg-white rounded-lg max-w-md w-full overflow-hidden shadow-xl">
             {/* Header */}
             <div className="bg-[#30a6b7] text-white p-4 flex justify-between items-center">
-<<<<<<< HEAD
-              <h2 className="text-xl font-medium">Code of Ethics</h2>
+              <h2 className="text-xl font-medium">Terms of Use              </h2>
               <button
                 onClick={() => setShow(false)}
                 className="text-white hover:text-gray-200 transition-colors"
               >
                 <X className="h-5 w-5" />
               </button>
-=======
-              <h2 className="text-xl font-medium">Terms And Conditions</h2>
->>>>>>> b1e93bc53244885ae6517a23006bd7a782e5d1c4
             </div>
 
             {/* Content */}
             <div className="p-6 space-y-4">
               <p>
-                This chat is intended to provide information of a general
-                nature, aimed at helping people be informed about their family
-                and personal life. It does not offer professional medical advice
-                or prescribe the use of any particular form of treatment for any
-                specific medical or none medical condition.
+              Anonymous Voices is intended to provide general information and a safe space for individuals to express their thoughts and emotions. It is not a source of medical advice or treatment recommendations.
               </p>
 
               <p>
-                If you have any concerns at all about your physical, mental,
-                spiritual or emotional health, you should immediately seek out
-                the services of a qualified medical practitioner. If you choose
-                to act on any of the suggestions made here, which is your right,
-                neither Kinjunxion nor any of the Certified Listeners assume any
-                responsibility for your actions.
+              If you have concerns about your mental, emotional, or physical health, please seek help from a qualified healthcare professional. Any decisions made from the information provided on this platform are your own responsibility, and Anonymous Voices holds no liability.
               </p>
 
               <p>
-                We are &quot;not&quot; a crisis hotline. If you are in crisis,
-                please call 911.
+              It is not a crisis hotline. If you are in an immediate crisis, please call 999 or your local emergency services.
               </p>
+              <p>By using Anonymous Voices, you agree to these Terms of Use. </p>
 
               {/* Buttons */}
               <div className="flex justify-start gap-4 pt-4">

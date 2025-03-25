@@ -83,7 +83,7 @@ export default function WhoWeAre() {
         {/* Text Content Container */}
         <div className="flex-1 space-y-4 lg:w-2/3">
           <motion.h2
-            className="text-xl sm:text-2xl font-bold text-violet text-center lg:text-left"
+            className="text-2xl sm:text-2xl font-bold text-violet text-center lg:text-left"
             {...fadeIn}
             transition={{ delay: 0.2 }}
           >

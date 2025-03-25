@@ -22,7 +22,7 @@ export default function Page() {
           {/* <HonourableVolunteers /> */}
           <WhyAnonymousVoice />
           <Stat />
-          <OurPartner title="Our Partners" />
+          {/* <OurPartner title="Our Partners" /> */}
         </div>
       </div>
     </div>
