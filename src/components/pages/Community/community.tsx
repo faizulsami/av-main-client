@@ -1,9 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client"
+"use client";
 
-import type React from "react"
-import { useEffect, useState } from "react"
-import { Facebook, MessageSquare, ThumbsUp, Link2, X, Flame, Trash2, Loader2 } from "lucide-react"
+import type React from "react";
+import { useEffect, useState } from "react";
+import {
+  Facebook,
+  MessageSquare,
+  ThumbsUp,
+  Link2,
+  X,
+  Flame,
+  Trash2,
+  Loader2,
+} from "lucide-react";
 import {
   addCommentToPosts,
   addVote,
@@ -13,84 +22,91 @@ import {
   getCommunityPost,
   type IComment,
   type ICommunity,
-} from "@/services/community.service"
-import { useAuth } from "@/hooks/useAuth"
-import Image from "next/image"
-import moment from "moment"
-import { useToast } from "@/hooks/use-toast"
-import { CommunityGuidelinesModal } from "./CommunityGuidelinesModal"
-import { Button } from "@/components/ui/button"
+} from "@/services/community.service";
+import { useAuth } from "@/hooks/useAuth";
+import Image from "next/image";
+import moment from "moment";
+import { useToast } from "@/hooks/use-toast";
+import { CommunityGuidelinesModal } from "./CommunityGuidelinesModal";
+import { Button } from "@/components/ui/button";
 
 // This is a self-contained component with all necessary UI elements
 export default function Community() {
-  const [activeTab, setActiveTab] = useState("popular")
-  const [selectedPost, setSelectedPost] = useState<Post | null>(null)
-  const [newPostContent, setNewPostContent] = useState("")
-  const [newComment, setNewComment] = useState("")
-  const [upvoting, setUpvoting] = useState(false)
-  const [posting, setPosting] = useState(false)
-  const [guidelinesModalOpen, setGuidelinesModalOpen] = useState(false)
-  const [postOpening, setPostOpening] = useState(false)
+  const [activeTab, setActiveTab] = useState("popular");
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [newPostContent, setNewPostContent] = useState("");
+  const [newComment, setNewComment] = useState("");
+  const [upvoting, setUpvoting] = useState(false);
+  const [posting, setPosting] = useState(false);
+  const [guidelinesModalOpen, setGuidelinesModalOpen] = useState(false);
+  const [postOpening, setPostOpening] = useState(false);
   const [postDeleting, setPostDeleting] = useState({
     _id: "",
     isLoading: false,
-  })
-  const [posts, setPosts] = useState<ICommunity[]>([])
-  const [votedLists, setVotedList] = useState([])
+  });
+  const [posts, setPosts] = useState<ICommunity[]>([]);
+  const [votedLists, setVotedList] = useState([]);
 
-  const { toast } = useToast()
-  const { user } = useAuth()
+  const { toast } = useToast();
+  const { user } = useAuth();
 
   const handleOpenPost = async (postId: string) => {
-    setPostOpening(true)
-    const res = await getCommunityPost(postId)
-    setPostOpening(false)
-    console.log({ res: res })
-    setSelectedPost(res.data)
-  }
+    setPostOpening(true);
+    const res = await getCommunityPost(postId);
+    setPostOpening(false);
+    console.log({ res: res });
+    setSelectedPost(res.data);
+  };
 
   const handleClosePost = () => {
-    setSelectedPost(null)
-  }
+    setSelectedPost(null);
+  };
 
   useEffect(() => {
     const getPosts = async () => {
-      const response = await getAllCommunityPosts()
-      setPosts(response?.data || [])
-    }
-    const votedList = JSON.parse(localStorage.getItem("voted-list") || "[]")
-    setVotedList(votedList)
+      const response = await getAllCommunityPosts();
+      setPosts(response?.data || []);
+    };
+    const votedList = JSON.parse(localStorage.getItem("voted-list") || "[]");
+    setVotedList(votedList);
 
-    getPosts()
-  }, [])
+    getPosts();
+  }, []);
 
   const handleUpvote = async () => {
-    if (!selectedPost) return
+    if (!selectedPost) return;
 
-    const votedList = JSON.parse(localStorage.getItem("voted-list") || "[]")
-    setVotedList(votedList)
+    let votedList = JSON.parse(localStorage.getItem("voted-list") || "[]");
+    setVotedList(votedList);
     if (votedList && votedList.includes(selectedPost._id)) {
+      await addVote(selectedPost._id, "dec");
+
       toast({
-        title: "You are already voted",
-        variant: "destructive",
-      })
-      return
+        title: "You are voted remove successfully",
+      });
+      votedList = votedList.filter(
+        (postId: string) => postId !== selectedPost._id,
+      );
+
+      localStorage.setItem("voted-list", JSON.stringify(votedList));
+      return;
     }
 
-    setUpvoting(true)
-    await addVote(selectedPost._id)
-    setUpvoting(false)
-    votedList.push(selectedPost._id)
+    setUpvoting(true);
+    await addVote(selectedPost._id, "inc");
 
-    toast({ title: "You are voted successfully" })
+    setUpvoting(false);
+    votedList.push(selectedPost._id);
 
-    localStorage.setItem("voted-list", JSON.stringify(votedList))
-  }
+    toast({ title: "You are voted successfully" });
+
+    localStorage.setItem("voted-list", JSON.stringify(votedList));
+  };
 
   const handlePostSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (!newPostContent.trim() || !user) return
+    if (!newPostContent.trim() || !user) return;
 
     const newPost: ICommunity = {
       author: {
@@ -98,17 +114,17 @@ export default function Community() {
         role: user.role,
       },
       content: newPostContent,
-    }
-    setPosting(true)
-    const res = await createCommunityPost(newPost)
-    if (res?.data?._id) setPosts([res?.data, ...posts])
-    setPosting(false)
-    setNewPostContent("")
-  }
+    };
+    setPosting(true);
+    const res = await createCommunityPost(newPost);
+    if (res?.data?._id) setPosts([res?.data, ...posts]);
+    setPosting(false);
+    setNewPostContent("");
+  };
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!selectedPost || !newComment.trim() || !user) return
+    e.preventDefault();
+    if (!selectedPost || !newComment.trim() || !user) return;
 
     const newCommentObj: IComment = {
       author: {
@@ -116,33 +132,37 @@ export default function Community() {
         role: user?.role,
       },
       content: newComment,
-    }
+    };
 
-    const res = await addCommentToPosts(selectedPost._id, newCommentObj)
+    const res = await addCommentToPosts(selectedPost._id, newCommentObj);
 
     if (!res?.data._id) {
-      toast({ title: "failed post to comment", variant: "destructive" })
-      return
+      toast({ title: "failed post to comment", variant: "destructive" });
+      return;
     }
 
-    setSelectedPost(res?.data)
-    setPosts(posts.map((post: any) => (post._id === selectedPost._id ? res?.data : post)))
+    setSelectedPost(res?.data);
+    setPosts(
+      posts.map((post: any) =>
+        post._id === selectedPost._id ? res?.data : post,
+      ),
+    );
 
-    setNewComment("")
-  }
+    setNewComment("");
+  };
 
   const handleDeletePost = async (e: React.MouseEvent, postId: string) => {
-    e.stopPropagation()
-    setPostDeleting({ _id: postId, isLoading: true })
-    const data = await deleteCommunityPost(postId)
-    setPostDeleting({ _id: postId, isLoading: false })
+    e.stopPropagation();
+    setPostDeleting({ _id: postId, isLoading: true });
+    const data = await deleteCommunityPost(postId);
+    setPostDeleting({ _id: postId, isLoading: false });
     if (data) {
-      setPosts(posts.filter((post) => post._id !== postId))
+      setPosts(posts.filter((post) => post._id !== postId));
       if (selectedPost?._id === postId) {
-        setSelectedPost(null)
+        setSelectedPost(null);
       }
     }
-  }
+  };
 
   return (
     <div className="min-h-screen text-gray-800 p-4 py-12 rounded">
@@ -151,7 +171,7 @@ export default function Community() {
           {/* Left Column - Posts */}
           <div className="w-full lg:w-2/3">
             <h1 className="text-2xl font-bold mb-6">
-            Anonymous Voice <span className="text-purple-600">Community</span>
+              Anonymous Voice <span className="text-purple-600">Community</span>
             </h1>
 
             {/* Post Input - Replacing "Community Posting Disabled" */}
@@ -166,9 +186,9 @@ export default function Community() {
                     rows={4}
                   />
                   <div className="flex justify-end">
-                  <Button className="bg-soft-paste rounded-md">
-              Post to Anonymous Voice
-            </Button>
+                    <Button className="bg-soft-paste rounded-md">
+                      Post to Anonymous Voice
+                    </Button>
                   </div>
                 </form>
               </div>
@@ -233,12 +253,14 @@ export default function Community() {
                   onClick={() => handleOpenPost(post._id)}
                 >
                   {/* Delete Icon */}
-                  {(user?.role === "admin" || user?.userName === post.author.name) && (
+                  {(user?.role === "admin" ||
+                    user?.userName === post.author.name) && (
                     <button
                       className="absolute top-2 right-2 text-gray-400 hover:text-red-500 z-10 p-1 rounded-full hover:bg-gray-100"
                       onClick={(e) => handleDeletePost(e, post._id)}
                     >
-                      {postDeleting._id === post._id && postDeleting.isLoading ? (
+                      {postDeleting._id === post._id &&
+                      postDeleting.isLoading ? (
                         <Loader2 className="animate-spin" />
                       ) : (
                         <Trash2 className="h-4 w-4" />
@@ -258,24 +280,40 @@ export default function Community() {
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-gray-800">@{post.author.name}</span>
+                        <span className="font-semibold text-gray-800">
+                          @{post.author.name}
+                        </span>
                         {post.author.role && (
-                          <span className={`${post.author.role === "mentee"? "" : "inline-flex uppercase items-center rounded-full border border-purple-300 bg-purple-100 px-2.5 py-0.5 text-xs font-semibold text-purple-700"}`}>
-                            {post.author.role === "admin" ? "Admin" : post.author.role === "mentor" ? "Listener" : ""}
+                          <span
+                            className={`${post.author.role === "mentee" ? "" : "inline-flex uppercase items-center rounded-full border border-purple-300 bg-purple-100 px-2.5 py-0.5 text-xs font-semibold text-purple-700"}`}
+                          >
+                            {post.author.role === "admin"
+                              ? "Admin"
+                              : post.author.role === "mentor"
+                                ? "Listener"
+                                : ""}
                           </span>
                         )}
                       </div>
-                      <p className="text-sm text-gray-500">{moment(post.createdAt).fromNow()}</p>
+                      <p className="text-sm text-gray-500">
+                        {moment(post.createdAt).fromNow()}
+                      </p>
                     </div>
                   </div>
                   <div className="px-4 pb-2">
-                    <p className="whitespace-pre-line text-gray-700">{post?.content}</p>
+                    <p className="whitespace-pre-line text-gray-700">
+                      {post?.content}
+                    </p>
                   </div>
                   <div className="flex justify-between border-t border-purple-100 pt-4 px-4 pb-4">
                     <div className="flex items-center gap-2">
                       <button className="flex items-center text-gray-500 hover:text-purple-600 text-sm">
                         <ThumbsUp
-                          fill={votedLists.includes(post._id) ? "#8b5cf6" : undefined}
+                          fill={
+                            votedLists.includes(post._id)
+                              ? "#8b5cf6"
+                              : undefined
+                          }
                           className="h-4 w-4 mr-1"
                         />
                         {post?.votes || 0}
@@ -308,15 +346,27 @@ export default function Community() {
                 />
               </div>
               <div className="p-6">
-                <h2 className="text-xl font-bold mb-2 text-gray-800">Anonymous Voice Community</h2>
-                <p className="text-gray-600 mb-4">built on real-world success and failure.</p>
+                <h2 className="text-xl font-bold mb-2 text-gray-800">
+                  Anonymous Voice Community
+                </h2>
+                <p className="text-gray-600 mb-4">
+                  built on real-world success and failure.
+                </p>
 
-                <button onClick={() => setGuidelinesModalOpen(true)} className="w-full mb-4 flex items-center justify-start px-4 py-2 border border-purple-200 rounded-md text-gray-700 hover:bg-purple-50">
+                <button
+                  onClick={() => setGuidelinesModalOpen(true)}
+                  className="w-full mb-4 flex items-center justify-start px-4 py-2 border border-purple-200 rounded-md text-gray-700 hover:bg-purple-50"
+                >
                   <span className="mr-2">📜</span> Rules and Guidelines
                 </button>
 
                 <button className="w-full flex items-center justify-start px-4 py-2 border border-purple-200 rounded-md  hover:bg-purple-50 font-bold">
-                  <img className="w-6 mr-2" src="https://upload.wikimedia.org/wikipedia/commons/6/6c/Facebook_Logo_2023.png" alt="" /> Follow Facebook
+                  <img
+                    className="w-6 mr-2"
+                    src="https://upload.wikimedia.org/wikipedia/commons/6/6c/Facebook_Logo_2023.png"
+                    alt=""
+                  />{" "}
+                  Follow Facebook
                 </button>
               </div>
             </div>
@@ -348,12 +398,20 @@ export default function Community() {
                     <div className="text-lg font-semibold flex items-center gap-2 text-gray-800">
                       @{selectedPost?.author?.name}
                       {selectedPost?.author?.role && (
-                          <span className={`${selectedPost.author.role === "mentee"? "" : "inline-flex uppercase items-center rounded-full border border-purple-300 bg-purple-100 px-2.5 py-0.5 text-xs font-semibold text-purple-700"}`}>
-                            {selectedPost.author.role === "admin" ? "Admin" : selectedPost.author.role === "mentor" ? "Listener" : ""}
-                          </span>
+                        <span
+                          className={`${selectedPost.author.role === "mentee" ? "" : "inline-flex uppercase items-center rounded-full border border-purple-300 bg-purple-100 px-2.5 py-0.5 text-xs font-semibold text-purple-700"}`}
+                        >
+                          {selectedPost.author.role === "admin"
+                            ? "Admin"
+                            : selectedPost.author.role === "mentor"
+                              ? "Listener"
+                              : ""}
+                        </span>
                       )}
                     </div>
-                    <p className="text-sm text-gray-500">{moment(selectedPost.createdAt).fromNow()}</p>
+                    <p className="text-sm text-gray-500">
+                      {moment(selectedPost.createdAt).fromNow()}
+                    </p>
                   </div>
                   <button
                     className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100"
@@ -364,8 +422,12 @@ export default function Community() {
                 </div>
 
                 <div className="py-4">
-                  <h3 className="text-xl font-bold mb-4 text-gray-800">{selectedPost.title}</h3>
-                  <p className="whitespace-pre-line mb-6 text-gray-700">{selectedPost.content}</p>
+                  <h3 className="text-xl font-bold mb-4 text-gray-800">
+                    {selectedPost.title}
+                  </h3>
+                  <p className="whitespace-pre-line mb-6 text-gray-700">
+                    {selectedPost.content}
+                  </p>
 
                   <div className="flex items-center gap-4 py-2 border-t border-b border-purple-100 mb-6">
                     <button
@@ -374,7 +436,11 @@ export default function Community() {
                       className="cursor-pointer flex items-center text-gray-500 hover:text-purple-600 text-sm py-1"
                     >
                       <ThumbsUp
-                        fill={votedLists.includes(selectedPost._id) ? "#8b5cf6" : undefined}
+                        fill={
+                          votedLists.includes(selectedPost._id)
+                            ? "#8b5cf6"
+                            : undefined
+                        }
                         className="h-4 w-4 mr-1"
                       />
                       {selectedPost?.votes || 0}
@@ -408,9 +474,9 @@ export default function Community() {
                           onChange={(e) => setNewComment(e.target.value)}
                         />
                         <div className="flex justify-end">
-                        <Button className="bg-soft-paste rounded-md">
-              Comment
-            </Button>
+                          <Button className="bg-soft-paste rounded-md">
+                            Comment
+                          </Button>
                         </div>
                       </form>
                     </div>
@@ -429,8 +495,12 @@ export default function Community() {
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center justify-between mb-1">
-                              <span className="font-semibold text-gray-800">@{comment.author.name}</span>
-                              <span className="text-sm text-gray-500">{moment(comment.createdAt).fromNow()}</span>
+                              <span className="font-semibold text-gray-800">
+                                @{comment.author.name}
+                              </span>
+                              <span className="text-sm text-gray-500">
+                                {moment(comment.createdAt).fromNow()}
+                              </span>
                             </div>
                             <p className="text-gray-700">{comment.content}</p>
                           </div>
@@ -444,33 +514,35 @@ export default function Community() {
           </div>
         )
       )}
-      <CommunityGuidelinesModal isOpen={guidelinesModalOpen} onClose={() => setGuidelinesModalOpen(false)} />
+      <CommunityGuidelinesModal
+        isOpen={guidelinesModalOpen}
+        onClose={() => setGuidelinesModalOpen(false)}
+      />
     </div>
-  )
+  );
 }
 
 // Types
 interface Post {
-  _id: string
+  _id: string;
   author: {
-    name: string
-    avatar: string
-    role?: string
-  }
-  date: string
-  title: string
-  content: string
-  votes: number
-  comments: Comment[]
+    name: string;
+    avatar: string;
+    role?: string;
+  };
+  date: string;
+  title: string;
+  content: string;
+  votes: number;
+  comments: Comment[];
 }
 
 interface Comment {
-  _id: string
+  _id: string;
   author: {
-    name: string
-    avatar: string
-  }
-  date: string
-  content: string
+    name: string;
+    avatar: string;
+  };
+  date: string;
+  content: string;
 }
-
