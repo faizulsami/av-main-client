@@ -90,7 +90,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   React.useEffect(() => {
     const interval = setInterval(() => {
       refetch();
-    }, 30000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, [refetch]);

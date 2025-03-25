@@ -8,6 +8,7 @@ import api from "@/config/axios.config";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
+import { get_socket } from "@/utils/get-socket";
 
 interface BookingConfirmation {
   id: string;
@@ -72,6 +73,27 @@ export default function BookingConfirmationPage() {
 
   if (!booking) return null;
 
+  const agree = async () => {
+    const socket = get_socket();
+    const id = localStorage.getItem("application");
+    if (!id) {
+      await api.post("/api/v1/notifications/create-notification", {
+        receiver: "listener",
+        type: `Booking Call_request`,
+        listenerUsername: booking.mentorUserName,
+        content: `A new chat request has been created by ${booking.menteeUserName}.`,
+        isSeen: false,
+      });
+      socket.emit("notification", {
+        receiver: "listener",
+        receiver_username: booking.mentorUserName,
+        type: `Booking Call_request`,
+        content: `A new Booking Call request has been created by ${booking.menteeUserName}.`,
+      });
+      localStorage.setItem("application", booking._id);
+    }
+  };
+
   const disagree = async () => {
     setIsDisagree(true);
     // bookingId
@@ -104,7 +126,7 @@ export default function BookingConfirmationPage() {
                 </h1>
                 {isDisagree ? (
                   <p className="text-sm text-red-800 mt-2">
-                    Your session has been failed
+                    Your session has been failed to scheduled
                   </p>
                 ) : (
                   <p className="text-sm text-soft-paste-darker mt-2">
@@ -157,13 +179,7 @@ export default function BookingConfirmationPage() {
           <div className="bg-white rounded-lg max-w-md w-full overflow-hidden shadow-xl">
             {/* Header */}
             <div className="bg-[#30a6b7] text-white p-4 flex justify-between items-center">
-              <h2 className="text-xl font-medium">Code of Ethics</h2>
-              <button
-                onClick={() => setShow(false)}
-                className="text-white hover:text-gray-200 transition-colors"
-              >
-                <X className="h-5 w-5" />
-              </button>
+              <h2 className="text-xl font-medium">Terms And Conditions</h2>
             </div>
 
             {/* Content */}
@@ -193,7 +209,10 @@ export default function BookingConfirmationPage() {
               {/* Buttons */}
               <div className="flex justify-start gap-4 pt-4">
                 <button
-                  onClick={() => setShow(false)}
+                  onClick={() => {
+                    setShow(false);
+                    agree();
+                  }}
                   className="px-8 py-2 rounded-full bg-[#30a6b7] text-white hover:bg-[#2a95a5] transition-colors"
                 >
                   Agree

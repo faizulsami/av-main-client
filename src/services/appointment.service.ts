@@ -2,10 +2,12 @@ import { AxiosError } from "axios";
 import api from "@/config/axios.config";
 import { AppointmentPayload } from "@/types/plan";
 
-interface AppointmentFilters {
+export interface AppointmentFilters {
+  appointmentType?: string;
   status?: string;
   mentorUserName?: string;
   menteeUserName?: string;
+  not?: string;
   dateRange?: {
     start: string;
     end: string;
