@@ -12,6 +12,8 @@ import {
   Flame,
   Trash2,
   Loader2,
+  Instagram,
+  Linkedin,
 } from "lucide-react";
 import {
   addCommentToPosts,
@@ -29,6 +31,7 @@ import moment from "moment";
 import { useToast } from "@/hooks/use-toast";
 import { CommunityGuidelinesModal } from "./CommunityGuidelinesModal";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 // This is a self-contained component with all necessary UI elements
 export default function Community() {
@@ -171,7 +174,8 @@ export default function Community() {
           {/* Left Column - Posts */}
           <div className="w-full lg:w-2/3">
             <h1 className="text-2xl font-bold mb-6">
-              Anonymous Voices <span className="text-purple-600">Community</span>
+              Anonymous Voices{" "}
+              <span className="text-purple-600">Community</span>
             </h1>
 
             {/* Post Input - Replacing "Community Posting Disabled" */}
@@ -195,7 +199,7 @@ export default function Community() {
             </div>
 
             {/* Tabs */}
-            <div className="flex mb-6 overflow-x-auto border-b border-purple-200">
+            {/* <div className="flex mb-6 overflow-x-auto border-b border-purple-200">
               <button
                 onClick={() => setActiveTab("popular")}
                 className={`px-4 py-2 flex items-center ${activeTab === "popular" ? "text-purple-700 border-b-2 border-purple-500" : "text-gray-600 hover:text-purple-600"}`}
@@ -220,7 +224,7 @@ export default function Community() {
               >
                 All Categories
               </button>
-            </div>
+            </div> */}
 
             {/* Category Pills */}
             {/* <div className="flex flex-wrap gap-2 mb-6">
@@ -239,10 +243,10 @@ export default function Community() {
             </div> */}
 
             {/* Pinned Posts */}
-            <div className="mb-6 flex items-center gap-2 text-purple-600">
+            {/* <div className="mb-6 flex items-center gap-2 text-purple-600">
               <Flame className="h-4 w-4" />
               <span>Pinned Posts (1)</span>
-            </div>
+            </div> */}
 
             {/* Posts List */}
             <div className="space-y-6">
@@ -357,17 +361,32 @@ export default function Community() {
                   onClick={() => setGuidelinesModalOpen(true)}
                   className="w-full mb-4 flex items-center justify-start px-4 py-2 border border-purple-200 rounded-md text-gray-700 hover:bg-purple-50"
                 >
-                  <span className="mr-2">📜</span> Rules and Guidelines
+                  <span className="mr-2">📜</span>Rules and Guidelines
                 </button>
 
-                <button className="w-full flex items-center justify-start px-4 py-2 border border-purple-200 rounded-md  hover:bg-purple-50 font-bold">
-                  <img
-                    className="w-6 mr-2"
-                    src="https://upload.wikimedia.org/wikipedia/commons/6/6c/Facebook_Logo_2023.png"
-                    alt=""
-                  />{" "}
-                  Follow Facebook
-                </button>
+                <div className="w-full flex items-center justify-start px-4 py-2  rounded-md gap-4 font-bold">
+                  <Link
+                    href="https://www.facebook.com/share/182B8bbSLb/?mibextid=wwXIfr"
+                    target="_blank"
+                    className="text-white bg-violet p-1 lg:p-1.5 rounded-md"
+                  >
+                    <Facebook className="w-3 h-3 md:w-4 md:h-4" />
+                  </Link>
+                  <Link
+                    href="https://www.instagram.com/anonymousvoices_av?igsh=bnEzNWw5OXBpb2lq"
+                    target="_blank"
+                    className="text-white bg-violet p-1 lg:p-1.5 rounded-md"
+                  >
+                    <Instagram className="w-3 h-3 md:w-4 md:h-4" />
+                  </Link>
+                  <Link
+                    href="https://www.linkedin.com/company/anonymous-voices/"
+                    target="_blank"
+                    className="text-white bg-violet p-1 lg:p-1.5 rounded-md"
+                  >
+                    <Linkedin className="w-3 h-3 md:w-4 md:h-4" />
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
