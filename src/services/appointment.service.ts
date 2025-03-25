@@ -12,6 +12,7 @@ export interface AppointmentFilters {
     start: string;
     end: string;
   };
+  limit?: number;
 }
 
 interface AppointmentUpdateData {

@@ -31,6 +31,7 @@ export default function BookedCallsPage() {
         const response = await AppointmentService.getAppointments({
           appointmentType: "Booking Call",
           mentorUserName: currentUser?.userName,
+          limit: 200,
         });
         const appointmentData = response.data as AppointmentResponse;
         setAppointments(appointmentData.data);
@@ -50,28 +51,22 @@ export default function BookedCallsPage() {
     if (currentUser?.userName) fetchAppointments();
   }, [currentUser?.userName, refetch]);
 
-  const bookingCallAppointments = appointments.filter(
-    (appointment) =>
-      appointment.appointmentType === "Booking Call" &&
-      appointment.mentorUserName === currentUser?.userName,
-  );
-
   const appointmentsByStatus = {
-    pending: bookingCallAppointments.filter(
+    pending: appointments.filter(
       (appointment) => appointment.status === "pending",
     ),
-    confirmed: bookingCallAppointments.filter(
+    confirmed: appointments.filter(
       (appointment) => appointment.status === "confirmed",
     ),
-    completed: bookingCallAppointments.filter(
+    completed: appointments.filter(
       (appointment) => appointment.status === "completed",
     ),
-    cancelled: bookingCallAppointments.filter(
+    cancelled: appointments.filter(
       (appointment) => appointment.status === "cancelled",
     ),
   };
 
-  console.log("Appointments - BookedCallsPage", appointments);
+  console.log("Appointments - BookedCallsPage", { appointments });
   console.log("Appointments by status - BookedCallsPage", appointmentsByStatus);
 
   const handleAccept = async (appointmentId: string) => {
@@ -116,10 +111,11 @@ export default function BookedCallsPage() {
         appointmentType="Booking Call"
         emptyMessage="No confirmed bookings"
       />
-      {/* 
+
       <AppointmentSection
         title="Completed Calls"
         description="List of completed calls"
+        appointmentType="Booking Call"
         appointments={appointmentsByStatus.completed}
         emptyMessage="No completed bookings"
       />
@@ -127,9 +123,10 @@ export default function BookedCallsPage() {
       <AppointmentSection
         title="Cancelled Calls"
         description="List of cancelled calls"
+        appointmentType="Booking Call"
         appointments={appointmentsByStatus.cancelled}
         emptyMessage="No cancelled bookings"
-      /> */}
+      />
     </div>
   );
 }

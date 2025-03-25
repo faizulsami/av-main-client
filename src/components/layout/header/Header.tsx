@@ -352,7 +352,7 @@ const Header: React.FC = () => {
         <div className="flex items-center gap-4 text-soft-paste">
           {user?.role !== "admin" && user?.role !== "mentee" && (
             <Link href="/chat">
-              <Mail size={18} />
+              <Mail size={18} className="text-soft-paste" />
             </Link>
           )}
           {user?.role === "mentee" &&
@@ -363,7 +363,7 @@ const Header: React.FC = () => {
                 item?.status === "confirmed",
             ) && (
               <Link href="/chat">
-                <Mail size={18} />
+                <Mail size={18} className="text-soft-paste" />
               </Link>
             )}
 
@@ -551,10 +551,10 @@ const Header: React.FC = () => {
   const DesktopUserActions = () => (
     <div className="hidden lg:flex items-center space-x-3 relative">
       {user ? (
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 text-soft-paste">
           {user?.role !== "admin" && user?.role !== "mentee" && (
             <Link href="/chat">
-              <Mail size={18} />
+              <Mail size={18} className="text-soft-paste" />
             </Link>
           )}
           {user?.role === "mentee" &&
@@ -565,7 +565,7 @@ const Header: React.FC = () => {
                 item?.status === "confirmed",
             ) && (
               <Link href="/chat">
-                <Mail size={18} />
+                <Mail size={18} className="text-soft-paste" />
               </Link>
             )}
 

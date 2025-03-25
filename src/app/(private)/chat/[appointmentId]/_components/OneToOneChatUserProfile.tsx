@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import CompleteDialog from "@/components/chat/chat-user-profile/CompleteDialog";
 import CancelDialog from "@/components/chat/chat-user-profile/CancelDialog";
 import OneToOneUserInfo from "./OneToOneUserInfo";
+import { useRouter } from "next/navigation";
 
 interface UserProfileProps {
   selectedUser: ChatContact;
@@ -26,7 +27,7 @@ const OneToOneChatUserProfile: React.FC<UserProfileProps> = ({
   const [showCancelDialog, setShowCancelDialog] = React.useState(false);
   const { refetch } = useAppointments();
   const { toast } = useToast();
-
+  const router = useRouter();
   const handleComplete = async () => {
     try {
       await AppointmentService.updateAppointment(selectedUser._id, {
@@ -40,7 +41,9 @@ const OneToOneChatUserProfile: React.FC<UserProfileProps> = ({
         title: "Success",
         description: "Appointment marked as completed",
       });
+
       await refetch();
+      router.push("/dashboard/booked-calls");
       onStatusUpdate?.();
       setShowCompleteDialog(false);
     } catch (error) {
