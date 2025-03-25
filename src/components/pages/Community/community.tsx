@@ -18,6 +18,8 @@ import { useAuth } from "@/hooks/useAuth"
 import Image from "next/image"
 import moment from "moment"
 import { useToast } from "@/hooks/use-toast"
+import { CommunityGuidelinesModal } from "./CommunityGuidelinesModal"
+import { Button } from "@/components/ui/button"
 
 // This is a self-contained component with all necessary UI elements
 export default function Community() {
@@ -27,6 +29,7 @@ export default function Community() {
   const [newComment, setNewComment] = useState("")
   const [upvoting, setUpvoting] = useState(false)
   const [posting, setPosting] = useState(false)
+  const [guidelinesModalOpen, setGuidelinesModalOpen] = useState(false)
   const [postOpening, setPostOpening] = useState(false)
   const [postDeleting, setPostDeleting] = useState({
     _id: "",
@@ -142,8 +145,8 @@ export default function Community() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-100 to-teal-100 text-gray-800 p-4 py-12 rounded">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen text-gray-800 p-4 py-12 rounded">
+      <div className="mx-auto">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left Column - Posts */}
           <div className="w-full lg:w-2/3">
@@ -163,13 +166,9 @@ export default function Community() {
                     rows={4}
                   />
                   <div className="flex justify-end">
-                    <button
-                      type="submit"
-                      disabled={posting}
-                      className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md font-medium text-sm"
-                    >
-                      {posting ? "Posting to Community" : "Post to Community"}
-                    </button>
+                  <Button className="bg-soft-paste rounded-md">
+              Post to Anonymous Voice
+            </Button>
                   </div>
                 </form>
               </div>
@@ -204,7 +203,7 @@ export default function Community() {
             </div>
 
             {/* Category Pills */}
-            <div className="flex flex-wrap gap-2 mb-6">
+            {/* <div className="flex flex-wrap gap-2 mb-6">
               <span className="inline-flex items-center rounded-full border border-purple-300 bg-purple-100 px-2.5 py-0.5 text-xs font-semibold text-purple-700 hover:bg-purple-200 cursor-pointer">
                 Video Editing Tricks
               </span>
@@ -217,7 +216,7 @@ export default function Community() {
               <span className="inline-flex items-center rounded-full border border-teal-300 bg-teal-100 px-2.5 py-0.5 text-xs font-semibold text-teal-700 hover:bg-teal-200 cursor-pointer">
                 Introduce Yourself
               </span>
-            </div>
+            </div> */}
 
             {/* Pinned Posts */}
             <div className="mb-6 flex items-center gap-2 text-purple-600">
@@ -288,7 +287,7 @@ export default function Community() {
                     </div>
                     <button className="flex items-center text-gray-500 hover:text-purple-600 text-sm">
                       <Link2 className="h-4 w-4 mr-1" />
-                      Share
+                      {/* Share */}
                     </button>
                   </div>
                 </div>
@@ -312,12 +311,12 @@ export default function Community() {
                 <h2 className="text-xl font-bold mb-2 text-gray-800">Anonymous Voice Community</h2>
                 <p className="text-gray-600 mb-4">built on real-world success and failure.</p>
 
-                <button className="w-full mb-4 flex items-center justify-start px-4 py-2 border border-purple-200 rounded-md text-gray-700 hover:bg-purple-50">
+                <button onClick={() => setGuidelinesModalOpen(true)} className="w-full mb-4 flex items-center justify-start px-4 py-2 border border-purple-200 rounded-md text-gray-700 hover:bg-purple-50">
                   <span className="mr-2">📜</span> Rules and Guidelines
                 </button>
 
-                <button className="w-full flex items-center justify-start px-4 py-2 border border-purple-200 rounded-md text-purple-600 hover:bg-purple-50">
-                  <Facebook className="h-4 w-4 mr-2" /> Follow Facebook
+                <button className="w-full flex items-center justify-start px-4 py-2 border border-purple-200 rounded-md  hover:bg-purple-50 font-bold">
+                  <img className="w-6 mr-2" src="https://upload.wikimedia.org/wikipedia/commons/6/6c/Facebook_Logo_2023.png" alt="" /> Follow Facebook
                 </button>
               </div>
             </div>
@@ -349,9 +348,9 @@ export default function Community() {
                     <div className="text-lg font-semibold flex items-center gap-2 text-gray-800">
                       @{selectedPost?.author?.name}
                       {selectedPost?.author?.role && (
-                        <span className="inline-flex uppercase items-center rounded-full border border-purple-300 bg-purple-100 px-2.5 py-0.5 text-xs font-semibold text-purple-700">
-                          {selectedPost?.author.role}
-                        </span>
+                          <span className={`${selectedPost.author.role === "mentee"? "" : "inline-flex uppercase items-center rounded-full border border-purple-300 bg-purple-100 px-2.5 py-0.5 text-xs font-semibold text-purple-700"}`}>
+                            {selectedPost.author.role === "admin" ? "Admin" : selectedPost.author.role === "mentor" ? "Listener" : ""}
+                          </span>
                       )}
                     </div>
                     <p className="text-sm text-gray-500">{moment(selectedPost.createdAt).fromNow()}</p>
@@ -380,10 +379,10 @@ export default function Community() {
                       />
                       {selectedPost?.votes || 0}
                     </button>
-                    <button className="flex items-center text-gray-500 hover:text-purple-600 text-sm py-1">
+                    {/* <button className="flex items-center text-gray-500 hover:text-purple-600 text-sm py-1">
                       <Link2 className="h-4 w-4 mr-1" />
                       Copy Link
-                    </button>
+                    </button> */}
                   </div>
 
                   <div className="mb-6">
@@ -409,12 +408,9 @@ export default function Community() {
                           onChange={(e) => setNewComment(e.target.value)}
                         />
                         <div className="flex justify-end">
-                          <button
-                            type="submit"
-                            className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md font-medium text-sm"
-                          >
-                            Post Comment
-                          </button>
+                        <Button className="bg-soft-paste rounded-md">
+              Comment
+            </Button>
                         </div>
                       </form>
                     </div>
@@ -448,6 +444,7 @@ export default function Community() {
           </div>
         )
       )}
+      <CommunityGuidelinesModal isOpen={guidelinesModalOpen} onClose={() => setGuidelinesModalOpen(false)} />
     </div>
   )
 }
