@@ -10,11 +10,12 @@ import {
 import { formatDateToLocale } from "@/lib/date";
 import { useBookingStore } from "@/store/useBookingStore";
 import { AppointmentType } from "@/types/booking";
+import { useSearchParams } from "next/navigation";
 
 interface BookingConfirmationProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: (username: string, type: string) => void;
   sessionType: AppointmentType;
   duration: number;
   isLoading: boolean;
@@ -29,7 +30,8 @@ export const BookingConfirmationDialog = ({
   isLoading,
 }: BookingConfirmationProps) => {
   const bookingStore = useBookingStore();
-
+  const searchParams = useSearchParams();
+  const listenerName = searchParams.get("mentor");
   const getDialogDescription = () => {
     if (sessionType === "Booking Call") {
       return `You are about to book a ${duration} minute call on ${formatDateToLocale(bookingStore.selectedDate)} at ${bookingStore.selectedTimeSlot}`;
@@ -49,7 +51,7 @@ export const BookingConfirmationDialog = ({
             Cancel
           </Button>
           <Button
-            onClick={onConfirm}
+            onClick={() => onConfirm(listenerName!, sessionType)}
             disabled={isLoading}
             className="bg-soft-paste hover:bg-soft-paste-active"
           >

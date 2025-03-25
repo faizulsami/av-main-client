@@ -39,11 +39,10 @@ export async function registerMentor(values: MentorFormValues) {
 
       socket.emit("notification", {
         receiver: "admin",
+        receiver_username: null,
         type: "mentor_request",
         content: `A new listener request has been created by ${userName}.`,
       });
-
-      console.log({ socket });
 
       await api.post("/api/v1/notifications/create-notification", {
         receiver: "admin",

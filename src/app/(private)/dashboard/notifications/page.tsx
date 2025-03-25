@@ -1,14 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { fetchNotifications } from "@/utils/fetchNotifications";
 import type React from "react";
 import { useEffect, useState } from "react";
-import {
-  Bell,
-  Clock,
-  User,
-  Filter,
-  X,
-} from "lucide-react";
+import { Bell, Clock, User, Filter, X } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import api from "@/config/axios.config";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Notification {
   id: string;
@@ -38,13 +35,22 @@ export default function Notifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    setUser(JSON.parse(localStorage.getItem("user") || "{}"));
+  }, []);
 
   useEffect(() => {
     const fetchUserNotifications = async () => {
       setLoading(true);
       try {
-        const data = await fetchNotifications("admin");
-        console.log("Notifications - data:", data);
+        let data;
+
+        if (!user) return;
+        if (user?.role === "admin") data = await fetchNotifications(user.role);
+        else data = await fetchNotifications("listener", user?.userName);
+
         setNotifications(data);
       } catch (error) {
         console.error("Failed to fetch notifications:", error);
@@ -54,7 +60,7 @@ export default function Notifications() {
     };
 
     fetchUserNotifications();
-  }, []);
+  }, [user]);
 
   const markAsRead = async (e: React.MouseEvent, id: string) => {
     e.preventDefault();
@@ -233,7 +239,11 @@ export default function Notifications() {
             {filteredNotifications.map((notification) => (
               <a
                 key={notification.id}
-                href={`/dashboard/listener-requests?listenerId=${notification.id}`}
+                href={
+                  user!.role === "admin"
+                    ? `/dashboard/listener-requests?listenerId=${notification.id}`
+                    : "/dashboard/booked-calls"
+                }
                 className="block"
               >
                 <Card

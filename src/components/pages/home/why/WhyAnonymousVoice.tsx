@@ -11,23 +11,15 @@ export default function WhyAnonymousVoice() {
       </h2>
 
       <div className="mx-auto">
-        <div className="flex flex-col lg:flex-row gap-6 items-end">
+        <div className="flex flex-col lg:flex-row gap-6 items-center">
           {/* Left Column */}
           <div className="space-y-6 text-center lg:text-start w-full lg:w-2/3">
             <h2 className="text-xl md:text-3xl font-bold text-soft-paste leading-tight">
-              Compassionate Care, Trusted Mental Health Support
+            A Safe, Confidential Space
             </h2>
 
             <p className="text-sm opacity-60 leading-relaxed">
-              At Anonymous Voice, we believe that every voice deserves to be
-              heard, especially when it comes to mental health. We are dedicated
-              to creating a safe, supportive space where individuals can seek
-              guidance, share their experiences, and find solace without
-              judgment. Our team of compassionate professionals is committed to
-              providing personalized mental health services that prioritize your
-              unique journey. We understand that reaching out for help can be
-              daunting, which is why we focus on creating a comfortable and
-              confidential environment.
+            Anonymously share your thoughts, emotions, and experiences, knowing your privacy is protected—free from judgment or identification.
             </p>
             <Button className="bg-soft-paste rounded-md">
               Learn More

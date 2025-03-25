@@ -3,6 +3,6 @@ export const getAvatarUrl = (gender: string) => {
   if (genderType === "male") {
     return `/images/avatar/man.png`;
   } else if (genderType === "female") {
-    return `/images/avatar/woman.jpg`;
+    return `/images/avatar/woman.png`;
   }
 };

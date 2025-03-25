@@ -48,14 +48,13 @@ export default function ChoosePlan({
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-4 items-end">
-          {sessionConfig.requiresDuration && (
-            <PlanField
-              label="Duration"
-              value={duration}
-              onDurationChange={handleDurationChange}
-              hasDropdown={true}
-            />
-          )}
+          <PlanField
+            label="Duration"
+            value={duration}
+            onDurationChange={handleDurationChange}
+            hasDropdown={true}
+          />
+
           {/* {sessionConfig.requiresTimeSlot && (
             <PlanField label="Time" value={selectedTimeSlot || "Select time"} />
           )}

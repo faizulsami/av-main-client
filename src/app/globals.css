@@ -87,8 +87,6 @@ body {
   }
 }
 
-
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -96,4 +94,14 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Hide scrollbar but allow scrolling */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Optional: For Firefox */
+.scrollbar-hide {
+  scrollbar-width: none;
 }

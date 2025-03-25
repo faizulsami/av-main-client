@@ -262,7 +262,10 @@ const Header: React.FC = () => {
       console.log(266, { role });
       setNotificationsLoading(true);
       try {
-        const data = await fetchNotifications(role);
+        if (!user) return;
+        let data;
+        if (role === "admin") data = await fetchNotifications(role);
+        else data = await fetchNotifications("listener", user?.userName);
         setNotifications(data);
       } catch (error) {
         console.error("Failed to fetch notifications:", error);
@@ -377,28 +380,30 @@ const Header: React.FC = () => {
       {notificationsLoading ? (
         <p>Loading notifications...</p>
       ) : (
-        <ul className="flex flex-col gap-5 mt-10 h-full max-h-[60vh] overflow-y-scroll">
+        <ul className="flex flex-col gap-5 mt-10 h-full max-h-[60vh] scrollbar-hide overflow-y-scroll">
           {notifications.map((notification, index) => (
-            <li key={index} className="flex items-center gap-5">
-              <Image
-                src={"/images/avatar/man.png"}
-                alt={"man"}
-                width={70}
-                height={70}
-                className={" bg-white"}
-              />
-              <div className=" text-white">
-                <p>{notification.content} </p>
+            <Link key={index} href={"/dashboard/notifications"}>
+              <li className="flex items-center gap-5">
+                <Image
+                  src={"/images/avatar/man.png"}
+                  alt={"man"}
+                  width={70}
+                  height={70}
+                  className={" bg-white"}
+                />
+                <div className=" text-white">
+                  <p>{notification.content} </p>
 
-                <div className="text-sm text-white opacity-70 flex items-center gap-2">
-                  <span>{notification.type}</span>
-                  <div className="flex items-center gap-2">
-                    <Clock size={16} />
-                    <span>{moment(notification.createdAt).fromNow()}</span>
+                  <div className="text-sm text-white opacity-70 flex items-center gap-2">
+                    <span>{notification.type}</span>
+                    <div className="flex items-center gap-2">
+                      <Clock size={16} />
+                      <span>{moment(notification.createdAt).fromNow()}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </li>
+              </li>
+            </Link>
           ))}
         </ul>
       )}
