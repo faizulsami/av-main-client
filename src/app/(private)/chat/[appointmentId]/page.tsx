@@ -70,7 +70,7 @@ export default function OneToOneChatInterface() {
   const [stream, setStream] = useState<MediaStream>();
   const [callEndedUsername, setCallEndedUsername] = useState("");
   const [callRejectUsername, setCallRejectUsername] = useState("");
-  const [isCompleted, setIsCompleted] = useState(false);
+
   const [appointmentLoading, setAppointmentLoading] = useState(false);
   const [incomingCall, setIncomingCall] = useState<{
     signal: any;
@@ -100,49 +100,6 @@ export default function OneToOneChatInterface() {
     };
     if (params?.appointmentId) getApplication();
   }, [params]);
-  const filteredContacts = useMemo(() => {
-    if (!currentActiveUser?.userName) return [];
-
-    const confirmedAppointments = appointments
-      .filter((appointment) => appointment.status === "confirmed")
-      .map((appointment) => ({
-        id: appointment._id,
-        username:
-          currentActiveUser.role === "mentor"
-            ? appointment.menteeUserName
-            : appointment.mentorUserName,
-        avatar: "/images/avatar/male-avatar.png",
-        lastMessage: "",
-        mentorUserName: appointment.mentorUserName,
-        duration: appointment.durationMinutes ?? 10,
-        selectedSlot: appointment.selectedSlot,
-      }));
-
-    const uniqueConfirmedAppointments = Array.from(
-      new Set(confirmedAppointments.map((a) => a.username)),
-    )
-      .map((username) =>
-        confirmedAppointments.find((a) => a.username === username),
-      )
-      .filter((contact): contact is ChatContact => contact !== undefined);
-
-    return currentActiveUser.role === "mentee"
-      ? uniqueConfirmedAppointments.filter(
-          (contact): contact is ChatContact =>
-            contact !== undefined &&
-            contact.username ===
-              appointments.find(
-                (appointment) =>
-                  appointment.menteeUserName === currentActiveUser.userName,
-              )?.mentorUserName,
-        )
-      : uniqueConfirmedAppointments;
-  }, [
-    appointments,
-    currentActiveUser?.role,
-    currentActiveUser?.userName,
-    currentActiveUser,
-  ]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -155,7 +112,7 @@ export default function OneToOneChatInterface() {
     const newMessage = {
       id: `${Date.now()}`,
       sentBy: currentActiveUser?.userName || "",
-      sentTo: selectedUser.menteeUserName,
+      sentTo: selectedUser?.menteeUserName,
       message: messageInput,
       isSeen: false,
       createdAt: new Date().toISOString(),
@@ -163,7 +120,7 @@ export default function OneToOneChatInterface() {
     };
 
     socket.emit("private message", {
-      to: selectedUser.menteeUserName,
+      to: selectedUser?.menteeUserName,
       message: messageInput,
     });
 
@@ -184,10 +141,6 @@ export default function OneToOneChatInterface() {
     setMessageInput("");
     scrollToBottom();
   };
-
-  useEffect(() => {
-    setFilteredContacts(filteredContacts);
-  }, [filteredContacts, setFilteredContacts]);
 
   useEffect(() => {
     if (!currentActiveUser?.userName) return;
@@ -226,7 +179,7 @@ export default function OneToOneChatInterface() {
     return () => {
       newSocket.disconnect();
     };
-  }, [currentActiveUser.username, selectedUser]);
+  }, [currentActiveUser?.userName, selectedUser]);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -254,19 +207,11 @@ export default function OneToOneChatInterface() {
     };
 
     fetchMessages();
-  }, [selectedUser, currentActiveUser.username]);
+  }, [selectedUser, currentActiveUser?.userName]);
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  useEffect(() => {
-    if (!socket) return;
-
-    socket.on("appointment-completed", () => {
-      setIsCompleted(true);
-    });
-  }, [socket]);
 
   //#region calling
   useEffect(() => {
@@ -283,7 +228,7 @@ export default function OneToOneChatInterface() {
       .catch((err) => {
         console.error("Error getting user media:", err);
       });
-    socket.emit("join", { fromUsername: currentActiveUser.username });
+    socket.emit("join", { fromUsername: currentActiveUser?.userName });
     socket.on("me", (me: string) => {
       setMe(me);
     });
@@ -336,13 +281,13 @@ export default function OneToOneChatInterface() {
         socket.off("me");
       }
     };
-  }, [socket, currentActiveUser.username, incomingCall?.callerSocketId]);
+  }, [socket, currentActiveUser?.userName, incomingCall?.callerSocketId]);
 
   const handleAcceptCall = () => {
     if (
       !incomingCall ||
       !socket ||
-      !currentActiveUser.username ||
+      !currentActiveUser?.userName ||
       !stream ||
       !me
     )
@@ -421,7 +366,7 @@ export default function OneToOneChatInterface() {
     if (!incomingCall || !socket) return;
 
     socket.emit("call:rejected", {
-      receiverUsername: currentActiveUser.username,
+      receiverUsername: currentActiveUser?.userName,
       callerSocketId: incomingCall.callerSocketId,
     });
     setIncomingCall(null);
@@ -523,7 +468,7 @@ export default function OneToOneChatInterface() {
 
     socket.emit("call:ended", {
       callerSocketId: callerSocketId,
-      callEndedUsername: currentActiveUser.username,
+      callEndedUsername: currentActiveUser?.userName,
     });
   };
 
@@ -608,42 +553,6 @@ export default function OneToOneChatInterface() {
           )}
         </>
       )}
-
-      {isCompleted &&
-        !!searchParams.get("mentee") &&
-        !!searchParams.get("mentor") && (
-          <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50">
-            <div className="border p-10 fixed text-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-background rounded-2xl shadow-2xl flex flex-col gap-3">
-              <h2 className="text-xl font-bold">
-                &quot;Hope your conversation with your mentor <br /> went well!
-                How would your rate the <br /> experience?
-              </h2>
-              <div className="flex items-center gap-2 justify-center">
-                <Star fill="#FFD700" className="text-[#FFD700]" />
-                <Star fill="#FFD700" className="text-[#FFD700]" />
-                <Star fill="#FFD700" className="text-[#FFD700]" />
-                <Star fill="#FFD700" className="text-[#FFD700]" />
-                <Star fill="#FFD700" className="text-[#FFD700]" />
-              </div>
-              <p className="text-lg">
-                Wishing your success on your journey!&quot;
-              </p>
-              <p className="text-lg">Give us your precious review here:</p>
-              <a
-                className="text-[#78bfc8]"
-                href="https://workspace.google.com/product/sheets/"
-                target="_blank"
-              >
-                https://workspace.google.com/product/sheets/
-              </a>
-              <Link className="mt-5" href="/">
-                <Button className="rounded-xl px-6 py-2 text-white bg-[#78bec6]">
-                  Back to Homepage
-                </Button>
-              </Link>
-            </div>
-          </div>
-        )}
     </div>
   );
 }

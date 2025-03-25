@@ -29,12 +29,12 @@ const OneToOneChatUserProfile: React.FC<UserProfileProps> = ({
 
   const handleComplete = async () => {
     try {
-      await AppointmentService.updateAppointment(selectedUser.id, {
+      await AppointmentService.updateAppointment(selectedUser._id, {
         status: "completed",
       });
       const socket = get_socket();
       socket.emit("appointment-completed", {
-        menteeUserName: selectedUser.username,
+        menteeUserName: selectedUser.menteeUserName,
       });
       toast({
         title: "Success",
@@ -55,7 +55,7 @@ const OneToOneChatUserProfile: React.FC<UserProfileProps> = ({
 
   const handleCancel = async () => {
     try {
-      await AppointmentService.updateAppointment(selectedUser.id, {
+      await AppointmentService.updateAppointment(selectedUser._id, {
         status: "cancelled",
       });
       toast({
