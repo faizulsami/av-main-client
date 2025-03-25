@@ -260,16 +260,16 @@ const Header: React.FC = () => {
         const response = await AppointmentService.getAppointments({
           menteeUserName: user?.userName,
           status: "confirmed",
-          not: "Booking Call",
         });
         const appointmentData = response.data as any;
+
         setAppointments(appointmentData.data);
       } catch (err) {
       } finally {
         setIsLoading(false);
       }
     };
-    if (user?.userName) fetchAppointments();
+    if (user?.userName && user?.role === "mentee") fetchAppointments();
   }, [user?.userName, user]);
   useEffect(() => {
     const socket = get_socket();

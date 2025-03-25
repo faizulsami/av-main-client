@@ -105,10 +105,10 @@ export const BookingCallsCard = ({
             {onChat && (
               <Badge
                 variant="secondary"
-                className="border border-dashed rounded-full bg-soft-paste-light-hover h-6 text-xs font-semibold cursor-pointer flex items-center"
+                className="border  border-dashed rounded-full bg-soft-paste-light-hover h-6 text-xs font-semibold cursor-pointer flex items-center"
                 onClick={handleChat}
               >
-                <MessageCircle className="mr-2 h-4 w-4" />
+                <MessageCircle className="mr-2  h-4 w-4" />
                 Chat
               </Badge>
             )}
