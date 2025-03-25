@@ -18,7 +18,7 @@ export default function Page() {
       >
         <div className="container w-full mx-auto px-2 md:px-8 lg:px-16 xl:px-24">
           <WhoWeAre />
-          <WhatWeDo />
+          {/* <WhatWeDo /> */}
           {/* <HonourableVolunteers /> */}
           <WhyAnonymousVoice />
           <Stat />

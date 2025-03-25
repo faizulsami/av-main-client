@@ -104,12 +104,12 @@ export default function Hero() {
           animate="animate"
           className="mb-8 text-sm lg:max-w-3xl font-semibold"
         >
-          Take a step towards mental clarity and well-being in a supportive,
+          {/* Take a step towards mental clarity and well-being in a supportive,
           peaceful environment.{" "}
           <span className="hidden lg:block">
             Start your journey with compassionate care, tailored to your unique
             needs.
-          </span>
+          </span> */}
         </motion.p>
 
         <div className="flex items-center w-full gap-4 flex-row justify-center">

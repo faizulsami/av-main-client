@@ -179,7 +179,17 @@ export default function BookingConfirmationPage() {
           <div className="bg-white rounded-lg max-w-md w-full overflow-hidden shadow-xl">
             {/* Header */}
             <div className="bg-[#30a6b7] text-white p-4 flex justify-between items-center">
+<<<<<<< HEAD
+              <h2 className="text-xl font-medium">Code of Ethics</h2>
+              <button
+                onClick={() => setShow(false)}
+                className="text-white hover:text-gray-200 transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+=======
               <h2 className="text-xl font-medium">Terms And Conditions</h2>
+>>>>>>> b1e93bc53244885ae6517a23006bd7a782e5d1c4
             </div>
 
             {/* Content */}
