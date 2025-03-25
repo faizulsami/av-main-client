@@ -78,7 +78,6 @@ const OneToOneChatUserProfile: React.FC<UserProfileProps> = ({
   return (
     <div className="flex flex-col items-center gap-4">
       <Card className="h-full rounded-none border-0">
-        {/* <OneToOneChatMessages selectedUser={selectedUser} /> */}
         <OneToOneUserInfo selectedUser={selectedUser} />
         <div className="flex flex-col gap-4 mt-6">
           <Button

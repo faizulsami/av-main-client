@@ -4,20 +4,20 @@ import {
   AppointmentService,
 } from "@/services/appointment.service";
 
-type AppointmentStatus =
+export type AppointmentStatus =
   | "pending"
   | "confirmed"
   | "completed"
   | "cancelled"
   | "running";
 
-interface AppointmentSlot {
+export interface AppointmentSlot {
   time: string;
   isAvailable: boolean;
   _id: string;
 }
 
-interface Appointment {
+export interface Appointment {
   _id: string;
   appointmentType: string;
   status: AppointmentStatus;
@@ -47,7 +47,7 @@ interface Appointment {
   durationMinutes: number;
 }
 
-interface AppointmentResponse {
+export interface AppointmentResponse {
   statusCode: number;
   success: boolean;
   message: string;
@@ -59,7 +59,7 @@ interface AppointmentResponse {
   data: Appointment[];
 }
 
-interface UseAppointmentsReturn {
+export interface UseAppointmentsReturn {
   appointments: Appointment[];
   isLoading: boolean;
   error: Error | null;

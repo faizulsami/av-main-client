@@ -117,7 +117,7 @@ export const OneToOneChatHeader: React.FC<ChatHeaderProps> = ({
                 </div>
               ))
             ) : (
-              <div className="p-4">{getEmptyStateMessage()}</div>
+              <div className="p-4">{"No contacts found"}</div>
             )}
           </ScrollArea>
         </SheetContent>
