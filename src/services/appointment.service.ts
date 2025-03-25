@@ -7,6 +7,7 @@ export interface AppointmentFilters {
   status?: string;
   mentorUserName?: string;
   menteeUserName?: string;
+  not?: string;
   dateRange?: {
     start: string;
     end: string;

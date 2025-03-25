@@ -25,7 +25,7 @@ import * as React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Peer from "simple-peer";
 import { io, Socket } from "socket.io-client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Star } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -53,7 +53,7 @@ export default function ChatInterface() {
   const { appointments, refetch } = useAppointments();
   const { setFilteredContacts } = useChatContactsStore();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
+  const searchParams = useSearchParams();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -81,8 +81,6 @@ export default function ChatInterface() {
   const [me, setMe] = useState("");
   const [callerSocketId, setCallerSocketId] = useState("");
   const connectionRef = useRef<any>(null);
-
-  // { roomId: "some-room", isCaller: true }
 
   const currentActiveUser = useMemo(() => AuthService.getStoredUser(), []);
   const currentUser = useMemo(
@@ -257,7 +255,6 @@ export default function ChatInterface() {
     if (!socket) return;
 
     socket.on("appointment-completed", () => {
-      console.log("274 completed");
       setIsCompleted(true);
     });
   }, [socket]);
@@ -610,35 +607,41 @@ export default function ChatInterface() {
         </>
       )}
 
-      {isCompleted && (
-        <div className="border p-10 fixed text-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-background rounded-2xl shadow-2xl flex flex-col gap-3">
-          <h2 className="text-xl font-bold">
-            &quot;Hope your conversation with your mentor <br /> went well! How
-            would your rate the <br /> experience?
-          </h2>
-          <div className="flex items-center gap-2 justify-center">
-            <Star fill="#FFD700" className="text-[#FFD700]" />
-            <Star fill="#FFD700" className="text-[#FFD700]" />
-            <Star fill="#FFD700" className="text-[#FFD700]" />
-            <Star fill="#FFD700" className="text-[#FFD700]" />
-            <Star fill="#FFD700" className="text-[#FFD700]" />
+      {isCompleted &&
+        !!searchParams.get("mentee") &&
+        !!searchParams.get("mentor") && (
+          <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50">
+            <div className="border p-10 fixed text-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-background rounded-2xl shadow-2xl flex flex-col gap-3">
+              <h2 className="text-xl font-bold">
+                &quot;Hope your conversation with your mentor <br /> went well!
+                How would your rate the <br /> experience?
+              </h2>
+              <div className="flex items-center gap-2 justify-center">
+                <Star fill="#FFD700" className="text-[#FFD700]" />
+                <Star fill="#FFD700" className="text-[#FFD700]" />
+                <Star fill="#FFD700" className="text-[#FFD700]" />
+                <Star fill="#FFD700" className="text-[#FFD700]" />
+                <Star fill="#FFD700" className="text-[#FFD700]" />
+              </div>
+              <p className="text-lg">
+                Wishing your success on your journey!&quot;
+              </p>
+              <p className="text-lg">Give us your precious review here:</p>
+              <a
+                className="text-[#78bfc8]"
+                href="https://workspace.google.com/product/sheets/"
+                target="_blank"
+              >
+                https://workspace.google.com/product/sheets/
+              </a>
+              <Link className="mt-5" href="/">
+                <Button className="rounded-xl px-6 py-2 text-white bg-[#78bec6]">
+                  Back to Homepage
+                </Button>
+              </Link>
+            </div>
           </div>
-          <p className="text-lg">Wishing your success on your journey!&quot;</p>
-          <p className="text-lg">Give us your precious review here:</p>
-          <a
-            className="text-[#78bfc8]"
-            href="https://workspace.google.com/product/sheets/"
-            target="_blank"
-          >
-            https://workspace.google.com/product/sheets/
-          </a>
-          <Link className="mt-5" href="/">
-            <Button className="rounded-xl px-6 py-2 text-white bg-[#78bec6]">
-              Back to Homepage
-            </Button>
-          </Link>
-        </div>
-      )}
+        )}
     </div>
   );
 }
