@@ -164,10 +164,7 @@ export default function ListenerSection() {
                 </ul>
               </div>
             </div>
-            <div className="text-center">
-              <h3>How to Apply:</h3>
-              <p className="mt-2">If you are passionate about helping others and want to make a difference, please submit your application to <a className="text-blue-300" href="mailto:anonymous.voices.av@gmail.com">anonymous.voices.av@gmail.com</a> </p>
-            </div>
+            
           </div>
         </div>
       </div>

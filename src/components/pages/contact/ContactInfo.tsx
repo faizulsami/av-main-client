@@ -1,3 +1,4 @@
+import { Facebook, Instagram, Linkedin, Mail } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -14,58 +15,62 @@ export default function ContactInfo() {
 
       <div className="space-y-6 mb-10 mt-6">
         <div className="flex items-center gap-4">
-          <Image
+          {/* <Image
             src={"/images/icons/contact/phone-call.png"}
             alt=""
             width={20}
             height={20}
           />
-          <p>+1012 3456 789</p>
+          <p>+1012 3456 789</p> */}
         </div>
         <div className="flex items-center gap-4">
-          <Image
+          {/* <Image
             src={"/images/icons/contact/email.png"}
             alt=""
             width={20}
             height={20}
-          />
+          /> */}
+          <Mail></Mail>
           <p>anonymous.voices.av@gmail.com</p>
         </div>
         <div className="flex items-start gap-4">
-          <Image
+          {/* <Image
             src={"/images/icons/contact/location.png"}
             alt=""
             width={20}
             height={20}
           />
-          <p>132 Dartmouth Street Boston, Massachusetts 02156 United States</p>
+          <p>132 Dartmouth Street Boston, Massachusetts 02156 United States</p> */}
         </div>
       </div>
 
       <div className="flex gap-4 bg-white/20 w-fit py-2 px-6 rounded-r-lg absolute bottom-6 left-0">
         <Link href="#" className="hover:opacity-80">
-          <Image
+        <Facebook></Facebook>
+          {/* <Image
             src={"/images/icons/social/facebook.png"}
             alt=""
             width={24}
             height={24}
-          />
+          /> */}
         </Link>
         <Link href="#" className="hover:opacity-80">
-          <Image
+          {/* <Image
             src={"/images/icons/social/instagram.png"}
             alt=""
             width={24}
             height={24}
-          />
+          /> */}
+          <Instagram></Instagram>
         </Link>
         <Link href="#" className="hover:opacity-80">
-          <Image
+          {/* <Image
             src={"/images/icons/social/linkedin.png"}
             alt=""
             width={24}
             height={24}
-          />
+          /> */}
+          <Linkedin></Linkedin>
         </Link>
       </div>
     </div>

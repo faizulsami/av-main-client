@@ -71,11 +71,11 @@ export default function TermsSection() {
   return (
     <section className="w-full min-h-screen">
       <div className="max-w-4xl mx-auto px-4 py-10">
-        <h1 className="text-2xl md:text-3xl font-semibold text-center text-[#9B8ACB] mb-12">
+        <h1 className="text-2xl md:text-4xl font-semibold text-center text-[#9B8ACB] mb-12">
         Code of Ethics
         </h1>
         <p className="text-sm text-center">At Anonymous Voices, we are committed to maintaining a safe, inclusive, and respectful environment for all users and volunteers. To promote a community characterized by trust and compassion, we request that all participants adhere to the following guidelines.</p>
-        <h1 className="text-2xl md:text-3xl font-semibold text-[#9B8ACB] pt-8 ms-6">
+        <h1 className="text-2xl md:text-2xl font-semibold text-[#9B8ACB] pt-8 ms-6">
         FOR USERS
         </h1>
 
@@ -94,7 +94,7 @@ export default function TermsSection() {
             </CardContent>
           </Card>
         ))}
-        <h1 className="text-2xl md:text-3xl font-semibold text-[#9B8ACB] pt-8 ms-6">
+        <h1 className="text-2xl md:text-2xl font-semibold text-[#9B8ACB] pt-8 ms-6">
         For Volunteers
         </h1>
         {volunteer.map((section, index) => (
