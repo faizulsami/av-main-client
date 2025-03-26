@@ -1,6 +1,7 @@
 import TitleHeader from "@/components/common/TitleHeader";
+import Community from "@/components/pages/community/community";
 import React from "react";
-import Community from "../../../components/pages/community/community";
+
 export const metadata = {
   title: "Community",
 };
