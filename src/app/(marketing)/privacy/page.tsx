@@ -23,8 +23,9 @@ const sections = [
               </ul>`,
   },
   {
-    title: "Children&apos;s Privacy",
-    content: `Our platform is not intended for use by children under the age of 16. We do not knowingly collect personal information from children under 16. If you are under 16, please do not use our platform.`,
+    title: "Age Limitation",
+    content: `Our platform is not intended for use by children under the age of 18. We do not knowingly collect personal information from children under 18. If you are under 18, please do not use our platform.
+`,
   },
   {
     title: "Policy Updates",

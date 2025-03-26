@@ -109,7 +109,7 @@ export default function ContactForm() {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="gap-4">
           <FormField
             control={form.control}
             name="email"
@@ -127,19 +127,7 @@ export default function ContactForm() {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="phoneNumber"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Phone Number (Optional)</FormLabel>
-                <FormControl>
-                  <Input placeholder="+1 (555) 000-0000" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          
         </div>
 
         <FormField

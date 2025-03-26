@@ -97,7 +97,7 @@ export default function DonationDetails() {
             guide you through the donation process.
           </p>
           <p className="mt-4 font-medium">Our Email address</p>
-          <a href="mailto:anonymous.voices.av@gmail.com"><p>anonymous.voices.av@gmail.com</p></a>
+          <a className="text-blue-500" href="mailto:anonymous.voices.av@gmail.com"><p>anonymous.voices.av@gmail.com</p></a>
           
           <p className="mt-4">
             Thank you for believing in our mission and for helping us create a
