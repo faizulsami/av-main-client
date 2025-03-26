@@ -183,29 +183,33 @@ export default function BookingConfirmationPage() {
           <div className="bg-white rounded-lg max-w-md w-full overflow-hidden shadow-xl">
             {/* Header */}
             <div className="bg-[#30a6b7] text-white p-4 flex justify-between items-center">
-              <h2 className="text-xl font-medium">Terms of Use              </h2>
-              <button
-                onClick={() => setShow(false)}
-                className="text-white hover:text-gray-200 transition-colors"
-              >
-                <X className="h-5 w-5" />
-              </button>
+              <h2 className="text-xl font-medium">Terms of Use </h2>
             </div>
 
             {/* Content */}
             <div className="p-6 space-y-4">
               <p>
-              Anonymous Voices is intended to provide general information and a safe space for individuals to express their thoughts and emotions. It is not a source of medical advice or treatment recommendations.
+                Anonymous Voices is intended to provide general information and
+                a safe space for individuals to express their thoughts and
+                emotions. It is not a source of medical advice or treatment
+                recommendations.
               </p>
 
               <p>
-              If you have concerns about your mental, emotional, or physical health, please seek help from a qualified healthcare professional. Any decisions made from the information provided on this platform are your own responsibility, and Anonymous Voices holds no liability.
+                If you have concerns about your mental, emotional, or physical
+                health, please seek help from a qualified healthcare
+                professional. Any decisions made from the information provided
+                on this platform are your own responsibility, and Anonymous
+                Voices holds no liability.
               </p>
 
               <p>
-              It is not a crisis hotline. If you are in an immediate crisis, please call 999 or your local emergency services.
+                It is not a crisis hotline. If you are in an immediate crisis,
+                please call 999 or your local emergency services.
               </p>
-              <p>By using Anonymous Voices, you agree to these Terms of Use. </p>
+              <p>
+                By using Anonymous Voices, you agree to these Terms of Use.{" "}
+              </p>
 
               {/* Buttons */}
               <div className="flex justify-start gap-4 pt-4">

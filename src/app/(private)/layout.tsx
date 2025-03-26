@@ -27,5 +27,5 @@ export default function PrivateLayout({
     return <Loading />;
   }
 
-  return <div className="bg-soft-paste-light">{children}</div>;
+  return <div className="md:bg-soft-paste-light">{children}</div>;
 }
