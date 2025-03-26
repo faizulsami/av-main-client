@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Calendar, Clock, Video, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import api from "@/config/axios.config";
-import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import Image from "next/image";
 import { get_socket } from "@/utils/get-socket";
+import { Calendar, Check, Clock, Video } from "lucide-react";
+import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface BookingConfirmation {
   id: string;
@@ -56,7 +56,12 @@ export default function BookingConfirmationPage() {
           throw new Error("Booking not found");
         }
         setBooking(data.data);
-        setShow(true);
+        const id = localStorage.getItem("application");
+        if (id === data.data?._id) {
+          setShow(false);
+        } else {
+          setShow(true);
+        }
       } catch (error) {
         console.error("Error fetching booking details: ", error);
         toast({
@@ -75,28 +80,27 @@ export default function BookingConfirmationPage() {
 
   const agree = async () => {
     const socket = get_socket();
-    const id = localStorage.getItem("application");
-    if (!id) {
-      await api.post("/api/v1/notifications/create-notification", {
-        receiver: "listener",
-        type: `Booking Call_request`,
-        listenerUsername: booking.mentorUserName,
-        content: `A new chat request has been created by ${booking.menteeUserName}.`,
-        isSeen: false,
-      });
-      socket.emit("notification", {
-        receiver: "listener",
-        receiver_username: booking.mentorUserName,
-        type: `Booking Call_request`,
-        content: `A new Booking Call request has been created by ${booking.menteeUserName}.`,
-      });
-      localStorage.setItem("application", booking._id);
-    }
+
+    await api.post("/api/v1/notifications/create-notification", {
+      receiver: "listener",
+      type: `${booking.appointmentType}_request`,
+      listenerUsername: booking.mentorUserName,
+      content: `A new chat request has been created by ${booking.menteeUserName}.`,
+      isSeen: false,
+    });
+    socket.emit("notification", {
+      receiver: "listener",
+      receiver_username: booking.mentorUserName,
+      type: `${booking.appointmentType}_request`,
+      content: `A new ${booking.appointmentType} request has been created by ${booking.menteeUserName}.`,
+    });
+
+    localStorage.setItem("application", booking._id);
   };
 
   const disagree = async () => {
     setIsDisagree(true);
-    // bookingId
+
     if (bookingId) {
       await api.delete(`/api/v1/appointments/${bookingId}`);
     }

@@ -38,28 +38,6 @@ const daysOfWeek = [
   "saturday",
 ];
 
-const TimeSlotItem = ({
-  slot,
-  onSelect,
-  isSelected,
-  isBooked,
-}: {
-  slot: TimeSlot;
-  onSelect: () => void;
-  isSelected: boolean;
-  isBooked: boolean;
-}) => {
-  return (
-    <>
-      <div className="relative">
-        <div className="flex items-center justify-center gap-4 px-6 py-1 border border-soft-paste-light-active rounded-lg text-sm">
-          <span className="tracking-wide text-md">{slot.formatted}</span>
-        </div>
-      </div>
-    </>
-  );
-};
-
 function generateTimeSlots(
   startTime: TimeRange,
   endTime: TimeRange,
@@ -85,7 +63,6 @@ function generateTimeSlots(
     // Format end time
     const endHours = Math.floor(currentEnd / 60);
     const endMins = currentEnd % 60;
-    const formattedEnd = `${String(endHours).padStart(2, "0")} : ${String(endMins).padStart(2, "0")}`;
 
     slots.push({
       start: { hours: startHours, minutes: startMins },
@@ -107,9 +84,7 @@ type SelectedTimeSlot = {
 
 export default function Availability({ schedule }: AvailabilityProps) {
   const { toast } = useToast();
-  const [currentDaySchedule, setCurrentDaySchedule] =
-    useState<DaySchedule | null>(null);
-  const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([]);
+
   const [selectedSlot, setSelectedSlot] = useState<SelectedTimeSlot | null>(
     null,
   );
@@ -120,26 +95,21 @@ export default function Availability({ schedule }: AvailabilityProps) {
   const [isSelected, setIsSelected] = useState({ day: "", selected: false });
   const query = useSearchParams();
   const mentorUserName = query.get("mentor");
-  console.log({ mentorUserName });
-  const {
-    selectedTimeSlot,
-    setSelectedTimeSlot,
-    bookedSlots,
-    setSelectedDate,
-  } = useBookingStore();
+
+  const { setSelectedTimeSlot, bookedSlots, setSelectedDate } =
+    useBookingStore();
 
   const { appointments } = useAppointments({
-    status: "pending",
     mentorUserName: mentorUserName!,
     appointmentType: "Booking Call",
+    not: "completed",
+    limit: 10000,
   });
 
   // Filter Booking Call appointments and extract their time slots
   const bookedCallSlots = appointments.flatMap(
     (appointment) => appointment.selectedSlot?.map((slot) => slot.time) || [],
   );
-
-  console.log({ bookedCallSlots });
 
   // Combine Zustand bookedSlots with appointments' booked slots
   const allBookedSlots = [...bookedSlots, ...bookedCallSlots];

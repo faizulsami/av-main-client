@@ -1,10 +1,8 @@
-import { useState, useMemo, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useBookingStore } from "@/store/useBookingStore";
 import { useBookSession } from "@/hooks/useBookSession";
+import { useBookingStore } from "@/store/useBookingStore";
 import { AppointmentType } from "@/types/booking";
-import { get_socket } from "@/utils/get-socket";
-import api from "@/config/axios.config";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 
 export const useBookingLogic = (
   mentorUsername: string,
@@ -41,24 +39,6 @@ export const useBookingLogic = (
       setShowConfirmDialog(false);
       bookingStore.resetBooking();
       router.push(`/booking/confirmation?id=${response.data.data._id}`);
-
-      const socket = get_socket();
-
-      if (type !== "Booking Call") {
-        await api.post("/api/v1/notifications/create-notification", {
-          receiver: "listener",
-          type: `${type}_request`,
-          listenerUsername: username,
-          content: `A new chat request has been created by ${response?.data?.data?.menteeUserName}.`,
-          isSeen: false,
-        });
-        socket.emit("notification", {
-          receiver: "listener",
-          receiver_username: username,
-          type: `${type}_request`,
-          content: `A new ${type} request has been created by ${response?.data?.data?.menteeUserName}.`,
-        });
-      }
     }
   };
 
