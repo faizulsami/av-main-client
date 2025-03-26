@@ -1,13 +1,13 @@
 export default function VisionSection() {
   return (
-    <section className="w-full py-16">
+    <section className="w-full">
       <div className="space-y-6 text-center">
         <h2 className="text-2xl md:text-3xl font-bold text-violet">
           Our Vision
         </h2>
 
         <div className="flex flex-col items-center rounded-xl overflow-hidden text-center bg-soft-paste-light-hover p-4 gap-4 max-w-4xl mx-auto">
-          <div className="prose prose-lg text-muted-foreground text-sm w-full">
+          <div className="prose prose-lg text-muted-foreground text- w-full">
             <p>
             To create a world where every voice is heard, emotional well-being is prioritised, and mental health awareness eliminates the stigma around expressing one’s feelings, ensuring that no one faces their emotions in isolation.
             </p>

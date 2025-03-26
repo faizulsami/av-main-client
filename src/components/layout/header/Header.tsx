@@ -475,7 +475,7 @@ const Header: React.FC = () => {
             <Link href="/" className="flex items-center">
               <Image
                 src="/images/av.png"
-                alt="Anonymous Voice Logo"
+                alt="Anonymous Voices Logo"
                 width={100}
                 height={50}
                 className="h-10 w-auto"
@@ -505,7 +505,7 @@ const Header: React.FC = () => {
 
         <SheetFooter className="p-4 border-t text-start">
           <p className="text-[10px] text-gray-400">
-            &copy; {new Date().getFullYear()} Anonymous Voice. All rights
+            &copy; {new Date().getFullYear()} Anonymous Voices. All rights
             reserved.
           </p>
         </SheetFooter>
@@ -639,7 +639,7 @@ const Header: React.FC = () => {
           <Link href="/" className="flex-shrink-0">
             <Image
               src="/images/av.png"
-              alt="Anonymous Voice Logo"
+              alt="Anonymous Voices Logo"
               width={100}
               height={100}
               className="w-auto h-12 sm:h-16"

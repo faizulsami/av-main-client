@@ -4,6 +4,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import ArrowHand from "@/components/buttons/ArrowHand";
+import Link from "next/link";
 
 interface WhoWeAreProps {
   image: string;
@@ -22,7 +23,7 @@ const whoWeAreData: WhoWeAreProps = {
   title: "why choose us?",
   subtitle: "Committed to Your Mental Wellness with Compassionate Care",
   description:
-    "At Anonymous Voice, we believe that every voice deserves to be heard, especially when it comes to mental health. We are dedicated to creating a safe, supportive space where individuals can seek guidance, share their experiences, and find solace without judgment.",
+    "At Anonymous Voices, we believe that every voice deserves to be heard, especially when it comes to mental health. We are dedicated to creating a safe, supportive space where individuals can seek guidance, share their experiences, and find solace without judgment.",
   extendedDescription:
     "Our team of compassionate professionals is committed to providing personalized mental health services that prioritize your unique journey. We understand that reaching out for help can be daunting, which is why we focus on creating a comfortable and confidential environment.",
   buttonText: "Learn More",
@@ -83,7 +84,7 @@ export default function WhoWeAre() {
         {/* Text Content Container */}
         <div className="flex-1 space-y-4 lg:w-2/3">
           <motion.h2
-            className="text-xl sm:text-2xl font-bold text-violet text-center lg:text-left"
+            className="text-2xl sm:text-3xl font-bold text-violet text-center lg:text-left"
             {...fadeIn}
             transition={{ delay: 0.2 }}
           >
@@ -122,13 +123,13 @@ export default function WhoWeAre() {
             {...fadeIn}
             transition={{ delay: 0.6 }}
           >
-            <Button
-              onClick={onLearnMore}
-              className="bg-soft-paste text-white px-8 py-2 rounded-lg transition-colors"
-            >
-              {buttonText}
-              <ArrowHand />
-            </Button>
+            <div className="mt-4">
+              <Link href="/about"><Button className="bg-soft-paste rounded-md">
+                Learn More
+                <ArrowHand />
+              </Button>
+              </Link>
+              </div>
           </motion.div>
         </div>
       </div>

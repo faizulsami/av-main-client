@@ -2,9 +2,9 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Anonymous Voice",
+    name: "Anonymous Voices",
     short_name: "AV",
-    description: "A platform to provide anonymous voice support and resources.",
+    description: "A platform to provide Anonymous Voices support and resources.",
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",

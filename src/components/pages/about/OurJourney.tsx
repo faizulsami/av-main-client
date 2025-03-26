@@ -14,8 +14,8 @@ export default function OurJourney() {
               Committed to Your Mental <br /> Wellness with Compassionate Care
             </h3>
 
-            <div className="space-y-4 text-muted-foreground text-sm">
-              <p className="leading-relaxed">
+            <div className="space-y-4 text-muted-foreground text-md">
+              <p className="leading-relaxed text-md">
                 It all started one day when one of the three of us was visibly
                 exhausted and struggling to concentrate. When we asked her what
                 was wrong, she said she hadn’t slept the night before and had to
@@ -63,7 +63,7 @@ export default function OurJourney() {
             />
           </div>
 
-          <div className="space-y-4 text-muted-foreground text-sm max-w-4xl mx-auto text-center">
+          <div className="space-y-4 text-muted-foreground text-md max-w-4xl mx-auto text-center">
             <p className="leading-relaxed">
               And then, a few days later, we had a thought: why not create
               something ourselves that could address all these concerns? As we

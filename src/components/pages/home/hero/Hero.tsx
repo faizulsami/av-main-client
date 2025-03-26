@@ -96,7 +96,7 @@ export default function Hero() {
           animate="animate"
           className="mb-4 text-3xl font-bold md:text-5xl lg:text-6xl leading-relaxed"
         >
-          Free your mind, find your peace <br /> Welcome to a safe space
+          Free your mind, Find your peace <br /> Welcome to a safe space
         </motion.h1>
         <motion.p
           variants={textVariants}
@@ -154,7 +154,7 @@ export default function Hero() {
         </div>
 
         <div className="hidden lg:block mt-4">
-          <p className="text-sm">
+          <p className="text-3xl">
             “Every story deserves a listener”
           </p>
         </div>

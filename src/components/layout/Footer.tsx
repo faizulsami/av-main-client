@@ -78,7 +78,7 @@ export function Footer() {
           <div className="mb-12">
             <Image
               src="/images/av.png"
-              alt="Anonymous Voice"
+              alt="Anonymous Voices"
               width={60}
               height={60}
               priority
@@ -136,7 +136,7 @@ export function Footer() {
           <Separator className="w-full max-w-4xl mb-4" />
 
           <div className="text-xs text-white/80">
-            © Copyright {currentYear} - Anonymous Voice. All rights reserved.
+            © Copyright {currentYear} - Anonymous Voices. All rights reserved.
           </div>
         </div>
         <div

@@ -21,8 +21,8 @@ export default function Page() {
           {/* <WhatWeDo /> */}
           {/* <HonourableVolunteers /> */}
           <WhyAnonymousVoice />
-          <Stat />
-          <OurPartner title="Our Partners" />
+          {/* <Stat /> */}
+          {/* <OurPartner title="Our Partners" /> */}
         </div>
       </div>
     </div>

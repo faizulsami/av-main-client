@@ -13,27 +13,27 @@ const expectations: ExpectationCard[] = [
   {
     id: 1,
     title: "Confidentiality & Privacy",
-    image: "/images/confidentiality.png",
+    image: "/images/HowItWorks/secret-file.png",
   },
   {
     id: 2,
     title: "Empathy & Compassion",
-    image: "/images/empathy.png",
+    image: "/images/HowItWorks/empathy.png",
   },
   {
     id: 3,
     title: "Expert Guidance",
-    image: "/images/guidance.png",
+    image: "/images/HowItWorks/expert.png",
   },
   {
     id: 4,
     title: "Flexible Support",
-    image: "/images/support.png",
+    image: "/images/HowItWorks/responsibility.png",
   },
   {
     id: 5,
     title: "Resources & Referrals",
-    image: "/images/resources.png",
+    image: "/images/HowItWorks/resources.png",
   },
 ];
 
@@ -85,8 +85,8 @@ export default function WhatToExpect() {
                     src={card.image}
                     alt={card.title}
                     className="object-cover w-fit"
-                    width={100}
-                    height={100}
+                    width={50}
+                    height={50}
                   />
                 </div>
               </div>

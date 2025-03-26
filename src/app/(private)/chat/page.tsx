@@ -612,10 +612,12 @@ export default function ChatInterface() {
         !!searchParams.get("mentor") && (
           <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50">
             <div className="border p-10 fixed text-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-background rounded-2xl shadow-2xl flex flex-col gap-3">
-              <h2 className="text-xl font-bold">
-                &quot;Hope your conversation with your mentor <br /> went well!
-                How would your rate the <br /> experience?
+              <h2 className="text-2xl font-bold ">
+              Welcome to User Feedback Form
               </h2>
+              <p className="text-center my-2">Here, at Anonymous Voices, we value our users’ opinions very highly and we are constantly working to improve our service to meet users’ satisfaction. <br />
+              Kindly fill out this short feedback form to help us understand how we can provide you with better service in the future. We thank you in advance for your time and patience filling out this form. 
+              </p>
               <div className="flex items-center gap-2 justify-center">
                 <Star fill="#FFD700" className="text-[#FFD700]" />
                 <Star fill="#FFD700" className="text-[#FFD700]" />
@@ -623,9 +625,6 @@ export default function ChatInterface() {
                 <Star fill="#FFD700" className="text-[#FFD700]" />
                 <Star fill="#FFD700" className="text-[#FFD700]" />
               </div>
-              <p className="text-lg">
-                Wishing your success on your journey!&quot;
-              </p>
               <p className="text-lg">Give us your precious review here:</p>
               <a
                 className="text-[#78bfc8]"
