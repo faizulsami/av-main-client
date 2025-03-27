@@ -65,7 +65,7 @@ export function useMentorRequests(): UseMentorRequestsReturn {
 
   const rejectMentor = async (userName: string) => {
     try {
-      await api.post(`/api/v1/mentors/${userName}/reject`);
+      await api.patch(`/api/v1/mentors/${userName}/reject`);
       setMentorRequests((prevRequests) =>
         prevRequests.filter((request) => request.userName !== userName),
       );
