@@ -53,7 +53,7 @@ export function useMentorRequests(): UseMentorRequestsReturn {
 
   const approveMentor = async (userName: string) => {
     try {
-      await api.patch(`/api/v1/mentors/${userName}`, { adminApproval: true });
+      await api.put(`/api/v1/mentors/${userName}`, { adminApproval: true });
       setMentorRequests((prevRequests) =>
         prevRequests.filter((request) => request.userName !== userName),
       );
@@ -65,7 +65,7 @@ export function useMentorRequests(): UseMentorRequestsReturn {
 
   const rejectMentor = async (userName: string) => {
     try {
-      await api.patch(`/api/v1/mentors/${userName}/reject`);
+      await api.put(`/api/v1/mentors/${userName}/reject`);
       setMentorRequests((prevRequests) =>
         prevRequests.filter((request) => request.userName !== userName),
       );
