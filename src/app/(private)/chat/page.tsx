@@ -29,6 +29,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Star } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Message {
   id: string;
@@ -67,7 +68,7 @@ export default function ChatInterface() {
   const [callEndedUsername, setCallEndedUsername] = useState("");
   const [callRejectUsername, setCallRejectUsername] = useState("");
   const [isCompleted, setIsCompleted] = useState(false);
-  const router = useRouter();
+  const { user } = useAuth();
   const [incomingCall, setIncomingCall] = useState<{
     signal: any;
     receiverSocketId: string;
@@ -355,13 +356,6 @@ export default function ChatInterface() {
             username: "guest",
             credential: "somepassword",
           },
-          { urls: "stun:stun1.l.google.com:19302" },
-          { urls: "stun:stun2.l.google.com:19302" },
-          { urls: "stun:stun3.l.google.com:19302" },
-          { urls: "stun:stun4.l.google.com:19302" },
-          { urls: "stun:stun.sipgate.net" },
-          { urls: "stun:stun.ekiga.net" },
-          { urls: "stun:stunserver.org" },
         ],
       },
     });
@@ -442,13 +436,6 @@ export default function ChatInterface() {
             username: "guest",
             credential: "somepassword",
           },
-          { urls: "stun:stun1.l.google.com:19302" },
-          { urls: "stun:stun2.l.google.com:19302" },
-          { urls: "stun:stun3.l.google.com:19302" },
-          { urls: "stun:stun4.l.google.com:19302" },
-          { urls: "stun:stun.sipgate.net" },
-          { urls: "stun:stun.ekiga.net" },
-          { urls: "stun:stunserver.org" },
         ],
       },
     });
@@ -501,15 +488,29 @@ export default function ChatInterface() {
   //#endregion
 
   const handleEndCall = () => {
-    if (!socket || !callerSocketId) return;
+    if (
+      !socket ||
+      (user?.role === "mentee" && !searchParams.get("mentor")) ||
+      (user?.role === "mentor" && !searchParams.get("mentee"))
+    )
+      return;
     setShowCallScreen(null);
     connectionRef.current?.destroy();
     if (user_audio.current) user_audio.current.srcObject = null;
 
-    socket.emit("call:ended", {
-      callerSocketId: callerSocketId,
-      callEndedUsername: currentUser.username,
-    });
+    if (user?.role === "mentor") {
+      socket.emit("call:ended", {
+        needToEndCallUsername: searchParams.get("mentee"),
+        callEndedUsername: currentUser.username,
+        callEndUserType: "mentor",
+      });
+    } else {
+      socket.emit("call:ended", {
+        needToEndCallUsername: searchParams.get("mentor"),
+        callEndedUsername: currentUser.username,
+        callEndUserType: "mentee",
+      });
+    }
   };
 
   if (!currentActiveUser?.userName) {
@@ -613,10 +614,16 @@ export default function ChatInterface() {
           <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50">
             <div className="border p-10 fixed text-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-background rounded-2xl shadow-2xl flex flex-col gap-3">
               <h2 className="text-2xl font-bold ">
-              Welcome to User Feedback Form
+                Welcome to User Feedback Form
               </h2>
-              <p className="text-center my-2">Here, at Anonymous Voices, we value our users’ opinions very highly and we are constantly working to improve our service to meet users’ satisfaction. <br />
-              Kindly fill out this short feedback form to help us understand how we can provide you with better service in the future. We thank you in advance for your time and patience filling out this form. 
+              <p className="text-center my-2">
+                Here, at Anonymous Voices, we value our users’ opinions very
+                highly and we are constantly working to improve our service to
+                meet users’ satisfaction. <br />
+                Kindly fill out this short feedback form to help us understand
+                how we can provide you with better service in the future. We
+                thank you in advance for your time and patience filling out this
+                form.
               </p>
               <div className="flex items-center gap-2 justify-center">
                 <Star fill="#FFD700" className="text-[#FFD700]" />

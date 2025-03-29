@@ -9,6 +9,7 @@ import { Calendar, Check, Clock, Video } from "lucide-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Socket } from "socket.io-client";
 
 interface BookingConfirmation {
   id: string;
@@ -47,7 +48,10 @@ export default function BookingConfirmationPage() {
   const bookingId = searchParams.get("id");
   const [show, setShow] = useState(false);
   const [isDisagree, setIsDisagree] = useState(false);
-
+  const [socket, setSocket] = useState<Socket | null>(null);
+  useEffect(() => {
+    setSocket(get_socket());
+  }, []);
   useEffect(() => {
     const fetchBookingDetails = async () => {
       try {
@@ -76,11 +80,9 @@ export default function BookingConfirmationPage() {
     fetchBookingDetails();
   }, [bookingId, router, toast]);
 
-  if (!booking) return null;
+  if (!booking || !socket) return null;
 
   const agree = async () => {
-    const socket = get_socket();
-
     await api.post("/api/v1/notifications/create-notification", {
       receiver: "listener",
       type: `${booking.appointmentType}_request`,

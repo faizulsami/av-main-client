@@ -31,6 +31,7 @@ import Peer from "simple-peer";
 import { io, Socket } from "socket.io-client";
 import OneToOneChatMessages from "./_components/OneToOneChatMessages";
 import OneToOneChatUserProfile from "./_components/OneToOneChatUserProfile";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Message {
   id: string;
@@ -53,11 +54,10 @@ interface ReceivedMessage {
 export default function OneToOneChatInterface() {
   const { toast, dismiss } = useToast();
   const params = useParams();
+  const { user } = useAuth();
 
-  const { appointments, refetch } = useAppointments();
-  const { setFilteredContacts } = useChatContactsStore();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const searchParams = useSearchParams();
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -315,13 +315,6 @@ export default function OneToOneChatInterface() {
             username: "guest",
             credential: "somepassword",
           },
-          { urls: "stun:stun1.l.google.com:19302" },
-          { urls: "stun:stun2.l.google.com:19302" },
-          { urls: "stun:stun3.l.google.com:19302" },
-          { urls: "stun:stun4.l.google.com:19302" },
-          { urls: "stun:stun.sipgate.net" },
-          { urls: "stun:stun.ekiga.net" },
-          { urls: "stun:stunserver.org" },
         ],
       },
     });
@@ -402,13 +395,6 @@ export default function OneToOneChatInterface() {
             username: "guest",
             credential: "somepassword",
           },
-          { urls: "stun:stun1.l.google.com:19302" },
-          { urls: "stun:stun2.l.google.com:19302" },
-          { urls: "stun:stun3.l.google.com:19302" },
-          { urls: "stun:stun4.l.google.com:19302" },
-          { urls: "stun:stun.sipgate.net" },
-          { urls: "stun:stun.ekiga.net" },
-          { urls: "stun:stunserver.org" },
         ],
       },
     });
@@ -461,15 +447,24 @@ export default function OneToOneChatInterface() {
   //#endregion
 
   const handleEndCall = () => {
-    if (!socket || !callerSocketId) return;
+    if (!socket || (user?.role === "mentee" && !callerSocketId)) return;
     setShowCallScreen(null);
     connectionRef.current?.destroy();
     if (user_audio.current) user_audio.current.srcObject = null;
-
-    socket.emit("call:ended", {
-      callerSocketId: callerSocketId,
-      callEndedUsername: currentActiveUser?.userName,
-    });
+    console.log({ role: user?.role });
+    if (user?.role === "mentor") {
+      socket.emit("call:ended", {
+        needToEndCallUsername: selectedUser?.menteeUserName,
+        callEndedUsername: user?.userName,
+        callEndUserType: "mentor",
+      });
+    } else {
+      socket.emit("call:ended", {
+        needToEndCallUsername: selectedUser?.mentorUserName,
+        callEndedUsername: user?.userName,
+        callEndUserType: "mentee",
+      });
+    }
   };
 
   if (!currentActiveUser?.userName) {
@@ -525,7 +520,6 @@ export default function OneToOneChatInterface() {
             selectedUser={selectedUser}
             onStatusUpdate={() => {
               setSelectedUser(null);
-              refetch();
             }}
           />
         </aside>

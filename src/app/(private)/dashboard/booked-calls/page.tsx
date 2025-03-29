@@ -11,6 +11,7 @@ import { AppointmentSectionSkeleton } from "./_components/AppointmentSectionSkel
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
 import { get_socket } from "@/utils/get-socket";
+import { Socket } from "socket.io-client";
 
 export default function BookedCallsPage() {
   const { user: currentUser } = useAuth();
@@ -24,6 +25,10 @@ export default function BookedCallsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [refetch, setRefetch] = useState(false);
+  const [socket, setSocket] = useState<Socket | null>(null);
+  useEffect(() => {
+    setSocket(get_socket());
+  }, []);
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -68,13 +73,11 @@ export default function BookedCallsPage() {
   };
 
   const handleAccept = async (data: { id: string; menteeUserName: string }) => {
+    if (!socket) return;
     await AppointmentService.updateAppointment(data.id, {
       status: "confirmed",
     });
 
-    console.log(75, { menteeUserName: data.menteeUserName });
-
-    const socket = get_socket();
     socket.emit("is-able-to-chat", {
       menteeUserName: data.menteeUserName,
     });

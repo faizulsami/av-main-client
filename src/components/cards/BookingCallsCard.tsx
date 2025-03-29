@@ -68,7 +68,7 @@ export const BookingCallsCard = ({
       <div className="flex items-center gap-4">
         <Avatar>
           <AvatarImage
-            src={booking.user.avatarUrl ?? ""}
+            src={"/images/avatar/man.png"}
             alt={booking.user.username}
           />
           <AvatarFallback>{booking.user.name}</AvatarFallback>

@@ -2,17 +2,20 @@
 
 import { useAuth } from "@/hooks/useAuth";
 import { get_socket } from "@/utils/get-socket";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Socket } from "socket.io-client";
 
 const SocketCom = () => {
   const { user } = useAuth();
+  const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    const socket = get_socket();
-
+    setSocket(get_socket());
+  }, []);
+  useEffect(() => {
     if (!socket || !user) return;
     socket.emit("join", { fromUsername: user.userName });
-  }, [user]);
+  }, [user, socket]);
 
   return <div></div>;
 };

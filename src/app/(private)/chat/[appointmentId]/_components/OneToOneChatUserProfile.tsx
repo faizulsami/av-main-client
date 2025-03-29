@@ -1,3 +1,4 @@
+"use client";
 import * as React from "react";
 import { Card } from "@/components/ui/card";
 
@@ -13,6 +14,7 @@ import CompleteDialog from "@/components/chat/chat-user-profile/CompleteDialog";
 import CancelDialog from "@/components/chat/chat-user-profile/CancelDialog";
 import OneToOneUserInfo from "./OneToOneUserInfo";
 import { useRouter } from "next/navigation";
+import { Socket } from "socket.io-client";
 
 interface UserProfileProps {
   selectedUser: ChatContact;
@@ -28,12 +30,17 @@ const OneToOneChatUserProfile: React.FC<UserProfileProps> = ({
   const { refetch } = useAppointments();
   const { toast } = useToast();
   const router = useRouter();
+  const [socket, setSocket] = React.useState<Socket | null>(null);
+  React.useEffect(() => {
+    setSocket(get_socket());
+  }, []);
   const handleComplete = async () => {
     try {
+      if (!socket) return;
       await AppointmentService.updateAppointment(selectedUser._id, {
         status: "completed",
       });
-      const socket = get_socket();
+
       socket.emit("appointment-completed", {
         menteeUserName: selectedUser.menteeUserName,
       });
