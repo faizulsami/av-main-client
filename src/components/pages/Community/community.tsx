@@ -29,9 +29,10 @@ import { useAuth } from "@/hooks/useAuth";
 import Image from "next/image";
 import moment from "moment";
 import { useToast } from "@/hooks/use-toast";
-import { CommunityGuidelinesModal } from "./CommunityGuidelinesModal";
+
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { CommunityGuidelinesModal } from "./CommunityGuidelinesModal";
 
 // This is a self-contained component with all necessary UI elements
 export default function Community() {

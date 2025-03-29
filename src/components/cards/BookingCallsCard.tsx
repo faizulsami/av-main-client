@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { useChatStore } from "@/store/useChatStore";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -23,7 +24,7 @@ interface BookingCallsCardProps {
     createdAt: string;
     updatedAt: string;
   };
-  onAccept?: (id: string) => Promise<void>;
+  onAccept?: (data: { id: string; menteeUserName: string }) => Promise<void>;
   onReject?: (id: string) => Promise<void>;
   onChat?: (id: string) => void;
   isPending?: boolean;
@@ -39,11 +40,11 @@ export const BookingCallsCard = ({
   const setChatUser = useChatStore((state) => state.setActiveUser);
 
   const handleAction = async (
-    action: (id: string) => Promise<void>,
-    id: string,
+    action: (data: any) => Promise<void>,
+    data: any,
   ) => {
     try {
-      await action(id);
+      await action(data);
     } catch (error) {
       console.error(`Failed to perform action:`, error);
     }
@@ -83,7 +84,12 @@ export const BookingCallsCard = ({
             size="icon"
             variant="ghost"
             className="h-8 w-8 text-green-500 hover:text-green-600"
-            onClick={() => handleAction(onAccept, booking.id)}
+            onClick={() =>
+              handleAction(onAccept, {
+                id: booking.id,
+                menteeUserName: booking.user.username || "",
+              })
+            }
           >
             <Check className="h-4 w-4" />
             <span className="sr-only">Accept</span>

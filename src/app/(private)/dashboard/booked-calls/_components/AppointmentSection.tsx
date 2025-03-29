@@ -26,7 +26,7 @@ interface AppointmentSectionProps {
   description: string;
   appointments: Appointment[];
   appointmentType: string;
-  onAccept?: (id: string) => Promise<void>;
+  onAccept?: (data: { id: string; menteeUserName: string }) => Promise<void>;
   onReject?: (id: string) => Promise<void>;
   emptyMessage: string;
 }

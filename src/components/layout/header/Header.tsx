@@ -250,6 +250,7 @@ const Header: React.FC = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [socket, setSocket] = useState<any>(null);
   const [newNotification, setNewNotification] = useState(false);
+  const [showChat, setShowChat] = useState(false);
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
@@ -267,7 +268,7 @@ const Header: React.FC = () => {
       }
     };
     if (user?.userName && user?.role === "mentee") fetchAppointments();
-  }, [user?.userName, user]);
+  }, [user?.userName, user, showChat]);
   useEffect(() => {
     const socket = get_socket();
     setSocket(socket);
@@ -280,7 +281,17 @@ const Header: React.FC = () => {
         setNewNotification(true);
       }
     });
+
+    return () => socket.off("notification");
   }, [user?.role, loading, socket]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("is-able-to-chat", (data: any) => {
+      setShowChat(!showChat);
+    });
+  }, [socket]);
 
   useEffect(() => {
     const fetchUserNotifications = async (role: "admin" | "mentor") => {

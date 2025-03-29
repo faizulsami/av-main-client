@@ -95,6 +95,13 @@ export default function BookingConfirmationPage() {
       content: `A new ${booking.appointmentType} request has been created by ${booking.menteeUserName}.`,
     });
 
+    if (booking.appointmentType !== "Booking Call") {
+      socket.emit("is-able-to-chat", {
+        menteeUserName: booking.menteeUserName,
+      });
+    }
+
+    localStorage.setItem("book-application", JSON.stringify(true));
     localStorage.setItem("application", booking._id);
   };
 

@@ -10,6 +10,7 @@ import { AppointmentSection } from "./_components/AppointmentSection";
 import { AppointmentSectionSkeleton } from "./_components/AppointmentSectionSkeleton";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
+import { get_socket } from "@/utils/get-socket";
 
 export default function BookedCallsPage() {
   const { user: currentUser } = useAuth();
@@ -66,13 +67,18 @@ export default function BookedCallsPage() {
     ),
   };
 
-  console.log("Appointments - BookedCallsPage", { appointments });
-  console.log("Appointments by status - BookedCallsPage", appointmentsByStatus);
-
-  const handleAccept = async (appointmentId: string) => {
-    await AppointmentService.updateAppointment(appointmentId, {
+  const handleAccept = async (data: { id: string; menteeUserName: string }) => {
+    await AppointmentService.updateAppointment(data.id, {
       status: "confirmed",
     });
+
+    console.log(75, { menteeUserName: data.menteeUserName });
+
+    const socket = get_socket();
+    socket.emit("is-able-to-chat", {
+      menteeUserName: data.menteeUserName,
+    });
+
     setRefetch(!refetch);
   };
 
