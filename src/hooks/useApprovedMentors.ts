@@ -59,7 +59,7 @@ export function useApprovedMentors(): UseApprovedMentorsReturn {
   const approveMentor = async (userName: string) => {
     try {
       setIsLoading(true);
-      await api.patch(`/api/v1/mentors/${userName}`, {
+      await api.put(`/api/v1/mentors/${userName}`, {
         adminApproval: true,
       });
 

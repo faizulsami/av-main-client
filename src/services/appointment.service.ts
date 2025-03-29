@@ -53,7 +53,7 @@ export class AppointmentService {
   }
 
   static async updateAppointment(id: string, data: AppointmentUpdateData) {
-    return api.patch(`/api/v1/appointments/${id}`, data);
+    return api.put(`/api/v1/appointments/${id}`, data);
   }
 
   static async deleteAppointment(id: string) {

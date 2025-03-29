@@ -176,7 +176,7 @@ export default function Profile() {
 
   async function updateIsOnlineStatus(newStatus: boolean) {
     try {
-      const response = await axios.patch(
+      const response = await axios.put(
         `${process.env.NEXT_PUBLIC_API_URL}/api/v1/mentors/${mentor?.userName}`,
         {
           isOnline: newStatus,
@@ -205,7 +205,7 @@ export default function Profile() {
 
   async function onSubmit(data: ProfileFormValues) {
     try {
-      const response = await axios.patch(
+      const response = await axios.put(
         `${process.env.NEXT_PUBLIC_API_URL}/api/v1/mentors/${mentor?._id}`,
         {
           ...data,
