@@ -1,5 +1,5 @@
 import TitleHeader from "@/components/common/TitleHeader";
-import Community from "@/components/pages/community/Community";
+import Community from "@/components/pages/Community/Community";
 
 import React from "react";
 
