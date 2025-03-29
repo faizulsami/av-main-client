@@ -75,7 +75,7 @@ export default function LoginPage() {
         <CardHeader className="text-center">
           <CardTitle className="text-lg text-muted-foreground">
             Welcome To <span className="text-violet">Anonymous </span>{" "}
-            <span className="text-soft-paste-hover">Voice!</span>
+            <span className="text-soft-paste-hover">Voices!</span>
           </CardTitle>
           <CardDescription className="text-xs text-muted-foreground"></CardDescription>
         </CardHeader>
