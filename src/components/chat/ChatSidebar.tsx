@@ -45,24 +45,32 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   const filteredContacts = React.useMemo(() => {
     if (!currentActiveUser?.userName) return [];
 
-    const confirmedAppointments = appointments
-      .filter(
+    let confirmedAppointments;
+
+    if (currentActiveUser.role === "mentee") {
+      confirmedAppointments = appointments.filter(
+        (appointment) => appointment.status === "confirmed",
+      );
+    } else {
+      confirmedAppointments = filteredAppointments.filter(
         (appointment) =>
           appointment.status === "confirmed" &&
           appointment.appointmentType !== "Booking Call",
-      )
-      .map((appointment) => ({
-        id: appointment._id,
-        username:
-          currentActiveUser.role === "mentor"
-            ? appointment.menteeUserName
-            : appointment.mentorUserName,
-        avatar: "/images/avatar/male-avatar.png",
-        lastMessage: "",
-        mentorUserName: appointment.mentorUserName,
-        duration: appointment.durationMinutes ?? 10,
-        selectedSlot: appointment.selectedSlot,
-      }));
+      );
+    }
+
+    confirmedAppointments = confirmedAppointments.map((appointment) => ({
+      id: appointment._id,
+      username:
+        currentActiveUser.role === "mentor"
+          ? appointment.menteeUserName
+          : appointment.mentorUserName,
+      avatar: "/images/avatar/male-avatar.png",
+      lastMessage: "",
+      mentorUserName: appointment.mentorUserName,
+      duration: appointment.durationMinutes ?? 10,
+      selectedSlot: appointment.selectedSlot,
+    }));
 
     const uniqueContacts = Array.from(
       new Set(confirmedAppointments.map((a) => a.username)),
