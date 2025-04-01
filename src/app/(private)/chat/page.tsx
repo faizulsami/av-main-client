@@ -333,13 +333,7 @@ export default function ChatInterface() {
   const handleAcceptCall = () => {
     if (!incomingCall || !socket || !currentUser.username || !stream || !me)
       return;
-    const secret = process.env.NEXT_PUBLIC_TURN_SECRET!; // Your static-auth-secret
-    const timestamp = Math.floor(Date.now() / 1000) + 3600; // Valid for 1 hour (can adjust duration)
-    const username = `${timestamp}`; // The username is the timestamp
-    const password = crypto
-      .createHmac("sha1", secret)
-      .update(username.toString())
-      .digest("base64");
+
     const peer = new Peer({
       initiator: false,
       trickle: false,
@@ -353,8 +347,8 @@ export default function ChatInterface() {
             urls: `turn:stun.anonymousvoicesav.com`,
             // username: username.toString(),
             // credential: password,
-            username: "guest",
-            credential: "somepassword",
+            username: process.env.NEXT_PUBLIC_TURN_SERVER_USERNAME,
+            credential: process.env.NEXT_PUBLIC_TURN_SERVER_PASSWORD,
           },
         ],
       },
