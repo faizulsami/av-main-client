@@ -345,8 +345,6 @@ export default function ChatInterface() {
           },
           {
             urls: `turn:stun.anonymousvoicesav.com`,
-            // username: username.toString(),
-            // credential: password,
             username: process.env.NEXT_PUBLIC_TURN_SERVER_USERNAME,
             credential: process.env.NEXT_PUBLIC_TURN_SERVER_PASSWORD,
           },
@@ -425,10 +423,8 @@ export default function ChatInterface() {
           },
           {
             urls: `turn:stun.anonymousvoicesav.com`,
-            // username: username.toString(),
-            // credential: password,
-            username: "guest",
-            credential: "somepassword",
+            username: process.env.NEXT_PUBLIC_TURN_SERVER_USERNAME,
+            credential: process.env.NEXT_PUBLIC_TURN_SERVER_PASSWORD,
           },
         ],
       },
