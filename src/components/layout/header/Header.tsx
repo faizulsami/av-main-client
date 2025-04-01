@@ -33,6 +33,7 @@ import { socketService } from "@/services/socket.service";
 import { get_socket } from "@/utils/get-socket";
 import { useAppointments } from "@/hooks/useAppointments";
 import { AppointmentService } from "@/services/appointment.service";
+import { Socket } from "socket.io-client";
 
 // Advanced Navigation Types
 interface NavItemBase {
@@ -248,9 +249,18 @@ const Header: React.FC = () => {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [notificationsLoading, setNotificationsLoading] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [socket, setSocket] = useState<any>(null);
+
+  const [socket, setSocket] = useState<Socket | null>(null);
   const [newNotification, setNewNotification] = useState(false);
   const [showChat, setShowChat] = useState(false);
+
+  useEffect(() => {
+    setSocket(get_socket());
+  }, []);
+  useEffect(() => {
+    if (!socket || !user) return;
+    socket.emit("join", { fromUsername: user.userName });
+  }, [user, socket]);
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
@@ -269,12 +279,9 @@ const Header: React.FC = () => {
     };
     if (user?.userName && user?.role === "mentee") fetchAppointments();
   }, [user?.userName, user, showChat]);
+
   useEffect(() => {
-    const socket = get_socket();
-    setSocket(socket);
-  }, []);
-  useEffect(() => {
-    if (!socket) return;
+    if (!socket || !user) return;
     socket.on("notification", (data: any) => {
       if (!loading && (user?.role === "admin" || user?.role === "mentor")) {
         setNotifications((prevNotifications) => [data, ...prevNotifications]);
@@ -282,7 +289,9 @@ const Header: React.FC = () => {
       }
     });
 
-    return () => socket.off("notification");
+    return () => {
+      socket.off("notification");
+    };
   }, [user?.role, loading, socket]);
 
   useEffect(() => {
