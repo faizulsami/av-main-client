@@ -46,7 +46,11 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
     if (!currentActiveUser?.userName) return [];
 
     const confirmedAppointments = appointments
-      .filter((appointment) => appointment.status === "confirmed")
+      .filter(
+        (appointment) =>
+          appointment.status === "confirmed" &&
+          appointment.appointmentType !== "Booking Call",
+      )
       .map((appointment) => ({
         id: appointment._id,
         username:
