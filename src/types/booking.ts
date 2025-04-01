@@ -53,9 +53,9 @@ export type Booking = z.infer<typeof BookingSchema>;
 
 // Constants
 export const DURATION_OPTIONS = [
-  { value: 10, label: "10 min call" },
-  { value: 20, label: "20 min call" },
-  { value: 30, label: "30 min call" },
+  { value: 10, label: "10 min" },
+  { value: 20, label: "20 min" },
+  { value: 30, label: "30 min" },
 ] as const;
 
 // Session Configuration
@@ -98,6 +98,7 @@ export interface PlanFieldProps {
   value: number;
   hasDropdown?: boolean;
   onDurationChange?: (value: number) => void;
+  sessionType: string;
 }
 
 export interface ConfirmDialogProps {

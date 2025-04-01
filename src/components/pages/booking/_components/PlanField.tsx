@@ -12,6 +12,7 @@ export const PlanField = ({
   value,
   hasDropdown = false,
   onDurationChange,
+  sessionType,
 }: PlanFieldProps) => {
   console.log("PlanField rendered with value:", value, typeof value);
 
@@ -29,7 +30,10 @@ export const PlanField = ({
           <SelectContent>
             {DURATION_OPTIONS.map(({ value, label }) => (
               <SelectItem key={value} value={value.toString()}>
-                {label}
+                {label}{" "}
+                <span className="lowercase">
+                  {sessionType === "Booking Call" ? "call" : sessionType}{" "}
+                </span>
               </SelectItem>
             ))}
           </SelectContent>

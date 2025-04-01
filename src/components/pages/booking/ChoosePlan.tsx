@@ -51,6 +51,7 @@ export default function ChoosePlan({
           <PlanField
             label="Duration"
             value={duration}
+            sessionType={sessionType}
             onDurationChange={handleDurationChange}
             hasDropdown={true}
           />
