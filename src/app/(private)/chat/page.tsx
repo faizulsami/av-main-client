@@ -405,13 +405,7 @@ export default function ChatInterface() {
       title: "Calling...",
       description: `Calling ${selectedUser.username}`,
     });
-    const secret = process.env.NEXT_PUBLIC_TURN_SECRET!; // Your static-auth-secret
-    const timestamp = Math.floor(Date.now() / 1000) + 3600; // Valid for 1 hour (can adjust duration)
-    const username = `${timestamp}`; // The username is the timestamp
-    const password = crypto
-      .createHmac("sha1", secret)
-      .update(username.toString())
-      .digest("base64");
+
     const peer = new Peer({
       initiator: true,
       trickle: false,

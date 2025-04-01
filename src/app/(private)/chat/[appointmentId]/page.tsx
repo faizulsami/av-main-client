@@ -292,13 +292,10 @@ export default function OneToOneChatInterface() {
       !me
     )
       return;
-    const secret = process.env.NEXT_PUBLIC_TURN_SECRET!; // Your static-auth-secret
-    const timestamp = Math.floor(Date.now() / 1000) + 3600; // Valid for 1 hour (can adjust duration)
-    const username = `${timestamp}`; // The username is the timestamp
-    const password = crypto
-      .createHmac("sha1", secret)
-      .update(username.toString())
-      .digest("base64");
+    console.log({
+      username: process.env.NEXT_PUBLIC_TURN_SERVER_USERNAME,
+      password: process.env.NEXT_PUBLIC_TURN_SERVER_PASSWORD,
+    });
     const peer = new Peer({
       initiator: false,
       trickle: false,
@@ -370,13 +367,7 @@ export default function OneToOneChatInterface() {
       title: "Calling...",
       description: `Calling ${selectedUser?.menteeUserName}`,
     });
-    const secret = process.env.NEXT_PUBLIC_TURN_SECRET!; // Your static-auth-secret
-    const timestamp = Math.floor(Date.now() / 1000) + 3600; // Valid for 1 hour (can adjust duration)
-    const username = `${timestamp}`; // The username is the timestamp
-    const password = crypto
-      .createHmac("sha1", secret)
-      .update(username.toString())
-      .digest("base64");
+
     const peer = new Peer({
       initiator: true,
       trickle: false,
