@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 
+export const runtime = "edge";
+
 const comfortaa = localFont({
   src: [
     {
