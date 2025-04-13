@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import Blog from "@/models/Blog";
 import { ApiError, apiResponse } from "@/lib/blog/api-response";
 import connectMongoDB from "@/lib/db";
-export const runtime = "edge";
 
 export async function POST(req: NextRequest) {
   try {

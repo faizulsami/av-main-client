@@ -1,6 +1,5 @@
 import connectMongoDB from "@/lib/db";
 import Stats from "@/models/Stats";
-export const runtime = "edge";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {

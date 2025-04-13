@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import nodemailer from "nodemailer";
 import mongoose from "mongoose";
-export const runtime = "edge";
 
 // Connect to MongoDB
 const connectMongoDB = async () => {
