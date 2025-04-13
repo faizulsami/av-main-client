@@ -76,78 +76,63 @@ export default function ListenerSection() {
               </ul>
             </div> */}
 
-            {/* Requirements Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-              <div>
-                <h3 className="text-lg font-bold text-gray-900 mb-4">
-                  Role of a Volunteer Listener:
-                </h3>
-                <p className="pb-4">
-                  As a volunteer listener, you will play a crucial role in
-                  supporting individuals who are struggling with their mental
-                  health. Your primary responsibilities will include:
-                </p>
-                <ul className="space-y-3 text-sm font-medium">
-                  {requirements.map((requirement, index) => (
-                    <li key={index} className="flex items-start gap-3">
-                      <Circle className="w-4 h-4 text-soft-paste mt-1 flex-shrink-0" />
-                      <span className="text-gray-600">{requirement}</span>
-                    </li>
-                  ))}
-                </ul>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mt-10">
+              {/* Left Side - Requirements & Qualifications */}
+              <div className="space-y-8">
+                {/* Requirements Section */}
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">
+                    Role of a Volunteer Listener:
+                  </h3>
+                  <p className="pb-4">
+                    As a volunteer listener, you will play a crucial role in
+                    supporting individuals who are struggling with their mental
+                    health. Your primary responsibilities will include:
+                  </p>
+                  <ul className="space-y-3 text-sm font-medium">
+                    {requirements.map((requirement, index) => (
+                      <li key={index} className="flex items-start gap-3">
+                        <Circle className="w-4 h-4 text-soft-paste mt-1 flex-shrink-0" />
+                        <span className="text-gray-600">{requirement}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Qualifications Section */}
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">
+                    Required Qualifications
+                  </h3>
+                  <ul className="space-y-3 text-sm font-medium">
+                    {qualifications.map((qualification, index) => (
+                      <li key={index} className="flex items-start gap-3">
+                        <Circle className="w-4 h-4 text-soft-paste mt-1 flex-shrink-0" />
+                        <span className="text-gray-600">{qualification}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
 
-              <div className="relative w-full rounded-2xl overflow-hidden mt-6">
-                {/* <Image
-                  src="/images/requirements.png"
-                  alt="Mobile app interface showing task management"
-                  className="object-cover"
-                  loading="lazy"
-                  width={600}
-                  height={400}
-                /> */}
+              {/* Right Side - Image */}
+              <div className="relative w-full h-full lg:min-h-[600px]">
+                <Image
+                  src="/images/Apply for listener Image.svg"
+                  alt="apply-for-listener"
+                  fill
+                  className="object-contain"
+                />
               </div>
             </div>
-
-            {/* Benefits Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-              <div>
-                <h3 className="text-lg font-bold text-gray-900 mb-4">
-                  Required Qualifications
-                </h3>
-                <ul className="space-y-3 text-sm font-medium">
-                  {qualifications.map((benefit, index) => (
-                    <li key={index} className="flex items-start gap-3">
-                      <Circle className="w-4 h-4 text-soft-paste mt-1 flex-shrink-0" />
-                      <span className="text-gray-600">{benefit}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="relative w-full rounded-2xl overflow-hidden mt-6">
-                {/* <Image
-                  src="/images/benefits.png"
-                  alt="Document management interface"
-                  className="object-cover"
-                  loading="lazy"
-                  width={600}
-                  height={400}
-                /> */}
-              </div>
-            </div>
-            
           </div>
         </div>
       </div>
 
       <div className="mt-10">
-
         <div className="space-y-12 mt-4">
           {/* Text Content */}
           <div className="space-y-8">
-            
-
             {/* Benefits Section */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
               <div>
@@ -164,7 +149,6 @@ export default function ListenerSection() {
                 </ul>
               </div>
             </div>
-            
           </div>
         </div>
       </div>

@@ -60,12 +60,14 @@ export default function LoginPage() {
       // });
 
       router.push(redirect);
-    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
       toast({
         title: "Login Failed",
-        description: "Please check your credentials and try again.",
+        description:
+          error?.message || "Please check your credentials and try again.",
       });
-      console.error("Login failed:", error);
+      console.error("Login failed:", error?.message);
     }
   };
 

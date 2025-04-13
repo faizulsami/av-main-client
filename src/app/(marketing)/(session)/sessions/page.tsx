@@ -11,6 +11,7 @@ import { useSearchParams } from "next/navigation";
 import { ActionType } from "@/components/pages/home/hero/Hero";
 import TitleHeader from "@/components/common/TitleHeader";
 import useApprovedVolunteers from "@/hooks/useApprovedVolunteers";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Session() {
   const searchParams = useSearchParams();
@@ -18,7 +19,7 @@ export default function Session() {
   const { approvedVolunteers, loading, error } =
     useApprovedVolunteers<Volunteer[]>();
   const [visibleCount, setVisibleCount] = useState(10);
-
+  const { user } = useAuth();
   if (loading) {
     return <Loading />;
   }
@@ -97,6 +98,7 @@ export default function Session() {
                 expertise={volunteer.expertise}
                 description={volunteer.description}
                 actionType={actionType}
+                user={user}
               />
             </motion.div>
           ))}

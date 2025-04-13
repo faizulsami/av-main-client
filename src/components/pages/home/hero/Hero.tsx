@@ -76,15 +76,15 @@ export default function Hero() {
   );
 
   return (
-    <section className="relative lg:min-h-[90vh] w-[calc(100vw-16px)]  overflow-x-hidden flex justify-center items-center overflow-hidden bg-gradient-to-b from-purple-400 via-purple-300 to-blue-300 border">
+    <section className="relative xl:min-h-[90vh] w-[calc(100vw)] lg:w-[calc(98.5vw)] xl:w-[calc(99vw)]  overflow-x-hidden flex justify-center items-center overflow-hidden bg-gradient-to-b from-purple-400 via-purple-300 to-blue-300 border">
       <div className="absolute inset-0 z-0">
         <Image
-          src="/images/av-hero.webp"
+          src="/images/home-banner.webp"
           alt="A serene landscape representing mental health support"
-          // layout="fill"
-          width={1920}
-          height={1080}
-          className="object-center w-full h-full"
+          fill
+          // width={1920}
+          // height={1080}
+          className="object-center w-full h-full overflow-hidden"
           loading="lazy"
         />
       </div>
@@ -154,9 +154,7 @@ export default function Hero() {
         </div>
 
         <div className="hidden lg:block mt-4">
-          <p className="text-3xl">
-            “Every story deserves a listener”
-          </p>
+          <p className="text-3xl">“Every story deserves a listener”</p>
         </div>
       </div>
       <SocialBar />

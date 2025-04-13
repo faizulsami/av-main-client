@@ -76,7 +76,7 @@ export const BlogDetail = ({ id }: { id: string }) => {
   return (
     <article
       className={cn(
-        "max-w-3xl mx-auto px-4 py-12 animate-in fade-in duration-500",
+        "max-w-4xl mx-auto px-4 py-6 md:py-12 animate-in fade-in duration-500",
         isLoading && "pointer-events-none",
       )}
     >

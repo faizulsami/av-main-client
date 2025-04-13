@@ -73,6 +73,7 @@ export function useAuth() {
     user,
     loading,
     error,
+    setUser,
     login,
     register,
     logout,

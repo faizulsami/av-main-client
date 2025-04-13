@@ -9,12 +9,15 @@ export default function OurJourney() {
         </h2>
 
         <div className="flex flex-col items-center gap-8">
-          <div className="space-y-6 text-center max-w-4xl mx-auto">
-            <h3 className="text-xl md:text-2xl font-bold text-soft-paste leading-tight ">
+          <div className="space-y-6 max-w-4xl mx-auto">
+            <h3 className="text-xl md:text-2xl text-center font-bold text-soft-paste leading-tight ">
               Committed to Your Mental <br /> Wellness with Compassionate Care
             </h3>
 
-            <div className="space-y-4 text-muted-foreground text-md">
+            <div
+              className="space-y-4 text-muted-foreground text-md text-"
+              style={{ textAlign: "justify", textJustify: "inter-word" }}
+            >
               <p className="leading-relaxed text-md">
                 It all started one day when one of the three of us was visibly
                 exhausted and struggling to concentrate. When we asked her what
@@ -63,7 +66,10 @@ export default function OurJourney() {
             />
           </div>
 
-          <div className="space-y-4 text-muted-foreground text-md max-w-4xl mx-auto text-center">
+          <div
+            className="space-y-4 text-muted-foreground text-md max-w-4xl mx-auto"
+            style={{ textAlign: "justify", textJustify: "inter-word" }}
+          >
             <p className="leading-relaxed">
               And then, a few days later, we had a thought: why not create
               something ourselves that could address all these concerns? As we

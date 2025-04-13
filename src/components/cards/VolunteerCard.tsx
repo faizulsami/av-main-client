@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Phone, MessageCircle, CalendarCheck } from "lucide-react";
@@ -10,6 +11,8 @@ import { useAuth } from "@/hooks/useAuth";
 import type { ActionType } from "../pages/home/hero/Hero";
 import { SessionConfirmDialog } from "@/app/(marketing)/(session)/sessions/_components/SessionConfirmDialog";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useEffect, useState } from "react";
+import api from "@/config/axios.config";
 
 interface VolunteerProps {
   name: string;
@@ -27,6 +30,7 @@ interface VolunteerProps {
   onChat?: () => void;
   onBookCall?: () => void;
   actionType: ActionType;
+  user: any;
 }
 
 interface Expertise {
@@ -39,7 +43,9 @@ export default function VolunteerCard({
   gender,
   isOnline,
   actionType,
+  user,
 }: VolunteerProps) {
+  const [allAppointments, setAllAppointments] = useState([]);
   const { isAuthenticated, userRole } = useAuth();
   const router = useRouter();
 
@@ -64,6 +70,40 @@ export default function VolunteerCard({
   };
 
   const isDisabled = userRole && userRole !== "mentee" && userRole !== "guest";
+
+  useEffect(() => {
+    const fetchBookingDetails = async () => {
+      try {
+        const { data } = await api.get(`/api/v1/appointments`);
+        const filterAppointments = data?.data?.filter(
+          (appointment: any) =>
+            appointment.appointmentType ===
+              (actionType === "chat"
+                ? "Chat"
+                : actionType == "quick-call"
+                  ? "Quick Call"
+                  : "Booking Call") &&
+            appointment.menteeUserName === user?.userName,
+        );
+
+        setAllAppointments(filterAppointments);
+        if (!data?.data) {
+          throw new Error("Booking not found");
+        }
+      } catch (error) {
+        console.error("Error fetching booking details: ", error);
+
+        // router.push("/");
+      }
+    };
+    fetchBookingDetails();
+  }, []);
+
+  const isCompleted = allAppointments?.some(
+    (appointment: any) => appointment.status !== "completed",
+  );
+
+  console.log(isCompleted);
 
   return (
     <Card className="overflow-hidden transition-all hover:shadow-md bg-soft-paste-light-hover">
@@ -113,6 +153,7 @@ export default function VolunteerCard({
             <div className="grid grid-cols-1 gap-2 w-full">
               {isButtonEnabled("quick-call") && (
                 <Button
+                  disabled={isCompleted}
                   className=" h-9 text-xs font-bold bg-soft-paste hover:bg-soft-paste-dark text-white"
                   onClick={() => handleAction("quick-call")}
                 >
@@ -123,6 +164,7 @@ export default function VolunteerCard({
 
               {isButtonEnabled("chat") && (
                 <Button
+                  disabled={isCompleted}
                   className="h-9 text-xs font-bold bg-violet hover:bg-violet-dark text-white"
                   onClick={() => handleAction("chat")}
                 >

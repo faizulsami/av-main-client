@@ -210,13 +210,11 @@ export default function PostBlog() {
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="self-care">Self Care</SelectItem>
-                  <SelectItem value="mental-health">Mental Health</SelectItem>
-                  <SelectItem value="well-being">Well Being</SelectItem>
-                  <SelectItem value="self-improvement">
-                    Self Improvement
-                  </SelectItem>
+                  <SelectItem value="psychology">Psychology</SelectItem>
                   <SelectItem value="wellness-guide">Wellness Guide</SelectItem>
+                  <SelectItem value="relationships">Relationships</SelectItem>
+                  <SelectItem value="therapy">Therapy</SelectItem>
+                  <SelectItem value="trending">Trending</SelectItem>
                 </SelectContent>
               </Select>
             </div>

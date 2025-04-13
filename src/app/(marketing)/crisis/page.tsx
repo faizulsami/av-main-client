@@ -2,8 +2,8 @@ import React from "react";
 
 const Crisis = () => {
   return (
-    <div className="space-y-6 text-muted-foreground text-sm max-w-3xl mx-auto text-center py-8">
-      <h1 className="text-2xl font-bold text-violet">
+    <div className="space-y-6 text-muted-foreground mx-auto text-center py-8">
+      <h1 className="text-2xl md:text-4xl font-bold text-violet">
         Crisis Intervention Plan
       </h1>
       <p>

@@ -53,16 +53,16 @@ export default function ContactForm() {
 
     try {
       await emailjs.send(
-        "av_mail_service",
-        "template_zq8s5br",
+        "service_5rpdj2q",
+        "template_oxlykxo",
         {
-          from_name: `${data.firstName} ${data.lastName}`,
-          from_email: data.email,
+          name: `${data.firstName} ${data.lastName}`,
+          email: data.email,
           phone_number: data.phoneNumber,
           subject: data.subject,
           message: data.message,
         },
-        "oWgFw-BVvUQC-W8HC",
+        "2U6U8oLfEKrCvPP9Z",
       );
 
       setSubmitSuccess(true);
@@ -127,7 +127,6 @@ export default function ContactForm() {
               </FormItem>
             )}
           />
-          
         </div>
 
         <FormField

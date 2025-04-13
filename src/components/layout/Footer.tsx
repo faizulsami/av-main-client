@@ -43,7 +43,7 @@ export function Footer() {
 
   const onSubmit = async (data: NewsletterFormData) => {
     try {
-      await api.post("/newsletter/subscribe", {
+      await api.post("/api/v1/newsletter/subscribe", {
         email: data.email,
       });
 
@@ -137,6 +137,14 @@ export function Footer() {
 
           <div className="text-xs text-white/80">
             © Copyright {currentYear} - Anonymous Voices. All rights reserved.
+            Design & Development by{" "}
+            <Link
+              target="_blank"
+              href={"www.craflex.com"}
+              className="text-[#4dffb5] font-bold"
+            >
+              CRAFLEX
+            </Link>
           </div>
         </div>
         <div

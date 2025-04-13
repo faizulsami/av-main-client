@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
@@ -34,6 +35,9 @@ import { get_socket } from "@/utils/get-socket";
 import { useAppointments } from "@/hooks/useAppointments";
 import { AppointmentService } from "@/services/appointment.service";
 import { Socket } from "socket.io-client";
+import { useUserStore } from "@/services/user.service";
+import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 // Advanced Navigation Types
 interface NavItemBase {
@@ -113,6 +117,16 @@ const mainNavItems: NavItem[] = [
         label: "Contact",
         link: "/contact",
       },
+      {
+        id: "analysis-report",
+        label: "Resources",
+        link: "/analysis-report",
+      },
+      // {
+      //   id: "crisis-intervention",
+      //   label: "Crisis Intervention Plan",
+      //   link: "/crisis",
+      // },
     ],
   },
 ];
@@ -240,6 +254,7 @@ const MobileAccordionItem: React.FC<{
 };
 
 const Header: React.FC = () => {
+  // const { toast } = useToast();
   const pathname = usePathname();
   const { user, loading, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -249,14 +264,48 @@ const Header: React.FC = () => {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [notificationsLoading, setNotificationsLoading] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const {
+    user: currentUser,
+    initialized,
+    fetchUserById,
+    error,
+  } = useUserStore();
 
   const [socket, setSocket] = useState<Socket | null>(null);
   const [newNotification, setNewNotification] = useState(false);
   const [showChat, setShowChat] = useState(false);
 
   useEffect(() => {
+    if (!user?.id) return;
+
+    const intervalId = setInterval(() => {
+      if (user?.id) {
+        fetchUserById(user.id);
+      }
+    }, 5000); // 3000ms = 3 seconds
+
+    fetchUserById(user.id);
+
+    // Cleanup on unmount or user.id change
+    return () => clearInterval(intervalId);
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    if (initialized && (!currentUser?.data || error !== null)) {
+      logout();
+
+      toast.error("You're removed as listener by admin!", {
+        duration: 15000,
+      });
+    }
+  }, [initialized, currentUser, error]);
+
+  useEffect(() => {
     setSocket(get_socket());
   }, []);
+
   useEffect(() => {
     if (!socket || !user) return;
     socket.emit("join", { fromUsername: user.userName });
@@ -297,7 +346,7 @@ const Header: React.FC = () => {
   useEffect(() => {
     if (!socket) return;
 
-    socket.on("is-able-to-chat", (data: any) => {
+    socket.on("is-able-to-chat", (_data: any) => {
       setShowChat(!showChat);
     });
   }, [socket]);
@@ -320,13 +369,13 @@ const Header: React.FC = () => {
     };
 
     if (user && (user?.role === "admin" || user?.role === "mentor")) {
-      fetchUserNotifications(user.role as any);
+      fetchUserNotifications(user?.role as any);
     }
   }, [user?.role, user]);
   // User navigation items
   const userNavItems: NavItem[] = user
     ? [
-        ...(user.role === "admin"
+        ...(currentUser?.data?.role === "admin"
           ? [
               {
                 id: "dashboard",
@@ -334,7 +383,8 @@ const Header: React.FC = () => {
                 href: "/dashboard/listeners",
               },
             ]
-          : user.role === "mentor"
+          : currentUser?.data?.role === "mentor" &&
+              currentUser?.data?.adminApproval
             ? [
                 {
                   id: "dashboard",
@@ -360,25 +410,26 @@ const Header: React.FC = () => {
 
   const combinedNavItems = [...mainNavItems, ...userNavItems];
 
-  if (loading) {
+  if (isLoading) {
     return <Loading />;
   }
 
   // Mobile Navigation Trigger
   const MobileNavTrigger = () => (
     <div className="lg:hidden flex items-center">
-      {user ? (
+      {currentUser?.data ? (
         <div className="flex items-center gap-4 text-soft-paste">
-          {user?.role !== "admin" && user?.role !== "mentee" && (
-            <Link href="/chat">
-              <Mail size={18} className="text-soft-paste" />
-            </Link>
-          )}
-          {user?.role === "mentee" &&
+          {currentUser?.data?.role !== "admin" &&
+            currentUser?.data?.role !== "mentee" && (
+              <Link href="/chat">
+                <Mail size={18} className="text-soft-paste" />
+              </Link>
+            )}
+          {currentUser?.data?.role === "mentee" &&
             !isLoading &&
             !!appointments?.find(
               (item: any) =>
-                user?.userName === item?.menteeUserName &&
+                currentUser?.data?.userName === item?.menteeUserName &&
                 item?.status === "confirmed",
             ) && (
               <Link href="/chat">
@@ -386,7 +437,7 @@ const Header: React.FC = () => {
               </Link>
             )}
 
-          {user?.role !== "mentee" && (
+          {currentUser?.data?.role !== "mentee" && (
             <>
               <Button
                 variant="none"
@@ -453,7 +504,7 @@ const Header: React.FC = () => {
                   alt={"man"}
                   width={70}
                   height={70}
-                  className={" bg-white"}
+                  className={""}
                 />
                 <div className=" text-white">
                   <p>{notification.content} </p>
@@ -494,7 +545,7 @@ const Header: React.FC = () => {
           <SheetTitle>
             <Link href="/" className="flex items-center">
               <Image
-                src="/images/av.png"
+                src="/images/logo.svg"
                 alt="Anonymous Voices Logo"
                 width={100}
                 height={50}
@@ -579,16 +630,17 @@ const Header: React.FC = () => {
     <div className="hidden lg:flex items-center space-x-3 relative">
       {user ? (
         <div className="flex items-center space-x-2 text-soft-paste">
-          {user?.role !== "admin" && user?.role !== "mentee" && (
-            <Link href="/chat">
-              <Mail size={18} className="text-soft-paste" />
-            </Link>
-          )}
-          {user?.role === "mentee" &&
+          {currentUser?.data?.role !== "admin" &&
+            currentUser?.data?.role !== "mentee" && (
+              <Link href="/chat">
+                <Mail size={18} className="text-soft-paste" />
+              </Link>
+            )}
+          {currentUser?.data?.role === "mentee" &&
             !isLoading &&
             !!appointments?.find(
               (item: any) =>
-                user?.userName === item?.menteeUserName &&
+                currentUser?.data?.userName === item?.menteeUserName &&
                 item?.status === "confirmed",
             ) && (
               <Link href="/chat">
@@ -596,7 +648,7 @@ const Header: React.FC = () => {
               </Link>
             )}
 
-          {user?.role !== "mentee" && (
+          {currentUser?.data?.role !== "mentee" && (
             <>
               <Button
                 variant="none"
@@ -633,7 +685,7 @@ const Header: React.FC = () => {
 
           <UserDropdown
             userRole={{
-              role: user.role,
+              role: currentUser?.data?.role,
               logout,
             }}
           />
@@ -658,7 +710,7 @@ const Header: React.FC = () => {
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
             <Image
-              src="/images/av.png"
+              src="/images/logo.svg"
               alt="Anonymous Voices Logo"
               width={100}
               height={100}
