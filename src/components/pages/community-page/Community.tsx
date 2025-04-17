@@ -658,7 +658,7 @@ export default function Community() {
           {/* Right Column - Community Info */}
           <div className="w-full lg:w-1/3">
             <div className="bg-white border border-purple-200 rounded-lg overflow-hidden shadow-md">
-              <div className="aspect-video relative bg-gradient-to-r from-purple-400 to-teal-300">
+              {/* <div className="aspect-video relative bg-gradient-to-r from-purple-400 to-teal-300">
                 <Image
                   src={"/images/avatar/man.png"}
                   width={48}
@@ -666,7 +666,7 @@ export default function Community() {
                   alt={"avatar"}
                   className="h-full w-full object-cover opacity-75"
                 />
-              </div>
+              </div> */}
               <div className="p-6">
                 <h2 className="text-xl font-bold mb-2 text-gray-800">
                   Anonymous Voices Community
