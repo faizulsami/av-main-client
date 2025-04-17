@@ -138,13 +138,13 @@ export function Footer() {
           <div className="text-xs text-white/80">
             © Copyright {currentYear} - Anonymous Voices. All rights reserved.
             Design & Development by{" "}
-            <Link
+            <a
               target="_blank"
-              href={"www.craflex.com"}
+              href={"https://craflex.com/"}
               className="text-[#4dffb5] font-bold"
             >
               CRAFLEX
-            </Link>
+            </a>
           </div>
         </div>
         <div
