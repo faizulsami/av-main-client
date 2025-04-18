@@ -255,6 +255,7 @@ export default function OneToOneChatInterface() {
       setCallEndedUsername(username);
       connectionRef.current?.destroy();
       if (user_audio.current) user_audio.current.srcObject = null;
+      if (window !== undefined) alert("call ended");
     });
 
     socket.on("user:disconnected", (data) => {
