@@ -563,6 +563,7 @@ export default function ChatInterface() {
             selectedUser={selectedUser}
             onStatusUpdate={() => {
               setSelectedUser(null);
+              handleEndCall();
               refetch();
             }}
           />

@@ -507,6 +507,7 @@ export default function OneToOneChatInterface() {
             selectedUser={selectedUser}
             onStatusUpdate={() => {
               setSelectedUser(null);
+              handleEndCall();
             }}
           />
         </aside>
