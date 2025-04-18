@@ -83,9 +83,9 @@ export default function PostBlog() {
 
     try {
       const slug = post.blogTitle
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "");
+        ?.toLowerCase()
+        ?.replace(/[^a-z0-9]+/g, "-")
+        ?.replace(/(^-|-$)/g, "");
 
       const blogData = {
         ...post,
