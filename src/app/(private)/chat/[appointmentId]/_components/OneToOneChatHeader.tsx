@@ -48,7 +48,7 @@ export const OneToOneChatHeader: React.FC<ChatHeaderProps> = ({
           </Button>
         </SheetTrigger>
 
-        <SheetContent side="left" className="w-80 p-0 flex flex-col">
+        <SheetContent side="left" className="w-80  p-0 flex flex-col">
           <div className="sticky top-0 bg-background/80 backdrop-blur-sm border-b z-10">
             <div className="p-4">
               <h2 className="text-lg font-semibold">Messages</h2>

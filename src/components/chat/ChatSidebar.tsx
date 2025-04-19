@@ -15,15 +15,24 @@ import { getFilteredAppointments } from "@/utils/appointmentFilter";
 interface ChatSidebarProps {
   setSelectedUser: React.Dispatch<React.SetStateAction<ChatContact | null>>;
   selectedUser: ChatContact | null;
+  username?: string;
+  mentee?: string;
 }
 
 const ChatSidebar: React.FC<ChatSidebarProps> = ({
   setSelectedUser,
   selectedUser,
+  username,
+  mentee,
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { appointments, refetch } = useAppointments();
+  const { appointments, refetch } = useAppointments({
+    status: "confirmed",
+    limit: 200,
+    ...(username && { mentorUserName: username }),
+    ...(mentee && { menteeUserName: mentee }),
+  });
 
   const currentActiveUser = React.useMemo(
     () => AuthService.getStoredUser(),
@@ -31,7 +40,9 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   );
 
   const filteredAppointments = React.useMemo(() => {
-    if (!currentActiveUser?.userName || !currentActiveUser?.role) return [];
+    if (!currentActiveUser?.userName || !currentActiveUser?.role) {
+      return [];
+    }
 
     return getFilteredAppointments(
       appointments,
@@ -89,8 +100,8 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             )?.mentorUserName,
         )
       : uniqueContacts;
-  }, [appointments, currentActiveUser]);
-
+  }, [appointments, filteredAppointments, currentActiveUser]);
+  console.log({ filteredContacts });
   const matchedContacts = React.useMemo(() => {
     return getMatchedContacts(
       filteredContacts,

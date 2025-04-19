@@ -527,7 +527,7 @@ export default function ChatInterface() {
             </DialogContent>
           </Dialog>
         ))}
-      <aside className="hidden md:flex w-full max-w-[16vw] flex-col border-r">
+      <aside className="hidden md:flex w-full max-w-[16vw]  flex-col border-r">
         {/* {isLoading ? (
           <Skeleton className="w-full h-full" />
         ) : (
@@ -539,6 +539,12 @@ export default function ChatInterface() {
         <ChatSidebar
           setSelectedUser={setSelectedUser}
           selectedUser={selectedUser}
+          {...(currentUser.role === "mentor" && {
+            username: currentUser.username,
+          })}
+          {...(currentUser.role === "mentee" && {
+            mentee: currentUser.username,
+          })}
         />
       </aside>
       <ChatMessages
