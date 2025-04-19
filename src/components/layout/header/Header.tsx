@@ -293,7 +293,7 @@ const Header: React.FC = () => {
   useEffect(() => {
     if (!user) return;
 
-    if (initialized && (!currentUser?.data || error !== null)) {
+    if (initialized && (!user || error !== null)) {
       logout();
 
       toast.error("You're removed as listener by admin!", {
@@ -353,7 +353,6 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     const fetchUserNotifications = async (role: "admin" | "mentor") => {
-      console.log(266, { role });
       setNotificationsLoading(true);
       try {
         if (!user) return;
@@ -375,7 +374,7 @@ const Header: React.FC = () => {
   // User navigation items
   const userNavItems: NavItem[] = user
     ? [
-        ...(currentUser?.data?.role === "admin"
+        ...(user?.role === "admin"
           ? [
               {
                 id: "dashboard",
@@ -383,8 +382,7 @@ const Header: React.FC = () => {
                 href: "/dashboard/listeners",
               },
             ]
-          : currentUser?.data?.role === "mentor" &&
-              currentUser?.data?.adminApproval
+          : user?.role === "mentor"
             ? [
                 {
                   id: "dashboard",
@@ -417,19 +415,18 @@ const Header: React.FC = () => {
   // Mobile Navigation Trigger
   const MobileNavTrigger = () => (
     <div className="lg:hidden flex items-center">
-      {currentUser?.data ? (
+      {user ? (
         <div className="flex items-center gap-4 text-soft-paste">
-          {currentUser?.data?.role !== "admin" &&
-            currentUser?.data?.role !== "mentee" && (
-              <Link href="/chat">
-                <Mail size={18} className="text-soft-paste" />
-              </Link>
-            )}
-          {currentUser?.data?.role === "mentee" &&
+          {user?.role !== "admin" && user?.role !== "mentee" && (
+            <Link href="/chat">
+              <Mail size={18} className="text-soft-paste" />
+            </Link>
+          )}
+          {user?.role === "mentee" &&
             !isLoading &&
             !!appointments?.find(
               (item: any) =>
-                currentUser?.data?.userName === item?.menteeUserName &&
+                user?.userName === item?.menteeUserName &&
                 item?.status === "confirmed",
             ) && (
               <Link href="/chat">
@@ -437,7 +434,7 @@ const Header: React.FC = () => {
               </Link>
             )}
 
-          {currentUser?.data?.role !== "mentee" && (
+          {user?.role !== "mentee" && (
             <>
               <Button
                 variant="none"
@@ -630,17 +627,16 @@ const Header: React.FC = () => {
     <div className="hidden lg:flex items-center space-x-3 relative">
       {user ? (
         <div className="flex items-center space-x-2 text-soft-paste">
-          {currentUser?.data?.role !== "admin" &&
-            currentUser?.data?.role !== "mentee" && (
-              <Link href="/chat">
-                <Mail size={18} className="text-soft-paste" />
-              </Link>
-            )}
-          {currentUser?.data?.role === "mentee" &&
+          {user?.role !== "admin" && user?.role !== "mentee" && (
+            <Link href="/chat">
+              <Mail size={18} className="text-soft-paste" />
+            </Link>
+          )}
+          {user?.role === "mentee" &&
             !isLoading &&
             !!appointments?.find(
               (item: any) =>
-                currentUser?.data?.userName === item?.menteeUserName &&
+                user?.userName === item?.menteeUserName &&
                 item?.status === "confirmed",
             ) && (
               <Link href="/chat">
@@ -648,7 +644,7 @@ const Header: React.FC = () => {
               </Link>
             )}
 
-          {currentUser?.data?.role !== "mentee" && (
+          {user?.role !== "mentee" && (
             <>
               <Button
                 variant="none"
@@ -685,7 +681,7 @@ const Header: React.FC = () => {
 
           <UserDropdown
             userRole={{
-              role: currentUser?.data?.role,
+              role: user?.role,
               logout,
             }}
           />
