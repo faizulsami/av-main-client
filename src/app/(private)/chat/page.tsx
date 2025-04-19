@@ -80,6 +80,7 @@ export default function ChatInterface() {
     isCaller: boolean;
   } | null>(null);
   const [me, setMe] = useState("");
+  const [micAccess, setMicAccess] = useState(false);
   const [callerSocketId, setCallerSocketId] = useState("");
   const connectionRef = useRef<any>(null);
 
@@ -171,7 +172,15 @@ export default function ChatInterface() {
     setMessageInput("");
     scrollToBottom();
   };
-
+  useEffect(() => {
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach((track) => {
+          track.stop();
+        });
+      }
+    };
+  }, []);
   useEffect(() => {
     setFilteredContacts(filteredContacts);
   }, [filteredContacts, setFilteredContacts]);
@@ -332,10 +341,24 @@ export default function ChatInterface() {
         setStream(stream);
       })
       .catch((err) => {
-        console.error("Error getting user media:", err);
+        if (String(err).includes("NotAllowedError")) {
+          toast({
+            title: "Unable to access microphone",
+            description: "please allow access",
+            duration: 3000,
+            variant: "destructive",
+          });
+          return;
+        } else {
+          toast({
+            title: "Something went wrong",
+            description: "please try again",
+            duration: 3000,
+            variant: "destructive",
+          });
+          return;
+        }
       });
-
-    if (!stream) return;
 
     const peer = new Peer({
       initiator: false,
@@ -411,12 +434,27 @@ export default function ChatInterface() {
           track.enabled = true;
         });
         setStream(stream);
+        setMicAccess(true);
       })
       .catch((err) => {
-        console.error("Error getting user media:", err);
+        if (String(err).includes("NotAllowedError")) {
+          toast({
+            title: "Unable to access microphone",
+            description: "please allow access",
+            duration: 3000,
+            variant: "destructive",
+          });
+          return;
+        } else {
+          toast({
+            title: "Something went wrong",
+            description: "please try again",
+            duration: 3000,
+            variant: "destructive",
+          });
+          return;
+        }
       });
-
-    if (!stream) return;
 
     const toastId = toast({
       title: "Calling...",

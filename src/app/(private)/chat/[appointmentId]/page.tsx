@@ -84,6 +84,7 @@ export default function OneToOneChatInterface() {
   } | null>(null);
   const [me, setMe] = useState("");
   const [callerSocketId, setCallerSocketId] = useState("");
+  const [micAccess, setMicAccess] = useState(false);
   const connectionRef = useRef<any>(null);
 
   const currentActiveUser = useMemo(() => AuthService.getStoredUser(), []);
@@ -141,7 +142,15 @@ export default function OneToOneChatInterface() {
     setMessageInput("");
     scrollToBottom();
   };
-
+  useEffect(() => {
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach((track) => {
+          track.stop();
+        });
+      }
+    };
+  }, []);
   useEffect(() => {
     if (!currentActiveUser?.userName) return;
 
@@ -359,12 +368,28 @@ export default function OneToOneChatInterface() {
           track.enabled = true;
         });
         setStream(stream);
+        setMicAccess(true);
       })
       .catch((err) => {
-        console.error("Error getting user media:", err);
+        if (String(err).includes("NotAllowedError")) {
+          toast({
+            title: "Unable to access microphone",
+            description: "please allow access",
+            duration: 3000,
+            variant: "destructive",
+          });
+          return;
+        } else {
+          toast({
+            title: "Something went wrong",
+            description: "please try again",
+            duration: 3000,
+            variant: "destructive",
+          });
+          return;
+        }
       });
 
-    if (!stream) return;
     const toastId = toast({
       title: "Calling...",
       description: `Calling ${selectedUser?.menteeUserName}`,
@@ -440,7 +465,7 @@ export default function OneToOneChatInterface() {
     setShowCallScreen(null);
     connectionRef.current?.destroy();
     if (user_audio.current) user_audio.current.srcObject = null;
-    console.log({ role: user?.role });
+
     if (user?.role === "mentor") {
       socket.emit("call:ended", {
         needToEndCallUsername: selectedUser?.menteeUserName,
