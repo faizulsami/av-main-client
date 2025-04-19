@@ -217,17 +217,6 @@ export default function OneToOneChatInterface() {
   useEffect(() => {
     if (!socket) return;
 
-    navigator.mediaDevices
-      .getUserMedia({ audio: { deviceId: "default" } })
-      .then((stream) => {
-        stream.getAudioTracks().forEach((track) => {
-          track.enabled = true;
-        });
-        setStream(stream);
-      })
-      .catch((err) => {
-        console.error("Error getting user media:", err);
-      });
     socket.emit("join", { fromUsername: currentActiveUser?.userName });
     socket.on("me", (me: string) => {
       setMe(me);
@@ -362,8 +351,20 @@ export default function OneToOneChatInterface() {
   };
   // #region call function
   const handlePhoneClick = () => {
-    if (!socket || !selectedUser || !stream) return;
+    if (!socket || !selectedUser) return;
+    navigator.mediaDevices
+      .getUserMedia({ audio: { deviceId: "default" } })
+      .then((stream) => {
+        stream.getAudioTracks().forEach((track) => {
+          track.enabled = true;
+        });
+        setStream(stream);
+      })
+      .catch((err) => {
+        console.error("Error getting user media:", err);
+      });
 
+    if (!stream) return;
     const toastId = toast({
       title: "Calling...",
       description: `Calling ${selectedUser?.menteeUserName}`,
@@ -516,7 +517,7 @@ export default function OneToOneChatInterface() {
       {incomingCall && (
         <CallInviteDialog
           isOpen={!!incomingCall}
-          onOpenChange={(open) => !open && setIncomingCall(null)}
+          onOpenChange={() => {}}
           caller={incomingCall.callerUsername}
           onAccept={handleAcceptCall}
           onReject={handleRejectCall}

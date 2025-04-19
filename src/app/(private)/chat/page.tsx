@@ -264,17 +264,6 @@ export default function ChatInterface() {
   useEffect(() => {
     if (!socket) return;
 
-    navigator.mediaDevices
-      .getUserMedia({ audio: { deviceId: "default" } })
-      .then((stream) => {
-        stream.getAudioTracks().forEach((track) => {
-          track.enabled = true;
-        });
-        setStream(stream);
-      })
-      .catch((err) => {
-        console.error("Error getting user media:", err);
-      });
     socket.emit("join", { fromUsername: currentUser.username });
     socket.on("me", (me: string) => {
       setMe(me);
@@ -332,8 +321,21 @@ export default function ChatInterface() {
   }, [socket, currentUser.username, incomingCall?.callerSocketId]);
 
   const handleAcceptCall = () => {
-    if (!incomingCall || !socket || !currentUser.username || !stream || !me)
-      return;
+    if (!incomingCall || !socket || !currentUser.username || !me) return;
+
+    navigator.mediaDevices
+      .getUserMedia({ audio: { deviceId: "default" } })
+      .then((stream) => {
+        stream.getAudioTracks().forEach((track) => {
+          track.enabled = true;
+        });
+        setStream(stream);
+      })
+      .catch((err) => {
+        console.error("Error getting user media:", err);
+      });
+
+    if (!stream) return;
 
     const peer = new Peer({
       initiator: false,
@@ -400,7 +402,21 @@ export default function ChatInterface() {
   };
   // #region call function
   const handlePhoneClick = () => {
-    if (!socket || !selectedUser || !stream) return;
+    if (!socket || !selectedUser) return;
+
+    navigator.mediaDevices
+      .getUserMedia({ audio: { deviceId: "default" } })
+      .then((stream) => {
+        stream.getAudioTracks().forEach((track) => {
+          track.enabled = true;
+        });
+        setStream(stream);
+      })
+      .catch((err) => {
+        console.error("Error getting user media:", err);
+      });
+
+    if (!stream) return;
 
     const toastId = toast({
       title: "Calling...",
@@ -578,8 +594,8 @@ export default function ChatInterface() {
       )}
       {incomingCall && (
         <CallInviteDialog
-          isOpen={!!incomingCall}
-          onOpenChange={(open) => !open && setIncomingCall(null)}
+          isOpen={true}
+          onOpenChange={() => {}}
           caller={incomingCall.callerUsername}
           onAccept={handleAcceptCall}
           onReject={handleRejectCall}

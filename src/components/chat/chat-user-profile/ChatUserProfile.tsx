@@ -55,6 +55,12 @@ const UserProfile: React.FC<UserProfileProps> = ({
       await AppointmentService.updateAppointment(selectedUser.id, {
         status: "cancelled",
       });
+
+      const socket = get_socket();
+      socket.emit("appointment-completed", {
+        menteeUserName: selectedUser.username,
+      });
+
       toast({
         title: "Success",
         description: "Appointment cancelled successfully",

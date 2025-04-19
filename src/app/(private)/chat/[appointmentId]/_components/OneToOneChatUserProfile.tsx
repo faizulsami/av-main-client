@@ -65,8 +65,12 @@ const OneToOneChatUserProfile: React.FC<UserProfileProps> = ({
 
   const handleCancel = async () => {
     try {
+      if (!socket) return;
       await AppointmentService.updateAppointment(selectedUser._id, {
         status: "cancelled",
+      });
+      socket.emit("appointment-completed", {
+        menteeUserName: selectedUser.menteeUserName,
       });
       toast({
         title: "Success",
