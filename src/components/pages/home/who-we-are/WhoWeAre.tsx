@@ -61,7 +61,7 @@ export default function WhoWeAre() {
       {/* Main Content Container */}
       <div>
         <motion.h2
-          className="text-xl md:text-4xl font-bold text-violet mb-4 lg:mb-8 text-center"
+          className="text-2xl md:text-4xl font-bold text-violet mb-4 lg:mb-8 text-center"
           {...fadeIn}
           transition={{ delay: 0.2 }}
         >
@@ -77,9 +77,14 @@ export default function WhoWeAre() {
             <Image
               src={image}
               alt={altImg}
-              className="object-cover"
+              className="object-cover md:block hidden"
               fill
               priority
+            />
+            <img
+              src={image}
+              alt={altImg}
+              className="w-full h-40 md:hidden block"
             />
           </motion.div>
 

@@ -53,7 +53,10 @@ export default function ListenerSection() {
         <div className="space-y-12 mt-4">
           {/* Text Content */}
           <div className="space-y-8">
-            <p className="text-muted-foreground leading-relaxed text-sm text-center lg:text-start">
+            <p
+              className="text-muted-foreground leading-relaxed text-sm"
+              style={{ textAlign: "justify", textJustify: "inter-word" }}
+            >
               Anonymous Voices is a youth-driven mental wellness organization in
               Bangladesh. We provide confidential support to individuals seeking
               a safe space to share their feelings. As a volunteer listener, you
