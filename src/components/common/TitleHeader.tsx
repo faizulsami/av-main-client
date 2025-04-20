@@ -8,12 +8,9 @@ const TitleHeader: React.FC<TitleHeaderProps> = ({ title }) => {
   const headerText = typeof title === "function" ? title() : title;
 
   return (
-    <div className="relative mb-8 w-full">
+    <div className="relative mb-0 md:mb-8 w-full">
       <div className="absolute inset-0">
-        <div
-          className="absolute inset-0 bg-cover bg-center rounded-lg bg-[#b4c7e7]"
-          
-        />
+        <div className="absolute inset-0 bg-cover bg-center rounded-lg bg-[#b4c7e7]" />
         <div className="absolute top-0 left-0 w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16">
           <div className="absolute inset-0 rounded-full -translate-x-1/4 -translate-y-1/4" />
           <div className="absolute inset-0 rounded-full translate-x-1/4 translate-y-1/4 scale-75" />

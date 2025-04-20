@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function DonationDetails() {
   return (
-    <section className="w-full py-16">
+    <section className="w-full md:py-8">
       <div className="">
         {/* <h1 className="text-2xl font-bold text-center text-violet mb-12">
           Donation Details
@@ -73,7 +73,10 @@ export default function DonationDetails() {
             Support Our Mission
           </h2>
           <p className="text-md">
-          Anonymous Voices is a growing platform, your generosity can help us expand our reach and continue providing support to those in need. Every contribution, no matter how small, can make a big impact. With your generous donation, we will be able to:
+            Anonymous Voices is a growing platform, your generosity can help us
+            expand our reach and continue providing support to those in need.
+            Every contribution, no matter how small, can make a big impact. With
+            your generous donation, we will be able to:
           </p>
           <ul className="list-disc list-inside mt-4">
             <li>Expand our services and reach even more individuals.</li>
@@ -97,8 +100,13 @@ export default function DonationDetails() {
             guide you through the donation process.
           </p>
           <p className="mt-4 font-medium">Our Email address</p>
-          <a className="text-blue-500" href="mailto:anonymous.voices.av@gmail.com"><p>anonymous.voices.av@gmail.com</p></a>
-          
+          <a
+            className="text-blue-500"
+            href="mailto:anonymous.voices.av@gmail.com"
+          >
+            <p>anonymous.voices.av@gmail.com</p>
+          </a>
+
           <p className="mt-4">
             Thank you for believing in our mission and for helping us create a
             space where everyone feels heard and valued.

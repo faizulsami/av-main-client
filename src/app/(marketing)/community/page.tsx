@@ -13,7 +13,7 @@ const CommunityPage = () => {
       style={{ backgroundImage: "url('/images/overlay/about-overlay.png')" }}
     >
       <div className="container mx-auto px-4 py-8 space-y-12 md:space-y-20">
-        <TitleHeader title="Post Our Community" />
+        <TitleHeader title="Community Post" />
         <Community></Community>
       </div>
     </div>
