@@ -137,6 +137,10 @@ export default function OneToOneChatInterface() {
 
     const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL!, {
       auth: { username: currentActiveUser?.userName },
+      transports: ["polling", "websocket"],
+      reconnection: true,
+      reconnectionAttempts: 3,
+      reconnectionDelay: 5000,
     });
     setSocket(newSocket);
 
