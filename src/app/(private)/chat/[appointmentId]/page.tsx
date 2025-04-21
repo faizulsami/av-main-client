@@ -139,7 +139,6 @@ export default function OneToOneChatInterface() {
       auth: { username: currentActiveUser?.userName },
       path: "/socket.io",
       transports: ["websocket"],
-      withCredentials: true,
     });
     setSocket(newSocket);
 

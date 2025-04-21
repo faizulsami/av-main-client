@@ -6,7 +6,6 @@ const socket = io(process.env.NEXT_PUBLIC_API_URL, {
   },
   path: "/socket.io",
   transports: ["websocket"],
-  withCredentials: true,
 });
 
 export default socket;

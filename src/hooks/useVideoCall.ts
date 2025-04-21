@@ -37,7 +37,6 @@ export function useVideoCall({
           auth: { username },
           path: "/socket.io",
           transports: ["websocket"],
-          withCredentials: true,
         });
 
         await new Promise<void>((resolve, reject) => {

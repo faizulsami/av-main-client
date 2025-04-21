@@ -192,7 +192,6 @@ export default function ChatInterface() {
       auth: { username: currentUser.username },
       path: "/socket.io",
       transports: ["websocket"],
-      withCredentials: true,
     });
     setSocket(newSocket);
 

@@ -29,7 +29,6 @@ class SocketService {
     this.socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
       auth: { token },
       transports: ["websocket"],
-      withCredentials: true,
     });
 
     this.socket.on("connect", () => {
