@@ -11,6 +11,7 @@ import { useState } from "react";
 import {
   CalendarClock,
   FileText,
+  Home,
   Mail,
   Menu,
   MessageSquare,
@@ -55,11 +56,6 @@ const getMentorNavItems = (): NavItem[] => [
     href: "/dashboard/notifications",
     icon: <Mail size={20} />,
   },
-  // {
-  //   title: "Profile",
-  //   href: "/dashboard/profile",
-  //   icon: <User size={20} />,
-  // },
 ];
 
 const getAdminNavItems = (): NavItem[] => [
@@ -88,22 +84,6 @@ const getAdminNavItems = (): NavItem[] => [
     href: "/dashboard/data-customization",
     icon: <Settings2 size={20} />,
   },
-
-  // {
-  //   title: "Listener",
-  //   href: "/dashboard/listener",
-  //   icon: <User size={20} />,
-  // },
-  // {
-  //   title: "Analytics",
-  //   href: "/dashboard/analytics",
-  //   icon: <CalendarClock size={20} />,
-  // },
-  // {
-  //   title: "Settings",
-  //   href: "/dashboard/settings",
-  //   icon: <Settings size={20} />,
-  // },
 ];
 
 export default function DashboardHeader() {
@@ -118,6 +98,11 @@ export default function DashboardHeader() {
   return (
     <header className="flex h-16 items-center justify-between border-b bg-white px-4 md:px-6">
       <div className="flex items-center gap-4">
+        <Link href="/" className="block md:hidden">
+          <Button variant="secondary" size="icon">
+            <Home size={20} />
+          </Button>
+        </Link>
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" className="md:hidden">

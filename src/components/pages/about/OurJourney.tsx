@@ -15,7 +15,7 @@ export default function OurJourney() {
             </h3>
 
             <div
-              className="space-y-4 text-muted-foreground text-md text-"
+              className="space-y-4 text-muted-foreground text-md"
               style={{ textAlign: "justify", textJustify: "inter-word" }}
             >
               <p className="leading-relaxed text-md">

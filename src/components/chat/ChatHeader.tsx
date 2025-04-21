@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, Undo2 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { CallButton } from "../call/call-button";
 import { useChatContactsStore } from "@/store/chat-contacts.store";
@@ -12,6 +12,7 @@ import { useChatStore } from "@/store/useChatStore";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ChatContact } from "@/types/chat.types";
 import { Badge } from "../ui/badge";
+import Link from "next/link";
 
 interface currentMentorUser {
   username: string;
@@ -110,6 +111,11 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   return (
     <header className="flex items-center gap-3 p-4 border-b">
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+        <Link href="/" className="md:hidden block">
+          <Button variant="ghost" size="icon">
+            <Undo2 size={20} />
+          </Button>
+        </Link>
         <SheetTrigger asChild>
           <Button variant="ghost" size="icon" className="md:hidden">
             <Menu className="h-5 w-5" />
