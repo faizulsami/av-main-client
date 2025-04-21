@@ -62,12 +62,12 @@ export default function OneToOneChatInterface() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [socket, setSocket] = useState<Socket | null>(null);
-  // const [users, setUsers] = useState<ChatContact[]>([]);
+
   const user_audio = useRef<HTMLVideoElement>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [selectedUser, setSelectedUser] = useState<ChatContact | null>(null);
   const [messageInput, setMessageInput] = useState("");
-  const [stream, setStream] = useState<MediaStream>();
+
   const [callEndedUsername, setCallEndedUsername] = useState("");
   const [callRejectUsername, setCallRejectUsername] = useState("");
 
@@ -83,8 +83,7 @@ export default function OneToOneChatInterface() {
     isCaller: boolean;
   } | null>(null);
   const [me, setMe] = useState("");
-  const [callerSocketId, setCallerSocketId] = useState("");
-  const [micAccess, setMicAccess] = useState(false);
+
   const connectionRef = useRef<any>(null);
 
   const currentActiveUser = useMemo(() => AuthService.getStoredUser(), []);
@@ -144,11 +143,7 @@ export default function OneToOneChatInterface() {
   };
   useEffect(() => {
     return () => {
-      if (stream) {
-        stream.getTracks().forEach((track) => {
-          track.stop();
-        });
-      }
+      sessionStorage.removeItem("caller");
     };
   }, []);
   useEffect(() => {
@@ -231,24 +226,26 @@ export default function OneToOneChatInterface() {
       setMe(me);
     });
 
-    socket.on(
-      "call:invite",
-      (invitation: {
-        signal: any;
-        receiverSocketId: string;
-        callerSocketId: string;
-        callerUsername: string;
-      }) => {
-        setIncomingCall(invitation);
-        setCallerSocketId(invitation.callerSocketId);
-      },
-    );
+    // socket.on(
+    //   "call:invite",
+    //   (invitation: {
+    //     signal: any;
+    //     receiverSocketId: string;
+    //     callerSocketId: string;
+    //     callerUsername: string;
+    //   }) => {
+    //     setIncomingCall(invitation);
+    //   },
+    // );
+    socket.on("call:receiver-socket-id", (data) => {
+      sessionStorage.setItem("caller", data.receiverSocketId);
+    });
 
-    socket.once("call:accept", () => {
+    socket.on("call:accept", () => {
       setShowCallScreen({ isCaller: true });
     });
 
-    socket.once("call:ended", (username) => {
+    socket.on("call:ended", (username) => {
       setShowCallScreen(null);
       setCallEndedUsername(username);
       connectionRef.current?.destroy();
@@ -257,107 +254,28 @@ export default function OneToOneChatInterface() {
     });
 
     socket.on("user:disconnected", (data) => {
-      if (incomingCall?.callerSocketId === data.disconnectedSocketId) {
+      const callerSocketId = sessionStorage.getItem("caller");
+      console.log({ callerSocketId, data });
+      if (callerSocketId === data.disconnectedSocketId) {
         handleEndCall();
       }
     });
 
-    socket.on("call:reject", () => {
-      setIncomingCall(null);
-    });
+    // socket.on("call:reject", () => {
+    //   setIncomingCall(null);
+    // });
     socket.on("call:rejected", (data) => {
-      setIncomingCall(null);
+      // setIncomingCall(null);
       setCallRejectUsername(data.receiverUsername);
     });
 
     return () => {
       if (socket) {
-        socket.off("call:accept");
-        socket.off("call:reject");
-        socket.off("call:invite");
-        socket.off("call:ended");
-        socket.off("user:disconnected");
-        socket.off("me");
+        socket.disconnect();
       }
     };
-  }, [socket, currentActiveUser?.userName, incomingCall?.callerSocketId]);
+  }, [socket, currentActiveUser?.userName]);
 
-  const handleAcceptCall = () => {
-    if (
-      !incomingCall ||
-      !socket ||
-      !currentActiveUser?.userName ||
-      !stream ||
-      !me
-    )
-      return;
-    console.log({
-      username: process.env.NEXT_PUBLIC_TURN_SERVER_USERNAME,
-      password: process.env.NEXT_PUBLIC_TURN_SERVER_PASSWORD,
-    });
-    const peer = new Peer({
-      initiator: false,
-      trickle: false,
-      stream: stream,
-      config: {
-        iceServers: [
-          {
-            urls: `stun:stun.anonymousvoicesav.com`,
-          },
-          {
-            urls: `turn:stun.anonymousvoicesav.com`,
-            username: process.env.NEXT_PUBLIC_TURN_SERVER_USERNAME,
-            credential: process.env.NEXT_PUBLIC_TURN_SERVER_PASSWORD,
-          },
-        ],
-      },
-    });
-
-    peer.on("signal", (signal) => {
-      socket.emit("call:accept", {
-        receiverSocketId: incomingCall.callerSocketId,
-        callerSocketId: me,
-        signal,
-      });
-    });
-
-    peer.on("stream", (remoteStream) => {
-      const audioCtx = new AudioContext();
-      const analyser = audioCtx.createAnalyser();
-      const source = audioCtx.createMediaStreamSource(remoteStream);
-      source.connect(analyser);
-      const dataArray = new Uint8Array(analyser.frequencyBinCount);
-      analyser.getByteFrequencyData(dataArray);
-
-      if (user_audio.current) {
-        user_audio.current.srcObject = remoteStream;
-        user_audio.current.volume = 1.0;
-        user_audio.current.muted = false;
-        user_audio.current.play().catch(console.error);
-      }
-    });
-
-    if (!incomingCall?.signal) return;
-    peer.signal(incomingCall.signal as any);
-
-    setIncomingCall(null);
-    setShowCallScreen({ isCaller: false });
-    peer.on("close", () => {
-      peer.destroy();
-    });
-
-    if (connectionRef.current) connectionRef.current = peer;
-  };
-
-  const handleRejectCall = () => {
-    if (!incomingCall || !socket) return;
-
-    socket.emit("call:rejected", {
-      receiverUsername: currentActiveUser?.userName,
-      callerSocketId: incomingCall.callerSocketId,
-    });
-    setIncomingCall(null);
-  };
   // #region call function
   const handlePhoneClick = () => {
     if (!socket || !selectedUser) return;
@@ -367,8 +285,73 @@ export default function OneToOneChatInterface() {
         stream.getAudioTracks().forEach((track) => {
           track.enabled = true;
         });
-        setStream(stream);
-        setMicAccess(true);
+        const toastId = toast({
+          title: "Calling...",
+          description: `Calling ${selectedUser?.menteeUserName}`,
+        });
+
+        const peer = new Peer({
+          initiator: true,
+          trickle: false,
+          stream: stream,
+          config: {
+            iceServers: [
+              {
+                urls: `stun:stun.anonymousvoicesav.com`,
+              },
+              {
+                urls: `turn:stun.anonymousvoicesav.com`,
+                username: process.env.NEXT_PUBLIC_TURN_SERVER_USERNAME,
+                credential: process.env.NEXT_PUBLIC_TURN_SERVER_PASSWORD,
+              },
+            ],
+          },
+        });
+
+        peer.on("signal", (signal) => {
+          socket.emit("call:invite", {
+            signal,
+            receiverUsername: selectedUser?.menteeUserName,
+            callerUsername: currentActiveUser?.userName,
+            callerSocketId: me,
+          });
+        });
+
+        peer.on("stream", (remoteStream) => {
+          const audioCtx = new AudioContext();
+          const analyser = audioCtx.createAnalyser();
+          const source = audioCtx.createMediaStreamSource(remoteStream);
+          source.connect(analyser);
+          const dataArray = new Uint8Array(analyser.frequencyBinCount);
+          analyser.getByteFrequencyData(dataArray);
+          // new code
+          if (user_audio.current) {
+            user_audio.current.onloadedmetadata = () => {
+              user_audio
+                .current!.play()
+                .then(() => {})
+                .catch((error) => {});
+            };
+
+            dismiss(toastId.id);
+            user_audio.current.srcObject = remoteStream;
+            user_audio.current.volume = 1.0;
+            user_audio.current.muted = false;
+            user_audio.current.play().catch(console.error);
+          }
+        });
+
+        socket.on("call:accept", (data) => {
+          console.log("call accept 352");
+          setShowCallScreen({ isCaller: true });
+          if (data.signal) peer.signal(data.signal);
+        });
+
+        peer.on("close", () => {
+          peer.destroy();
+        });
+
+        if (connectionRef.current) connectionRef.current = peer;
       })
       .catch((err) => {
         if (String(err).includes("NotAllowedError")) {
@@ -389,73 +372,6 @@ export default function OneToOneChatInterface() {
           return;
         }
       });
-
-    const toastId = toast({
-      title: "Calling...",
-      description: `Calling ${selectedUser?.menteeUserName}`,
-    });
-
-    const peer = new Peer({
-      initiator: true,
-      trickle: false,
-      stream: stream,
-      config: {
-        iceServers: [
-          {
-            urls: `stun:stun.anonymousvoicesav.com`,
-          },
-          {
-            urls: `turn:stun.anonymousvoicesav.com`,
-            username: process.env.NEXT_PUBLIC_TURN_SERVER_USERNAME,
-            credential: process.env.NEXT_PUBLIC_TURN_SERVER_PASSWORD,
-          },
-        ],
-      },
-    });
-
-    peer.on("signal", (signal) => {
-      socket.emit("call:invite", {
-        signal,
-        receiverUsername: selectedUser?.menteeUserName,
-        callerUsername: currentActiveUser?.userName,
-        callerSocketId: me,
-      });
-    });
-
-    peer.on("stream", (remoteStream) => {
-      const audioCtx = new AudioContext();
-      const analyser = audioCtx.createAnalyser();
-      const source = audioCtx.createMediaStreamSource(remoteStream);
-      source.connect(analyser);
-      const dataArray = new Uint8Array(analyser.frequencyBinCount);
-      analyser.getByteFrequencyData(dataArray);
-      // new code
-      if (user_audio.current) {
-        user_audio.current.onloadedmetadata = () => {
-          user_audio
-            .current!.play()
-            .then(() => {})
-            .catch((error) => {});
-        };
-
-        dismiss(toastId.id);
-        user_audio.current.srcObject = remoteStream;
-        user_audio.current.volume = 1.0;
-        user_audio.current.muted = false;
-        user_audio.current.play().catch(console.error);
-      }
-    });
-
-    socket.once("call:accept", (data) => {
-      setShowCallScreen({ isCaller: true });
-      if (data.signal) peer.signal(data.signal);
-    });
-
-    peer.on("close", () => {
-      peer.destroy();
-    });
-
-    if (connectionRef.current) connectionRef.current = peer;
   };
 
   //#endregion
