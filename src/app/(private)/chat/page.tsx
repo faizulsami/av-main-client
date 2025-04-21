@@ -190,6 +190,9 @@ export default function ChatInterface() {
 
     const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL!, {
       auth: { username: currentUser.username },
+      path: "/socket.io",
+      transports: ["websocket"],
+      withCredentials: true,
     });
     setSocket(newSocket);
 

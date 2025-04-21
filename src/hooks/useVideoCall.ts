@@ -35,7 +35,9 @@ export function useVideoCall({
 
         socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
           auth: { username },
+          path: "/socket.io",
           transports: ["websocket"],
+          withCredentials: true,
         });
 
         await new Promise<void>((resolve, reject) => {
