@@ -77,6 +77,7 @@ const OneToOneChatUserProfile: React.FC<UserProfileProps> = ({
         description: "Appointment cancelled successfully",
       });
       await refetch();
+      router.push("/dashboard/booked-calls");
       onStatusUpdate?.();
       setShowCancelDialog(false);
     } catch (error) {

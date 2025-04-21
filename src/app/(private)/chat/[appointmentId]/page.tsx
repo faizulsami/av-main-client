@@ -2,11 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import Loading from "@/app/loading";
-import CallInviteDialog from "@/components/chat/CallInviteDialog";
-import ChatMessages from "@/components/chat/ChatMessages";
 import { VoiceCall } from "@/components/chat/VoiceCall";
-import UserProfile from "@/components/chat/chat-user-profile/ChatUserProfile";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -14,24 +10,19 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { useAppointments } from "@/hooks/useAppointments";
+import { useAuth } from "@/hooks/useAuth";
 import { AppointmentService } from "@/services/appointment.service";
 import { AuthService } from "@/services/auth.service";
 import { socketService } from "@/services/socket.service";
-import { useChatContactsStore } from "@/store/chat-contacts.store";
 import { useChatStore } from "@/store/useChatStore";
 import { ChatContact } from "@/types/chat.types";
-import crypto from "crypto";
-import { Star } from "lucide-react";
-import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import * as React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Peer from "simple-peer";
 import { io, Socket } from "socket.io-client";
 import OneToOneChatMessages from "./_components/OneToOneChatMessages";
 import OneToOneChatUserProfile from "./_components/OneToOneChatUserProfile";
-import { useAuth } from "@/hooks/useAuth";
 
 interface Message {
   id: string;
@@ -72,12 +63,7 @@ export default function OneToOneChatInterface() {
   const [callRejectUsername, setCallRejectUsername] = useState("");
 
   const [appointmentLoading, setAppointmentLoading] = useState(false);
-  const [incomingCall, setIncomingCall] = useState<{
-    signal: any;
-    receiverSocketId: string;
-    callerUsername: string;
-    callerSocketId: string;
-  } | null>(null);
+
   const { addMessage } = useChatStore();
   const [showCallScreen, setShowCallScreen] = useState<{
     isCaller: boolean;
@@ -221,58 +207,54 @@ export default function OneToOneChatInterface() {
   useEffect(() => {
     if (!socket) return;
 
-    socket.emit("join", { fromUsername: currentActiveUser?.userName });
-    socket.on("me", (me: string) => {
+    socket.emit("join", { fromUsername: currentActiveUser!.userName });
+
+    const handleMe = (me: string) => {
       setMe(me);
-    });
+    };
 
-    // socket.on(
-    //   "call:invite",
-    //   (invitation: {
-    //     signal: any;
-    //     receiverSocketId: string;
-    //     callerSocketId: string;
-    //     callerUsername: string;
-    //   }) => {
-    //     setIncomingCall(invitation);
-    //   },
-    // );
-    socket.on("call:receiver-socket-id", (data) => {
+    const handleReceiverSocketId = (data: { receiverSocketId: string }) => {
       sessionStorage.setItem("caller", data.receiverSocketId);
-    });
+    };
 
-    socket.on("call:accept", () => {
+    const handleCallAccept = () => {
       setShowCallScreen({ isCaller: true });
-    });
+    };
 
-    socket.on("call:ended", (username) => {
+    const handleCallEnded = (username: string) => {
       setShowCallScreen(null);
       setCallEndedUsername(username);
       connectionRef.current?.destroy();
       if (user_audio.current) user_audio.current.srcObject = null;
-      if (window !== undefined) alert("call ended");
-    });
+      if (typeof window !== "undefined") alert("call ended");
+    };
 
-    socket.on("user:disconnected", (data) => {
+    const handleUserDisconnected = (data: { disconnectedSocketId: string }) => {
       const callerSocketId = sessionStorage.getItem("caller");
       console.log({ callerSocketId, data });
       if (callerSocketId === data.disconnectedSocketId) {
         handleEndCall();
       }
-    });
+    };
 
-    // socket.on("call:reject", () => {
-    //   setIncomingCall(null);
-    // });
-    socket.on("call:rejected", (data) => {
-      // setIncomingCall(null);
+    const handleCallRejected = (data: { receiverUsername: string }) => {
       setCallRejectUsername(data.receiverUsername);
-    });
+    };
+
+    socket.on("me", handleMe);
+    socket.on("call:receiver-socket-id", handleReceiverSocketId);
+    socket.on("call:accept", handleCallAccept);
+    socket.on("call:ended", handleCallEnded);
+    socket.on("user:disconnected", handleUserDisconnected);
+    socket.on("call:rejected", handleCallRejected);
 
     return () => {
-      if (socket) {
-        socket.disconnect();
-      }
+      socket.off("me", handleMe);
+      socket.off("call:receiver-socket-id", handleReceiverSocketId);
+      socket.off("call:accept", handleCallAccept);
+      socket.off("call:ended", handleCallEnded);
+      socket.off("user:disconnected", handleUserDisconnected);
+      socket.off("call:rejected", handleCallRejected);
     };
   }, [socket, currentActiveUser?.userName]);
 
@@ -455,15 +437,7 @@ export default function OneToOneChatInterface() {
           />
         </aside>
       )}
-      {incomingCall && (
-        <CallInviteDialog
-          isOpen={!!incomingCall}
-          onOpenChange={() => {}}
-          caller={incomingCall.callerUsername}
-          onAccept={handleAcceptCall}
-          onReject={handleRejectCall}
-        />
-      )}
+
       {showCallScreen && socket ? (
         <>
           <audio ref={user_audio} autoPlay muted={false} playsInline />
