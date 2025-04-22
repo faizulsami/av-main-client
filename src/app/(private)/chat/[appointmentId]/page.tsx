@@ -276,7 +276,7 @@ export default function OneToOneChatInterface() {
           description: `Calling ${selectedUser?.menteeUserName}`,
         });
 
-        const peer = new Peer({
+        let peer = new Peer({
           initiator: true,
           trickle: false,
           stream: stream,
@@ -334,7 +334,8 @@ export default function OneToOneChatInterface() {
         });
 
         peer.on("close", () => {
-          peer.destroy();
+          peer = null;
+          connectionRef.current = null;
         });
 
         if (connectionRef.current) connectionRef.current = peer;

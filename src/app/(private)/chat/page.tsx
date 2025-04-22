@@ -354,7 +354,7 @@ export default function ChatInterface() {
         stream.getAudioTracks().forEach((track) => {
           track.enabled = true;
         });
-        const peer = new Peer({
+        let peer = new Peer({
           initiator: false,
           trickle: false,
           stream: stream,
@@ -402,7 +402,8 @@ export default function ChatInterface() {
         setIncomingCall(null);
         setShowCallScreen({ isCaller: false });
         peer.on("close", () => {
-          peer.destroy();
+          peer = null;
+          connectionRef.current = null;
         });
 
         if (connectionRef.current) connectionRef.current = peer;
@@ -454,7 +455,7 @@ export default function ChatInterface() {
           description: `Calling ${selectedUser.username}`,
         });
         setCallingToastId(toastId.id);
-        const peer = new Peer({
+        let peer = new Peer({
           initiator: true,
           trickle: false,
           stream: stream,
@@ -511,7 +512,8 @@ export default function ChatInterface() {
         });
 
         peer.on("close", () => {
-          peer.destroy();
+          peer = null;
+          connectionRef.current = null;
         });
 
         if (connectionRef.current) connectionRef.current = peer;
