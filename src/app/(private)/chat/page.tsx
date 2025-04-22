@@ -24,7 +24,7 @@ import { useChatStore } from "@/store/useChatStore";
 import { ChatContact } from "@/types/chat.types";
 import { Star } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import * as React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Peer from "simple-peer";
@@ -69,6 +69,7 @@ export default function ChatInterface() {
   const [isCompleted, setIsCompleted] = useState(false);
   const { user } = useAuth();
   const [callingToastId, setCallingToastId] = useState("");
+
   const [incomingCall, setIncomingCall] = useState<{
     signal: any;
     receiverSocketId: string;
@@ -304,7 +305,10 @@ export default function ChatInterface() {
       setCallEndedUsername(username);
       connectionRef.current?.destroy();
       if (user_audio.current) user_audio.current.srcObject = null;
-      if (typeof window !== "undefined") alert("call ended");
+      if (typeof window !== "undefined") {
+        alert("call ended");
+        window.location.reload();
+      }
     };
 
     const handleUserDisconnected = (data: { disconnectedSocketId: string }) => {
@@ -565,6 +569,10 @@ export default function ChatInterface() {
         callEndedUsername: currentUser.username,
         callEndUserType: "mentee",
       });
+
+      if (window !== undefined) {
+        window.location.reload();
+      }
     }
   };
 
