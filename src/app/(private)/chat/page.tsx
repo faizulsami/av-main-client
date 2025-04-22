@@ -307,7 +307,6 @@ export default function ChatInterface() {
       if (user_audio.current) user_audio.current.srcObject = null;
       if (typeof window !== "undefined") {
         alert("call ended");
-        window.location.reload();
       }
     };
 
@@ -569,10 +568,6 @@ export default function ChatInterface() {
         callEndedUsername: currentUser.username,
         callEndUserType: "mentee",
       });
-
-      if (window !== undefined) {
-        window.location.reload();
-      }
     }
   };
 
