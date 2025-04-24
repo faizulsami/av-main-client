@@ -174,7 +174,7 @@ const OneToOneChatUserProfile: React.FC<UserProfileProps> = ({
       <Card className="h-full rounded-none border-0">
         <OneToOneUserInfo selectedUser={selectedUser} />
         <div className="mt-3 mb-2">
-          <p className="font-medium text-center">Call Duration:</p>
+          <p className="font-medium text-center">Call Duration</p>
           <p className="text-xl font-bold text-center">
             {formatTime(elapsedTime)}
           </p>
