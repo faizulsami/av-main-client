@@ -149,7 +149,7 @@ const OneToOneChatUserProfile: React.FC<UserProfileProps> = ({
       await AppointmentService.updateAppointment(selectedUser._id, {
         status: "cancelled",
       });
-      socket.emit("appointment-completed", {
+      socket.emit("appointment-rejected", {
         menteeUserName: selectedUser.menteeUserName,
       });
       toast({
