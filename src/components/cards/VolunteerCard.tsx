@@ -100,10 +100,9 @@ export default function VolunteerCard({
   }, []);
 
   const isCompleted = allAppointments?.some(
-    (appointment: any) => appointment.status !== "completed",
+    (appointment: any) =>
+      appointment.status !== "completed" || appointment.status !== "cancelled",
   );
-
-  console.log(isCompleted);
 
   return (
     <Card className="overflow-hidden transition-all hover:shadow-md bg-soft-paste-light-hover">

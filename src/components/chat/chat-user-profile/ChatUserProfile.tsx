@@ -57,7 +57,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
       });
 
       const socket = get_socket();
-      socket.emit("appointment-rejected", {
+      socket.emit("appointment-completed", {
         menteeUserName: selectedUser.username,
       });
 

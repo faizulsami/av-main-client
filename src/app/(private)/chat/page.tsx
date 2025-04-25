@@ -70,7 +70,6 @@ export default function ChatInterface() {
   const [callEndedUsername, setCallEndedUsername] = useState("");
   const [callRejectUsername, setCallRejectUsername] = useState("");
   const [isCompleted, setIsCompleted] = useState(false);
-  const [isRejected, setIsRejected] = useState(false);
   const { user } = useAuth();
   const [incomingCall, setIncomingCall] = useState<{
     signal: any;
@@ -269,9 +268,6 @@ export default function ChatInterface() {
 
     socket.on("appointment-completed", () => {
       setIsCompleted(true);
-    });
-    socket.on("appointment-rejected", () => {
-      setIsRejected(true);
     });
   }, [socket]);
 
@@ -696,27 +692,6 @@ export default function ChatInterface() {
                   Back to Homepage
                 </Button>
               </Link>
-            </div>
-          </div>
-        )}
-      {isRejected &&
-        !!searchParams.get("mentee") &&
-        !!searchParams.get("mentor") && (
-          <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50">
-            <div className="border p-10 fixed text-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-background rounded-2xl shadow-2xl flex flex-col gap-3">
-              <h2 className="text-2xl font-bold text-red-600">
-                We're Sorry, You're Rejected!
-              </h2>
-
-              <Button
-                className="rounded-xl px-6 py-2 text-white bg-[#78bec6]"
-                onClick={() => {
-                  setIsRejected(false);
-                  router.push("/");
-                }}
-              >
-                Back to Homepage
-              </Button>
             </div>
           </div>
         )}
