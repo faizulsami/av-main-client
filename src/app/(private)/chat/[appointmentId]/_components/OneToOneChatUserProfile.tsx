@@ -32,11 +32,24 @@ const OneToOneChatUserProfile: React.FC<UserProfileProps> = ({
   const router = useRouter();
   const [socket, setSocket] = React.useState<Socket | null>(null);
 
+  // Create a storage key based on the user ID
+  const timerStorageKey = `${selectedUser._id}-message-time`;
+
   // Timer states
-  const [elapsedTime, setElapsedTime] = React.useState(0);
+  const [elapsedTime, setElapsedTime] = React.useState(() => {
+    // Get the stored elapsed time or start from 0
+    const storedTime = sessionStorage.getItem(timerStorageKey);
+    return storedTime ? parseInt(storedTime, 10) : 0;
+  });
+
   const [isTimerRunning, setIsTimerRunning] = React.useState(false);
   const timerIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
   const lastTickTimeRef = React.useRef<number>(Date.now());
+
+  // Store elapsed time in sessionStorage whenever it changes
+  React.useEffect(() => {
+    sessionStorage.setItem(timerStorageKey, elapsedTime.toString());
+  }, [elapsedTime, timerStorageKey]);
 
   // Format time as HH:MM:SS
   const formatTime = (timeInSeconds: number) => {

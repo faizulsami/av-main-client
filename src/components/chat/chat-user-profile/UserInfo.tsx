@@ -9,11 +9,24 @@ interface UserInfoProps {
 }
 
 const UserInfo: React.FC<UserInfoProps> = ({ selectedUser }) => {
+  // Create a storage key based on the user ID
+  const timerStorageKey = `${selectedUser.id}-message-time`;
+
   // Timer states
-  const [elapsedTime, setElapsedTime] = React.useState(0);
+  const [elapsedTime, setElapsedTime] = React.useState(() => {
+    // Get the stored elapsed time or start from 0
+    const storedTime = sessionStorage.getItem(timerStorageKey);
+    return storedTime ? parseInt(storedTime, 10) : 0;
+  });
+
   const [isTimerRunning, setIsTimerRunning] = React.useState(false);
   const timerIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
   const lastTickTimeRef = React.useRef<number>(Date.now());
+
+  // Store elapsed time in sessionStorage whenever it changes
+  React.useEffect(() => {
+    sessionStorage.setItem(timerStorageKey, elapsedTime.toString());
+  }, [elapsedTime, timerStorageKey]);
 
   // Format time as HH:MM:SS
   const formatTime = (timeInSeconds: number) => {
@@ -96,18 +109,8 @@ const UserInfo: React.FC<UserInfoProps> = ({ selectedUser }) => {
         </AvatarFallback>
       </Avatar>
       <h2 className="text-xl font-semibold">{selectedUser.username}</h2>
-      {/* <div className="flex items-center gap-1 mt-1">
-        <span className="h-2 w-2 rounded-full bg-green-500" />
-        <span className="text-sm text-green-500">Active Now</span>
-      </div> */}
 
       <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground font-semibold">
-        {/* <span className="flex items-center gap-1">
-          <Clock size={16} />
-          {selectedUser.duration || "N/A"} min Call
-        </span>
-        <span>•</span> */}
-
         <Badge
           variant="secondary"
           className="font-semibold flex items-center gap-1"
