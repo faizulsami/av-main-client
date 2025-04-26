@@ -100,10 +100,9 @@ export default function VolunteerCard({
   }, []);
 
   const isCompleted = allAppointments?.some(
-    (appointment: any) => appointment.status !== "completed",
+    (appointment: any) =>
+      appointment.status !== "completed" || appointment.status !== "cancelled",
   );
-
-  console.log(isCompleted);
 
   return (
     <Card className="overflow-hidden transition-all hover:shadow-md bg-soft-paste-light-hover">
@@ -153,7 +152,7 @@ export default function VolunteerCard({
             <div className="grid grid-cols-1 gap-2 w-full">
               {isButtonEnabled("quick-call") && (
                 <Button
-                  disabled={isCompleted}
+                  disabled={!isCompleted}
                   className=" h-9 text-xs font-bold bg-soft-paste hover:bg-soft-paste-dark text-white"
                   onClick={() => handleAction("quick-call")}
                 >
@@ -164,7 +163,7 @@ export default function VolunteerCard({
 
               {isButtonEnabled("chat") && (
                 <Button
-                  disabled={isCompleted}
+                  disabled={!isCompleted}
                   className="h-9 text-xs font-bold bg-violet hover:bg-violet-dark text-white"
                   onClick={() => handleAction("chat")}
                 >

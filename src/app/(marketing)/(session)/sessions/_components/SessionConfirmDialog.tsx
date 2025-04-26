@@ -77,7 +77,7 @@ export function SessionConfirmDialog() {
             variant="outline"
             onClick={() => bookingStore.setShowPlanDetails(false)}
           >
-            Cancel
+            Reject
           </Button>
           <Button
             className="bg-[#B4A5E8] hover:bg-[#A394D7]"

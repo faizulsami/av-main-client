@@ -49,6 +49,7 @@ interface ReceivedMessage {
 }
 
 export default function ChatInterface() {
+  const router = useRouter();
   const { toast, dismiss } = useToast();
   const { appointments, refetch } = useAppointments();
   const { setFilteredContacts } = useChatContactsStore();
@@ -83,6 +84,24 @@ export default function ChatInterface() {
   const [me, setMe] = useState("");
 
   const connectionRef = useRef<any>(null);
+
+  // Inside the ChatInterface component, add these state variables
+  const [callTimer, setCallTimer] = useState<number>(0);
+
+  // Add this useEffect to update the call timer in localStorage when the call screen changes
+  useEffect(() => {
+    if (showCallScreen) {
+      // If a call starts, initialize timer if not exists
+      if (!localStorage.getItem("callTimer")) {
+        localStorage.setItem("callTimer", "0");
+      }
+    } else {
+      // If call ends, clear the timer
+      if (!incomingCall) {
+        localStorage.removeItem("callTimer");
+      }
+    }
+  }, [showCallScreen, incomingCall]);
 
   const currentActiveUser = useMemo(() => AuthService.getStoredUser(), []);
   const currentUser = useMemo(
@@ -653,7 +672,10 @@ export default function ChatInterface() {
       {showCallScreen && socket ? (
         <>
           <audio ref={user_audio} autoPlay muted={false} playsInline />
-          <VoiceCall onEndCall={handleEndCall} />
+          <VoiceCall
+            onEndCall={handleEndCall}
+            isOpen={showCallScreen && socket ? true : false}
+          />
         </>
       ) : (
         <>

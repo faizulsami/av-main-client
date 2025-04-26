@@ -23,7 +23,7 @@ export const useUserStore = create<UserState>((set) => ({
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const res = await api.get<any>(`/api/v1/users/${id}`);
-      console.log(res);
+
       set({ user: res.data, loading: false, initialized: true });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

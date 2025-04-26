@@ -30,7 +30,7 @@ const CallConfirmationDialog: React.FC<CallConfirmationDialogProps> = ({
         <p>Do you want to start a call with {selectedUser?.username}?</p>
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
-            Cancel
+            Reject
           </Button>
           <Button onClick={handleConfirmCall}>Confirm</Button>
         </DialogFooter>

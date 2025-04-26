@@ -24,7 +24,7 @@ const CancelDialog: React.FC<CancelDialogProps> = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Cancel Appointment</DialogTitle>
+          <DialogTitle>Reject Appointment</DialogTitle>
           <DialogDescription>
             Are you sure you want to cancel this appointment? This action cannot
             be undone.
@@ -35,7 +35,7 @@ const CancelDialog: React.FC<CancelDialogProps> = ({
             No, keep it
           </Button>
           <Button variant="destructive" onClick={onCancel}>
-            Yes, cancel it
+            Yes, reject it
           </Button>
         </DialogFooter>
       </DialogContent>

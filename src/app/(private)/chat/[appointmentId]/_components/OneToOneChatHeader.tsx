@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Check, Menu, Undo2, X } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 import { useChatContactsStore } from "@/store/chat-contacts.store";
@@ -14,6 +14,14 @@ import { ChatContact } from "@/types/chat.types";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { CallButton } from "@/components/call/call-button";
+import { get_socket } from "@/utils/get-socket";
+import { useAppointments } from "@/hooks/useAppointments";
+import { useToast } from "@/hooks/use-toast";
+import { Socket } from "socket.io-client";
+import { AppointmentService } from "@/services/appointment.service";
+import CancelDialog from "@/components/chat/chat-user-profile/CancelDialog";
+import CompleteDialog from "@/components/chat/chat-user-profile/CompleteDialog";
+import Link from "next/link";
 
 interface ChatHeaderProps {
   selectedUser: ChatContact;
@@ -28,7 +36,13 @@ export const OneToOneChatHeader: React.FC<ChatHeaderProps> = ({
   setIsSidebarOpen,
   onPhoneClick,
 }) => {
+  const router = useRouter();
   const { filteredContacts } = useChatContactsStore();
+  const [socket, setSocket] = React.useState<Socket | null>(null);
+  const { refetch } = useAppointments();
+  const { toast } = useToast();
+  const [showCompleteDialog, setShowCompleteDialog] = React.useState(false);
+  const [showCancelDialog, setShowCancelDialog] = React.useState(false);
 
   const currentActiveuser = React.useMemo(() => {
     try {
@@ -38,9 +52,71 @@ export const OneToOneChatHeader: React.FC<ChatHeaderProps> = ({
     }
   }, []);
 
+  React.useEffect(() => {
+    // Socket initialization
+    setSocket(get_socket());
+  }, []);
+
+  const handleComplete = async () => {
+    try {
+      if (!socket) return;
+
+      socket.emit("appointment-completed", {
+        menteeUserName: selectedUser.menteeUserName,
+      });
+      toast({
+        title: "Success",
+        description: "Appointment marked as completed",
+      });
+
+      await refetch();
+      router.push("/dashboard/booked-calls");
+
+      setShowCompleteDialog(true);
+    } catch (error) {
+      console.error("Failed to complete appointment", error);
+      toast({
+        title: "Error",
+        description: "Failed to complete appointment",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCancel = async () => {
+    try {
+      if (!socket) return;
+      await AppointmentService.updateAppointment(selectedUser._id, {
+        status: "cancelled",
+      });
+      socket.emit("appointment-completed", {
+        menteeUserName: selectedUser.menteeUserName,
+      });
+      toast({
+        title: "Success",
+        description: "Appointment cancelled successfully",
+      });
+      await refetch();
+
+      setShowCancelDialog(true);
+    } catch (error) {
+      console.error("Failed to cancel appointment", error);
+      toast({
+        title: "Error",
+        description: "Failed to cancel appointment",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <header className="flex items-center gap-3 p-4 border-b">
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+        <Link href="/" className="md:hidden block">
+          <Button variant="ghost" size="icon">
+            <Undo2 size={20} />
+          </Button>
+        </Link>
         <SheetTrigger asChild>
           <Button variant="ghost" size="icon" className="md:hidden">
             <Menu className="h-5 w-5" />
@@ -136,7 +212,36 @@ export const OneToOneChatHeader: React.FC<ChatHeaderProps> = ({
         </p> */}
       </div>
 
+      {
+        <button
+          className="block lg:hidden"
+          onClick={() => setShowCompleteDialog(true)}
+        >
+          <Check />
+        </button>
+      }
+      {
+        <button
+          className="block lg:hidden"
+          onClick={() => setShowCompleteDialog(true)}
+        >
+          <X />
+        </button>
+      }
+
       <CallButton menteeId={selectedUser.id} onPhoneClick={onPhoneClick} />
+
+      <CompleteDialog
+        isOpen={showCompleteDialog}
+        onClose={() => setShowCompleteDialog(false)}
+        onComplete={handleComplete}
+      />
+
+      <CancelDialog
+        isOpen={showCancelDialog}
+        onClose={() => setShowCancelDialog(false)}
+        onCancel={handleCancel}
+      />
     </header>
   );
 };
