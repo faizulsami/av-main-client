@@ -152,7 +152,7 @@ export default function VolunteerCard({
             <div className="grid grid-cols-1 gap-2 w-full">
               {isButtonEnabled("quick-call") && (
                 <Button
-                  disabled={!isCompleted}
+                  disabled={allAppointments?.length > 0 && !isCompleted}
                   className=" h-9 text-xs font-bold bg-soft-paste hover:bg-soft-paste-dark text-white"
                   onClick={() => handleAction("quick-call")}
                 >
@@ -163,7 +163,7 @@ export default function VolunteerCard({
 
               {isButtonEnabled("chat") && (
                 <Button
-                  disabled={!isCompleted}
+                  disabled={allAppointments?.length > 0 && !isCompleted}
                   className="h-9 text-xs font-bold bg-violet hover:bg-violet-dark text-white"
                   onClick={() => handleAction("chat")}
                 >
