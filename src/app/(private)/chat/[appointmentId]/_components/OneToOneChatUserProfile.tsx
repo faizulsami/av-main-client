@@ -1,20 +1,19 @@
 "use client";
-import * as React from "react";
 import { Card } from "@/components/ui/card";
+import * as React from "react";
 
-import { AppointmentService } from "@/services/appointment.service";
 import { useToast } from "@/hooks/use-toast";
 import { useAppointments } from "@/hooks/useAppointments";
+import { AppointmentService } from "@/services/appointment.service";
 import { ChatContact } from "@/types/chat.types";
 
-import { get_socket } from "@/utils/get-socket";
-import OneToOneChatMessages from "./OneToOneChatMessages";
-import { Button } from "@/components/ui/button";
-import CompleteDialog from "@/components/chat/chat-user-profile/CompleteDialog";
 import CancelDialog from "@/components/chat/chat-user-profile/CancelDialog";
-import OneToOneUserInfo from "./OneToOneUserInfo";
+import CompleteDialog from "@/components/chat/chat-user-profile/CompleteDialog";
+import { Button } from "@/components/ui/button";
+import { get_socket } from "@/utils/get-socket";
 import { useRouter } from "next/navigation";
 import { Socket } from "socket.io-client";
+import OneToOneUserInfo from "./OneToOneUserInfo";
 
 interface UserProfileProps {
   selectedUser: ChatContact;
@@ -170,6 +169,7 @@ const OneToOneChatUserProfile: React.FC<UserProfileProps> = ({
         description: "Appointment cancelled successfully",
       });
       await refetch();
+      router.push("/dashboard/booked-calls");
       onStatusUpdate?.();
       setShowCancelDialog(false);
     } catch (error) {

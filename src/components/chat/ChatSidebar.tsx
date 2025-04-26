@@ -101,7 +101,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
         )
       : uniqueContacts;
   }, [appointments, filteredAppointments, currentActiveUser]);
-  console.log({ filteredContacts });
+
   const matchedContacts = React.useMemo(() => {
     return getMatchedContacts(
       filteredContacts,

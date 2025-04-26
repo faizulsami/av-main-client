@@ -1,5 +1,5 @@
-import { Mail } from "lucide-react";
-import { SocialBar } from "../home/hero/SocialBar";
+import { Facebook, Instagram, Linkedin, Mail } from "lucide-react";
+import Link from "next/link";
 
 export default function ContactInfo() {
   return (
@@ -43,7 +43,44 @@ export default function ContactInfo() {
         </div>
       </div>
 
-      <SocialBar />
+      <div className="flex gap-4 bg-white/20 w-fit py-2 px-6 rounded-r-lg absolute bottom-6 left-0">
+        <Link
+          href="https://www.facebook.com/share/182B8bbSLb/?mibextid=wwXIfr"
+          className="hover:opacity-80"
+        >
+          <Facebook></Facebook>
+          {/* <Image
+            src={"/images/icons/social/facebook.png"}
+            alt=""
+            width={24}
+            height={24}
+          /> */}
+        </Link>
+        <Link
+          href="https://www.instagram.com/anonymousvoices_av?igsh=bnEzNWw5OXBpb2lq"
+          className="hover:opacity-80"
+        >
+          {/* <Image
+            src={"/images/icons/social/instagram.png"}
+            alt=""
+            width={24}
+            height={24}
+          /> */}
+          <Instagram></Instagram>
+        </Link>
+        <Link
+          href="https://www.linkedin.com/company/anonymous-voices"
+          className="hover:opacity-80"
+        >
+          {/* <Image
+            src={"/images/icons/social/linkedin.png"}
+            alt=""
+            width={24}
+            height={24}
+          /> */}
+          <Linkedin></Linkedin>
+        </Link>
+      </div>
     </div>
   );
 }

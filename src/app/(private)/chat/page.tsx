@@ -1,13 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import crypto from "crypto";
 import Loading from "@/app/loading";
 import CallInviteDialog from "@/components/chat/CallInviteDialog";
 import ChatMessages from "@/components/chat/ChatMessages";
 import ChatSidebar from "@/components/chat/ChatSidebar";
 import { VoiceCall } from "@/components/chat/VoiceCall";
 import UserProfile from "@/components/chat/chat-user-profile/ChatUserProfile";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -16,21 +16,19 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useAppointments } from "@/hooks/useAppointments";
+import { useAuth } from "@/hooks/useAuth";
 import { AuthService } from "@/services/auth.service";
 import { socketService } from "@/services/socket.service";
 import { useChatContactsStore } from "@/store/chat-contacts.store";
 import { useChatStore } from "@/store/useChatStore";
 import { ChatContact } from "@/types/chat.types";
+import { Star } from "lucide-react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import * as React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Peer from "simple-peer";
 import { io, Socket } from "socket.io-client";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Star } from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/useAuth";
-import { set } from "mongoose";
 
 interface Message {
   id: string;
@@ -71,6 +69,8 @@ export default function ChatInterface() {
   const [callRejectUsername, setCallRejectUsername] = useState("");
   const [isCompleted, setIsCompleted] = useState(false);
   const { user } = useAuth();
+  const [callingToastId, setCallingToastId] = useState("");
+
   const [incomingCall, setIncomingCall] = useState<{
     signal: any;
     receiverSocketId: string;
@@ -82,8 +82,7 @@ export default function ChatInterface() {
     isCaller: boolean;
   } | null>(null);
   const [me, setMe] = useState("");
-  const [micAccess, setMicAccess] = useState(false);
-  const [callerSocketId, setCallerSocketId] = useState("");
+
   const connectionRef = useRef<any>(null);
 
   // Inside the ChatInterface component, add these state variables
@@ -194,6 +193,7 @@ export default function ChatInterface() {
   };
   useEffect(() => {
     return () => {
+      sessionStorage.removeItem("caller");
       if (stream) {
         stream.getTracks().forEach((track) => {
           track.stop();
@@ -210,13 +210,12 @@ export default function ChatInterface() {
 
     const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL!, {
       auth: { username: currentUser.username },
+      transports: ["polling", "websocket"],
+      reconnection: true,
+      reconnectionAttempts: 3,
+      reconnectionDelay: 5000,
     });
     setSocket(newSocket);
-
-    // newSocket.on("users", (userList: ChatContact[]) => {
-    //   setUsers(userList);
-    //   setIsLoading(false);
-    // });
 
     newSocket.on("private message", (data: ReceivedMessage) => {
       if (
@@ -287,6 +286,9 @@ export default function ChatInterface() {
     socket.on("appointment-completed", () => {
       setIsCompleted(true);
     });
+    return () => {
+      socket.off("appointment-completed");
+    };
   }, [socket]);
 
   //#region calling
@@ -294,58 +296,74 @@ export default function ChatInterface() {
     if (!socket) return;
 
     socket.emit("join", { fromUsername: currentUser.username });
-    socket.on("me", (me: string) => {
+
+    const handleMe = (me: string) => {
       setMe(me);
-    });
+    };
 
-    socket.on(
-      "call:invite",
-      (invitation: {
-        signal: any;
-        receiverSocketId: string;
-        callerSocketId: string;
-        callerUsername: string;
-      }) => {
-        setIncomingCall(invitation);
-        setCallerSocketId(invitation.callerSocketId);
-      },
-    );
+    const handleCallInvite = (invitation: {
+      signal: any;
+      receiverSocketId: string;
+      callerSocketId: string;
+      callerUsername: string;
+    }) => {
+      setIncomingCall(invitation);
+      sessionStorage.setItem("caller", invitation.callerSocketId);
+    };
 
-    socket.once("call:accept", () => {
+    const handleReceiverSocketId = (data: { receiverSocketId: string }) => {
+      sessionStorage.setItem("caller", data.receiverSocketId);
+    };
+
+    const handleCallAccept = () => {
       setShowCallScreen({ isCaller: true });
-    });
+    };
 
-    socket.once("call:ended", (username) => {
+    const handleCallEnded = (username: string) => {
       setShowCallScreen(null);
       setCallEndedUsername(username);
       connectionRef.current?.destroy();
       if (user_audio.current) user_audio.current.srcObject = null;
-      if (window !== undefined) alert("call ended");
-    });
+      if (typeof window !== "undefined") {
+        alert("call ended");
+      }
+    };
 
-    socket.on("user:disconnected", (data) => {
-      if (incomingCall?.callerSocketId === data.disconnectedSocketId) {
+    const handleUserDisconnected = (data: { disconnectedSocketId: string }) => {
+      const callerSocketId = sessionStorage.getItem("caller");
+      if (callerSocketId === data.disconnectedSocketId) {
         handleEndCall();
       }
-    });
+    };
 
-    socket.on("call:reject", () => {
+    const handleCallReject = () => {
       setIncomingCall(null);
-    });
-    socket.on("call:rejected", (data) => {
+    };
+
+    const handleCallRejected = (data: { receiverUsername: string }) => {
       setIncomingCall(null);
       setCallRejectUsername(data.receiverUsername);
-    });
+    };
+
+    // Register listeners
+    socket.on("me", handleMe);
+    socket.on("call:invite", handleCallInvite);
+    socket.on("call:receiver-socket-id", handleReceiverSocketId);
+    socket.on("call:accept", handleCallAccept);
+    socket.on("call:ended", handleCallEnded);
+    socket.on("user:disconnected", handleUserDisconnected);
+    socket.on("call:reject", handleCallReject);
+    socket.on("call:rejected", handleCallRejected);
 
     return () => {
-      if (socket) {
-        socket.off("call:accept");
-        socket.off("call:reject");
-        socket.off("call:invite");
-        socket.off("call:ended");
-        socket.off("user:disconnected");
-        socket.off("me");
-      }
+      socket.off("me", handleMe);
+      socket.off("call:invite", handleCallInvite);
+      socket.off("call:receiver-socket-id", handleReceiverSocketId);
+      socket.off("call:accept", handleCallAccept);
+      socket.off("call:ended", handleCallEnded);
+      socket.off("user:disconnected", handleUserDisconnected);
+      socket.off("call:reject", handleCallReject);
+      socket.off("call:rejected", handleCallRejected);
     };
   }, [socket, currentUser.username, incomingCall?.callerSocketId]);
 
@@ -358,7 +376,59 @@ export default function ChatInterface() {
         stream.getAudioTracks().forEach((track) => {
           track.enabled = true;
         });
-        setStream(stream);
+        let peer = new Peer({
+          initiator: false,
+          trickle: false,
+          stream: stream,
+          config: {
+            iceServers: [
+              {
+                urls: `stun:stun.anonymousvoicesav.com`,
+              },
+              {
+                urls: `turn:stun.anonymousvoicesav.com`,
+                username: process.env.NEXT_PUBLIC_TURN_SERVER_USERNAME,
+                credential: process.env.NEXT_PUBLIC_TURN_SERVER_PASSWORD,
+              },
+            ],
+          },
+        });
+
+        peer.on("signal", (signal) => {
+          socket.emit("call:accept", {
+            receiverSocketId: incomingCall.callerSocketId,
+            callerSocketId: me,
+            signal,
+          });
+        });
+
+        peer.on("stream", (remoteStream) => {
+          const audioCtx = new AudioContext();
+          const analyser = audioCtx.createAnalyser();
+          const source = audioCtx.createMediaStreamSource(remoteStream);
+          source.connect(analyser);
+          const dataArray = new Uint8Array(analyser.frequencyBinCount);
+          analyser.getByteFrequencyData(dataArray);
+
+          if (user_audio.current) {
+            user_audio.current.srcObject = remoteStream;
+            user_audio.current.volume = 1.0;
+            user_audio.current.muted = false;
+            user_audio.current.play().catch(console.error);
+          }
+        });
+
+        if (!incomingCall?.signal) return;
+        peer.signal(incomingCall.signal as any);
+
+        setIncomingCall(null);
+        setShowCallScreen({ isCaller: false });
+        peer.on("close", () => {
+          peer = null;
+          connectionRef.current = null;
+        });
+
+        if (connectionRef.current) connectionRef.current = peer;
       })
       .catch((err) => {
         if (String(err).includes("NotAllowedError")) {
@@ -379,68 +449,16 @@ export default function ChatInterface() {
           return;
         }
       });
-
-    const peer = new Peer({
-      initiator: false,
-      trickle: false,
-      stream: stream,
-      config: {
-        iceServers: [
-          {
-            urls: `stun:stun.anonymousvoicesav.com`,
-          },
-          {
-            urls: `turn:stun.anonymousvoicesav.com`,
-            username: process.env.NEXT_PUBLIC_TURN_SERVER_USERNAME,
-            credential: process.env.NEXT_PUBLIC_TURN_SERVER_PASSWORD,
-          },
-        ],
-      },
-    });
-
-    peer.on("signal", (signal) => {
-      socket.emit("call:accept", {
-        receiverSocketId: incomingCall.callerSocketId,
-        callerSocketId: me,
-        signal,
-      });
-    });
-
-    peer.on("stream", (remoteStream) => {
-      const audioCtx = new AudioContext();
-      const analyser = audioCtx.createAnalyser();
-      const source = audioCtx.createMediaStreamSource(remoteStream);
-      source.connect(analyser);
-      const dataArray = new Uint8Array(analyser.frequencyBinCount);
-      analyser.getByteFrequencyData(dataArray);
-
-      if (user_audio.current) {
-        user_audio.current.srcObject = remoteStream;
-        user_audio.current.volume = 1.0;
-        user_audio.current.muted = false;
-        user_audio.current.play().catch(console.error);
-      }
-    });
-
-    if (!incomingCall?.signal) return;
-    peer.signal(incomingCall.signal as any);
-
-    setIncomingCall(null);
-    setShowCallScreen({ isCaller: false });
-    peer.on("close", () => {
-      peer.destroy();
-    });
-
-    if (connectionRef.current) connectionRef.current = peer;
   };
 
   const handleRejectCall = () => {
-    if (!incomingCall || !socket) return;
-
+    const callerSocketId = sessionStorage.getItem("caller");
+    if (!callerSocketId || !socket) return;
     socket.emit("call:rejected", {
       receiverUsername: currentUser.username,
-      callerSocketId: incomingCall.callerSocketId,
+      callerSocketId: callerSocketId,
     });
+    dismiss(callingToastId);
     setIncomingCall(null);
   };
   // #region call function
@@ -454,7 +472,73 @@ export default function ChatInterface() {
           track.enabled = true;
         });
         setStream(stream);
-        setMicAccess(true);
+        const toastId = toast({
+          title: "Calling...",
+          description: `Calling ${selectedUser.username}`,
+        });
+        setCallingToastId(toastId.id);
+        let peer = new Peer({
+          initiator: true,
+          trickle: false,
+          stream: stream,
+          config: {
+            iceServers: [
+              {
+                urls: `stun:stun.anonymousvoicesav.com`,
+              },
+              {
+                urls: `turn:stun.anonymousvoicesav.com`,
+                username: process.env.NEXT_PUBLIC_TURN_SERVER_USERNAME,
+                credential: process.env.NEXT_PUBLIC_TURN_SERVER_PASSWORD,
+              },
+            ],
+          },
+        });
+
+        peer.on("signal", (signal) => {
+          socket.emit("call:invite", {
+            signal,
+            receiverUsername: selectedUser.username,
+            callerUsername: currentUser.username,
+            callerSocketId: me,
+          });
+        });
+
+        peer.on("stream", (remoteStream) => {
+          const audioCtx = new AudioContext();
+          const analyser = audioCtx.createAnalyser();
+          const source = audioCtx.createMediaStreamSource(remoteStream);
+          source.connect(analyser);
+          const dataArray = new Uint8Array(analyser.frequencyBinCount);
+          analyser.getByteFrequencyData(dataArray);
+          // new code
+          if (user_audio.current) {
+            user_audio.current.onloadedmetadata = () => {
+              user_audio
+                .current!.play()
+                .then(() => {})
+                .catch((error) => {});
+            };
+
+            dismiss(toastId.id);
+            user_audio.current.srcObject = remoteStream;
+            user_audio.current.volume = 1.0;
+            user_audio.current.muted = false;
+            user_audio.current.play().catch(console.error);
+          }
+        });
+
+        socket.on("call:accept", (data) => {
+          setShowCallScreen({ isCaller: true });
+          if (data.signal) peer.signal(data.signal);
+        });
+
+        peer.on("close", () => {
+          peer = null;
+          connectionRef.current = null;
+        });
+
+        if (connectionRef.current) connectionRef.current = peer;
       })
       .catch((err) => {
         if (String(err).includes("NotAllowedError")) {
@@ -475,73 +559,6 @@ export default function ChatInterface() {
           return;
         }
       });
-
-    const toastId = toast({
-      title: "Calling...",
-      description: `Calling ${selectedUser.username}`,
-    });
-
-    const peer = new Peer({
-      initiator: true,
-      trickle: false,
-      stream: stream,
-      config: {
-        iceServers: [
-          {
-            urls: `stun:stun.anonymousvoicesav.com`,
-          },
-          {
-            urls: `turn:stun.anonymousvoicesav.com`,
-            username: process.env.NEXT_PUBLIC_TURN_SERVER_USERNAME,
-            credential: process.env.NEXT_PUBLIC_TURN_SERVER_PASSWORD,
-          },
-        ],
-      },
-    });
-
-    peer.on("signal", (signal) => {
-      socket.emit("call:invite", {
-        signal,
-        receiverUsername: selectedUser.username,
-        callerUsername: currentUser.username,
-        callerSocketId: me,
-      });
-    });
-
-    peer.on("stream", (remoteStream) => {
-      const audioCtx = new AudioContext();
-      const analyser = audioCtx.createAnalyser();
-      const source = audioCtx.createMediaStreamSource(remoteStream);
-      source.connect(analyser);
-      const dataArray = new Uint8Array(analyser.frequencyBinCount);
-      analyser.getByteFrequencyData(dataArray);
-      // new code
-      if (user_audio.current) {
-        user_audio.current.onloadedmetadata = () => {
-          user_audio
-            .current!.play()
-            .then(() => {})
-            .catch((error) => {});
-        };
-
-        dismiss(toastId.id);
-        user_audio.current.srcObject = remoteStream;
-        user_audio.current.volume = 1.0;
-        user_audio.current.muted = false;
-        user_audio.current.play().catch(console.error);
-      }
-    });
-
-    socket.once("call:accept", (data) => {
-      setShowCallScreen({ isCaller: true });
-      if (data.signal) peer.signal(data.signal);
-    });
-
-    peer.on("close", () => {
-      peer.destroy();
-    });
-
-    if (connectionRef.current) connectionRef.current = peer;
   };
 
   //#endregion
@@ -553,6 +570,7 @@ export default function ChatInterface() {
       (user?.role === "mentor" && !searchParams.get("mentee"))
     )
       return;
+
     setShowCallScreen(null);
     connectionRef.current?.destroy();
     if (user_audio.current) user_audio.current.srcObject = null;
@@ -602,14 +620,6 @@ export default function ChatInterface() {
           </Dialog>
         ))}
       <aside className="hidden md:flex w-full max-w-[16vw]  flex-col border-r">
-        {/* {isLoading ? (
-          <Skeleton className="w-full h-full" />
-        ) : (
-          <ChatSidebar
-            setSelectedUser={setSelectedUser}
-            selectedUser={selectedUser}
-          />
-        )} */}
         <ChatSidebar
           setSelectedUser={setSelectedUser}
           selectedUser={selectedUser}

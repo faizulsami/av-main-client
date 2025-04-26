@@ -22,10 +22,10 @@ export class SocketManager {
       try {
         this.socket = io(url, {
           auth,
-          transports: ["websocket"],
           reconnection: true,
           reconnectionAttempts: 3,
           reconnectionDelay: 5000,
+          transports: ["polling", "websocket"],
         });
 
         this.socket.on("connect", () => {
