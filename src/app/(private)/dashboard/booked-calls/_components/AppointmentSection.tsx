@@ -15,6 +15,7 @@ interface Appointment {
   appointmentType: string;
   status: string;
   menteeUserName: string;
+  durationMinutes: string;
   menteeEmail?: string;
   selectedSlot: { time: string }[];
   createdAt: string;
@@ -104,7 +105,7 @@ export const AppointmentSection = ({
                   avatarUrl: null,
                 },
                 schedule: appointment.selectedSlot[0].time,
-                duration: "30",
+                duration: appointment.durationMinutes,
                 createdAt: appointment.createdAt,
                 updatedAt: appointment.updatedAt,
               }}

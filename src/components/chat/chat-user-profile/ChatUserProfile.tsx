@@ -97,7 +97,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
             variant="destructive"
             onClick={() => setShowCancelDialog(true)}
           >
-            Cancel
+            Reject
           </Button>
         </div>
       </Card>

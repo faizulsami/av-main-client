@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Menu, Undo2 } from "lucide-react";
+import { Check, Menu, Undo2, X } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { CallButton } from "../call/call-button";
 import { useChatContactsStore } from "@/store/chat-contacts.store";
@@ -13,14 +14,21 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ChatContact } from "@/types/chat.types";
 import { Badge } from "../ui/badge";
 import Link from "next/link";
+import { AppointmentService } from "@/services/appointment.service";
+import { Socket } from "socket.io-client";
+import { get_socket } from "@/utils/get-socket";
+import { useAppointments } from "@/hooks/useAppointments";
+import { useToast } from "@/hooks/use-toast";
+import CompleteDialog from "./chat-user-profile/CompleteDialog";
+import CancelDialog from "./chat-user-profile/CancelDialog";
 
 interface currentMentorUser {
   username: string;
   role: string;
 }
 interface ChatHeaderProps {
-  selectedUser: ChatContact;
-  setSelectedUser: React.Dispatch<React.SetStateAction<ChatContact | null>>;
+  selectedUser: any;
+  setSelectedUser: React.Dispatch<React.SetStateAction<any | null>>;
   isProfileOpen: boolean;
   setIsProfileOpen: React.Dispatch<React.SetStateAction<boolean>>;
   isSidebarOpen: boolean;
@@ -36,6 +44,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   setSelectedUser,
   isSidebarOpen,
   setIsSidebarOpen,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   lastActiveTime,
   currentUser,
   onPhoneClick,
@@ -44,6 +53,11 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   const searchParams = useSearchParams();
   const { setSession, setChatSelectedUser } = useChatStore();
   const { filteredContacts } = useChatContactsStore();
+  const [socket, setSocket] = React.useState<Socket | null>(null);
+  const { refetch } = useAppointments();
+  const { toast } = useToast();
+  const [showCompleteDialog, setShowCompleteDialog] = React.useState(false);
+  const [showCancelDialog, setShowCancelDialog] = React.useState(false);
 
   const currentActiveuser = React.useMemo(() => {
     try {
@@ -107,7 +121,64 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
     );
     setChatSelectedUser(contact);
   };
-  console.log("110", { selectedUser });
+
+  React.useEffect(() => {
+    // Socket initialization
+    setSocket(get_socket());
+  }, []);
+
+  const handleComplete = async () => {
+    try {
+      if (!socket) return;
+
+      socket.emit("appointment-completed", {
+        menteeUserName: selectedUser.menteeUserName,
+      });
+      toast({
+        title: "Success",
+        description: "Appointment marked as completed",
+      });
+
+      await refetch();
+      router.push("/dashboard/booked-calls");
+
+      setShowCompleteDialog(false);
+    } catch (error) {
+      console.error("Failed to complete appointment", error);
+      toast({
+        title: "Error",
+        description: "Failed to complete appointment",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCancel = async () => {
+    try {
+      if (!socket) return;
+      await AppointmentService.updateAppointment(selectedUser.id, {
+        status: "cancelled",
+      });
+      socket.emit("appointment-completed", {
+        menteeUserName: selectedUser.menteeUserName,
+      });
+      toast({
+        title: "Success",
+        description: "Appointment cancelled successfully",
+      });
+      await refetch();
+
+      setShowCancelDialog(false);
+    } catch (error) {
+      console.error("Failed to cancel appointment", error);
+      toast({
+        title: "Error",
+        description: "Failed to cancel appointment",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <header className="flex items-center gap-3 p-4 border-b">
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
@@ -211,11 +282,40 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
       </div>
 
       {currentUser.role === "mentor" && (
+        <button
+          className="block lg:hidden"
+          onClick={() => setShowCancelDialog(true)}
+        >
+          <Check />
+        </button>
+      )}
+      {currentUser.role === "mentor" && (
+        <button
+          className="block lg:hidden"
+          onClick={() => setShowCancelDialog(true)}
+        >
+          <X />
+        </button>
+      )}
+
+      {currentUser.role === "mentor" && (
         <CallButton menteeId={selectedUser.id} onPhoneClick={onPhoneClick} />
       )}
       {/* {currentUser.role === "mentor" && (
         <CallButton onPhoneClick={onPhoneClick} />
       )} */}
+
+      <CompleteDialog
+        isOpen={showCompleteDialog}
+        onClose={() => setShowCompleteDialog(false)}
+        onComplete={handleComplete}
+      />
+
+      <CancelDialog
+        isOpen={showCancelDialog}
+        onClose={() => setShowCancelDialog(false)}
+        onCancel={handleCancel}
+      />
     </header>
   );
 };
