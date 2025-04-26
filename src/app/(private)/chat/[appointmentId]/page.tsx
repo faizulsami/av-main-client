@@ -239,7 +239,9 @@ export default function OneToOneChatInterface() {
       const callerSocketId = sessionStorage.getItem("caller");
       console.log({ callerSocketId, data });
       if (callerSocketId === data.disconnectedSocketId) {
-        handleEndCall();
+        if (typeof window !== "undefined") {
+          window.location.reload();
+        } else handleEndCall();
       }
     };
 

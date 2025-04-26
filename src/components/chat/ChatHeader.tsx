@@ -107,7 +107,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
     );
     setChatSelectedUser(contact);
   };
-
+  console.log("110", { selectedUser });
   return (
     <header className="flex items-center gap-3 p-4 border-b">
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>

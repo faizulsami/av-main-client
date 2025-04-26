@@ -313,7 +313,9 @@ export default function ChatInterface() {
     const handleUserDisconnected = (data: { disconnectedSocketId: string }) => {
       const callerSocketId = sessionStorage.getItem("caller");
       if (callerSocketId === data.disconnectedSocketId) {
-        handleEndCall();
+        if (typeof window !== "undefined") {
+          window.location.reload();
+        } else handleEndCall();
       }
     };
 
