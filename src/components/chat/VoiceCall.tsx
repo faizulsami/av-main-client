@@ -21,15 +21,6 @@ export const VoiceCall: React.FC<VoiceCallProps> = ({ onEndCall, isOpen }) => {
         setTimer(parseInt(savedTimer, 10));
       }
     }
-
-    const isCallAccepted = JSON.parse(
-      localStorage.getItem("callAccepted") || "false",
-    );
-    if (isCallAccepted) {
-      setTimerActive(true); // Start the timer if the call is accepted
-    } else {
-      setTimerActive(false); // Stop the timer if the call is not accepted
-    }
   }, [isOpen]);
 
   // Timer logic
@@ -61,9 +52,8 @@ export const VoiceCall: React.FC<VoiceCallProps> = ({ onEndCall, isOpen }) => {
   // Handle call end and clear timer
   const handleEndCall = () => {
     setTimerActive(false);
-    localStorage.removeItem("callTimer"); // Optional: Clear timer when call ends
-    setTimer(0); // Reset timer to 0
-    onEndCall(); // Call parent's onEndCall
+    setTimer(0);
+    onEndCall();
   };
 
   return (
