@@ -11,15 +11,41 @@ interface VoiceCallProps {
 
 export const VoiceCall: React.FC<VoiceCallProps> = ({ onEndCall, isOpen }) => {
   const [timer, setTimer] = useState<number>(0);
+  const [timerActive, setTimerActive] = useState<boolean>(false);
 
+  // Load previous call duration from localStorage when dialog opens
   useEffect(() => {
     if (isOpen) {
       const savedTimer = localStorage.getItem("callTimer");
-
-      // Set the timer from localStorage or default to 300 seconds (5 minutes) if not available
-      setTimer(savedTimer ? parseInt(savedTimer, 10) : 300); // Default to 5 minutes if no saved timer
+      if (savedTimer) {
+        setTimer(parseInt(savedTimer, 10)); // Start from saved timer
+      } else {
+        setTimer(0); // Start from 0 if no saved timer
+      }
+      setTimerActive(true); // Start the timer immediately when call opens
+    } else {
+      setTimerActive(false); // Stop the timer when call closes
     }
   }, [isOpen]);
+
+  // Timer logic
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+
+    if (timerActive) {
+      interval = setInterval(() => {
+        setTimer((prevTime) => {
+          const newTime = prevTime + 1;
+          localStorage.setItem("callTimer", newTime.toString()); // Save updated time to localStorage
+          return newTime;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [timerActive]);
 
   // Format time as mm:ss
   const formatTime = (seconds: number): string => {
@@ -30,9 +56,10 @@ export const VoiceCall: React.FC<VoiceCallProps> = ({ onEndCall, isOpen }) => {
 
   // Handle call end and clear timer
   const handleEndCall = () => {
-    // setTimerActive(false);
-
-    onEndCall();
+    setTimerActive(false);
+    localStorage.removeItem("callTimer"); // Optional: Clear timer when call ends
+    setTimer(0); // Reset timer to 0
+    onEndCall(); // Call parent's onEndCall
   };
 
   return (
