@@ -28,12 +28,7 @@ export default function VoiceCallPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <VoiceCall
-        socket={socket}
-        roomId={roomId}
-        isCaller={isCaller}
-        onEndCall={handleEndCall}
-      />
+      <VoiceCall onEndCall={handleEndCall} isOpen={isCaller ? true : false} />
     </div>
   );
 }

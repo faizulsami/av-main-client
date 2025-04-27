@@ -65,9 +65,7 @@ export default function OneToOneChatInterface() {
   const [appointmentLoading, setAppointmentLoading] = useState(false);
 
   const { addMessage } = useChatStore();
-  const [showCallScreen, setShowCallScreen] = useState<{
-    isCaller: boolean;
-  } | null>(null);
+  const [showCallScreen, setShowCallScreen] = useState<boolean>(false);
   const [me, setMe] = useState("");
 
   const connectionRef = useRef<any>(null);
@@ -222,11 +220,11 @@ export default function OneToOneChatInterface() {
     };
 
     const handleCallAccept = () => {
-      setShowCallScreen({ isCaller: true });
+      setShowCallScreen(true);
     };
 
     const handleCallEnded = (username: string) => {
-      setShowCallScreen(null);
+      setShowCallScreen(false);
       setCallEndedUsername(username);
       connectionRef.current?.destroy();
       if (user_audio.current) user_audio.current.srcObject = null;
@@ -333,7 +331,7 @@ export default function OneToOneChatInterface() {
 
         socket.on("call:accept", (data) => {
           console.log("call accept 352");
-          setShowCallScreen({ isCaller: true });
+          setShowCallScreen(true);
           if (data.signal) peer.signal(data.signal);
         });
 
@@ -369,7 +367,7 @@ export default function OneToOneChatInterface() {
 
   const handleEndCall = () => {
     if (!socket || (user?.role === "mentee" && !callerSocketId)) return;
-    setShowCallScreen(null);
+    setShowCallScreen(false);
     connectionRef.current?.destroy();
     if (user_audio.current) user_audio.current.srcObject = null;
 
@@ -447,10 +445,10 @@ export default function OneToOneChatInterface() {
         </aside>
       )}
 
-      {showCallScreen && socket ? (
+      {showCallScreen ? (
         <>
           <audio ref={user_audio} autoPlay muted={false} playsInline />
-          <VoiceCall onEndCall={handleEndCall} />
+          <VoiceCall onEndCall={handleEndCall} isOpen={showCallScreen} />
         </>
       ) : (
         <>
