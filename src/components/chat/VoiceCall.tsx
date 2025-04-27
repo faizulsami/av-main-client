@@ -11,20 +11,24 @@ interface VoiceCallProps {
 
 export const VoiceCall: React.FC<VoiceCallProps> = ({ onEndCall, isOpen }) => {
   const [timer, setTimer] = useState<number>(0);
-  const [timerActive, setTimerActive] = useState<boolean>(false);
+  const [timerActive, setTimerActive] = useState<boolean>(isOpen);
 
   // Load previous call duration from localStorage when dialog opens
   useEffect(() => {
     if (isOpen) {
       const savedTimer = localStorage.getItem("callTimer");
       if (savedTimer) {
-        setTimer(parseInt(savedTimer, 10)); // Start from saved timer
-      } else {
-        setTimer(0); // Start from 0 if no saved timer
+        setTimer(parseInt(savedTimer, 10));
       }
-      setTimerActive(true); // Start the timer immediately when call opens
+    }
+
+    const isCallAccepted = JSON.parse(
+      localStorage.getItem("callAccepted") || "false",
+    );
+    if (isCallAccepted) {
+      setTimerActive(true); // Start the timer if the call is accepted
     } else {
-      setTimerActive(false); // Stop the timer when call closes
+      setTimerActive(false); // Stop the timer if the call is not accepted
     }
   }, [isOpen]);
 
@@ -36,7 +40,7 @@ export const VoiceCall: React.FC<VoiceCallProps> = ({ onEndCall, isOpen }) => {
       interval = setInterval(() => {
         setTimer((prevTime) => {
           const newTime = prevTime + 1;
-          localStorage.setItem("callTimer", newTime.toString()); // Save updated time to localStorage
+          localStorage.setItem("callTimer", newTime.toString());
           return newTime;
         });
       }, 1000);

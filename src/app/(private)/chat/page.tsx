@@ -78,30 +78,13 @@ export default function ChatInterface() {
     callerSocketId: string;
   } | null>(null);
   const { addMessage } = useChatStore();
-  const [showCallScreen, setShowCallScreen] = useState<{
-    isCaller: boolean;
-  } | null>(null);
+  const [showCallScreen, setShowCallScreen] = useState<boolean>(false);
   const [me, setMe] = useState("");
 
   const connectionRef = useRef<any>(null);
 
   // Inside the ChatInterface component, add these state variables
   const [callTimer, setCallTimer] = useState<number>(0);
-
-  // Add this useEffect to update the call timer in localStorage when the call screen changes
-  useEffect(() => {
-    if (showCallScreen) {
-      // If a call starts, initialize timer if not exists
-      if (!localStorage.getItem("callTimer")) {
-        localStorage.setItem("callTimer", "0");
-      }
-    } else {
-      // If call ends, clear the timer
-      if (!incomingCall) {
-        localStorage.removeItem("callTimer");
-      }
-    }
-  }, [showCallScreen, incomingCall]);
 
   const currentActiveUser = useMemo(() => AuthService.getStoredUser(), []);
   const currentUser = useMemo(
@@ -316,11 +299,11 @@ export default function ChatInterface() {
     };
 
     const handleCallAccept = () => {
-      setShowCallScreen({ isCaller: true });
+      setShowCallScreen(true);
     };
 
     const handleCallEnded = (username: string) => {
-      setShowCallScreen(null);
+      setShowCallScreen(false);
       setCallEndedUsername(username);
       connectionRef.current?.destroy();
       if (user_audio.current) user_audio.current.srcObject = null;
@@ -424,7 +407,7 @@ export default function ChatInterface() {
         peer.signal(incomingCall.signal as any);
 
         setIncomingCall(null);
-        setShowCallScreen({ isCaller: false });
+        setShowCallScreen(true);
         peer.on("close", () => {
           peer = null;
           connectionRef.current = null;
@@ -531,7 +514,7 @@ export default function ChatInterface() {
         });
 
         socket.on("call:accept", (data) => {
-          setShowCallScreen({ isCaller: true });
+          setShowCallScreen(true);
           if (data.signal) peer.signal(data.signal);
         });
 
@@ -573,7 +556,7 @@ export default function ChatInterface() {
     )
       return;
 
-    setShowCallScreen(null);
+    setShowCallScreen(false);
     connectionRef.current?.destroy();
     if (user_audio.current) user_audio.current.srcObject = null;
 
@@ -665,19 +648,17 @@ export default function ChatInterface() {
       {incomingCall && (
         <CallInviteDialog
           isOpen={true}
+          setShowCallScreen={setShowCallScreen}
           onOpenChange={() => {}}
           caller={incomingCall.callerUsername}
           onAccept={handleAcceptCall}
           onReject={handleRejectCall}
         />
       )}
-      {showCallScreen && socket ? (
+      {showCallScreen ? (
         <>
           <audio ref={user_audio} autoPlay muted={false} playsInline />
-          <VoiceCall
-            onEndCall={handleEndCall}
-            isOpen={showCallScreen && socket ? true : false}
-          />
+          <VoiceCall onEndCall={handleEndCall} isOpen={showCallScreen} />
         </>
       ) : (
         <>

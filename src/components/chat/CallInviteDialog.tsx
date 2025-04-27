@@ -14,7 +14,8 @@ interface CallInviteDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   caller: string;
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  setShowCallScreen: any;
   onAccept: () => void;
   onReject: () => void;
 }
@@ -24,6 +25,7 @@ const CallInviteDialog: React.FC<CallInviteDialogProps> = ({
   onOpenChange,
   caller,
   onAccept,
+  setShowCallScreen,
   onReject,
 }) => {
   const [timer, setTimer] = useState<number>(0);
@@ -69,6 +71,8 @@ const CallInviteDialog: React.FC<CallInviteDialogProps> = ({
     // Reset timer when accepting a new call
     setTimer(0);
     localStorage.setItem("callTimer", "0");
+
+    setShowCallScreen(true);
     setTimerActive(true);
     onAccept();
   };
