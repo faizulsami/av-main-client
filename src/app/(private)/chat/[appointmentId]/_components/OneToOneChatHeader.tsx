@@ -321,7 +321,7 @@ export const OneToOneChatHeader: React.FC<ChatHeaderProps> = ({
       {
         <button
           className="block lg:hidden"
-          onClick={() => setShowCompleteDialog(true)}
+          onClick={() => setShowCancelDialog(true)}
         >
           <X />
         </button>

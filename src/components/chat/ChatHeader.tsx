@@ -382,7 +382,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
       {currentUser.role === "mentor" && (
         <button
           className="block lg:hidden"
-          onClick={() => setShowCancelDialog(true)}
+          onClick={() => setShowCompleteDialog(true)}
         >
           <Check />
         </button>
