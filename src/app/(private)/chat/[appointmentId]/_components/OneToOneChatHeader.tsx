@@ -139,6 +139,12 @@ export const OneToOneChatHeader: React.FC<ChatHeaderProps> = ({
     sessionStorage.setItem(timerStorageKey, elapsedTime.toString());
   }, [elapsedTime, timerStorageKey]);
 
+  // Reset elapsedTime when timerStorageKey changes
+  React.useEffect(() => {
+    const storedTime = sessionStorage.getItem(timerStorageKey);
+    setElapsedTime(storedTime ? parseInt(storedTime, 10) : 0);
+  }, [timerStorageKey]);
+
   // Start timer function
   const startTimer = React.useCallback(() => {
     if (timerIntervalRef.current) {

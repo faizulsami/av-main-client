@@ -13,15 +13,17 @@ const UserInfo: React.FC<UserInfoProps> = ({ selectedUser }) => {
   const timerStorageKey = `${selectedUser.id}-message-time`;
 
   // Timer states
-  const [elapsedTime, setElapsedTime] = React.useState(() => {
-    // Get the stored elapsed time or start from 0
-    const storedTime = sessionStorage.getItem(timerStorageKey);
-    return storedTime ? parseInt(storedTime, 10) : 0;
-  });
+  const [elapsedTime, setElapsedTime] = React.useState(0);
 
   const [isTimerRunning, setIsTimerRunning] = React.useState(false);
   const timerIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
   const lastTickTimeRef = React.useRef<number>(Date.now());
+
+  // Reset elapsedTime when timerStorageKey changes
+  React.useEffect(() => {
+    const storedTime = sessionStorage.getItem(timerStorageKey);
+    setElapsedTime(storedTime ? parseInt(storedTime, 10) : 0);
+  }, [timerStorageKey, selectedUser]);
 
   // Store elapsed time in sessionStorage whenever it changes
   React.useEffect(() => {

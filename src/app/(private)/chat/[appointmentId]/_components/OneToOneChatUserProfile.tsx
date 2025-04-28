@@ -48,7 +48,13 @@ const OneToOneChatUserProfile: React.FC<UserProfileProps> = ({
   // Store elapsed time in sessionStorage whenever it changes
   React.useEffect(() => {
     sessionStorage.setItem(timerStorageKey, elapsedTime.toString());
-  }, [elapsedTime, timerStorageKey]);
+  }, [elapsedTime, timerStorageKey, selectedUser]);
+
+  // Reset elapsedTime when timerStorageKey changes
+  React.useEffect(() => {
+    const storedTime = sessionStorage.getItem(timerStorageKey);
+    setElapsedTime(storedTime ? parseInt(storedTime, 10) : 0);
+  }, [timerStorageKey]);
 
   // Format time as HH:MM:SS
   const formatTime = (timeInSeconds: number) => {
