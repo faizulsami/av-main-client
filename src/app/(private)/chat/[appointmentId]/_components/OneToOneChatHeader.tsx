@@ -109,6 +109,98 @@ export const OneToOneChatHeader: React.FC<ChatHeaderProps> = ({
     }
   };
 
+  const timerStorageKey = `${selectedUser.id}-message-time`;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [elapsedTime, setElapsedTime] = React.useState(() => {
+    // Get the stored elapsed time or start from 0
+    const storedTime = sessionStorage.getItem(timerStorageKey);
+    return storedTime ? parseInt(storedTime, 10) : 0;
+  });
+
+  // Format time as HH:MM:SS
+  const formatTime = (timeInSeconds: number) => {
+    const hours = Math.floor(timeInSeconds / 3600);
+    const minutes = Math.floor((timeInSeconds % 3600) / 60);
+    const seconds = timeInSeconds % 60;
+
+    return [
+      hours.toString().padStart(2, "0"),
+      minutes.toString().padStart(2, "0"),
+      seconds.toString().padStart(2, "0"),
+    ].join(":");
+  };
+
+  const [isTimerRunning, setIsTimerRunning] = React.useState(false);
+  const timerIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
+  const lastTickTimeRef = React.useRef<number>(Date.now());
+
+  // Store elapsed time in sessionStorage whenever it changes
+  React.useEffect(() => {
+    sessionStorage.setItem(timerStorageKey, elapsedTime.toString());
+  }, [elapsedTime, timerStorageKey]);
+
+  // Start timer function
+  const startTimer = React.useCallback(() => {
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+    }
+
+    setIsTimerRunning(true);
+    lastTickTimeRef.current = Date.now();
+
+    timerIntervalRef.current = setInterval(() => {
+      const now = Date.now();
+      const deltaSeconds = Math.floor((now - lastTickTimeRef.current) / 1000);
+
+      if (deltaSeconds > 0) {
+        setElapsedTime((prev) => prev + deltaSeconds);
+        lastTickTimeRef.current = now;
+      }
+    }, 1000);
+  }, []);
+
+  // Pause timer function
+  const pauseTimer = React.useCallback(() => {
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
+    }
+    setIsTimerRunning(false);
+  }, []);
+
+  // Handle visibility change
+  const handleVisibilityChange = React.useCallback(() => {
+    if (document.visibilityState === "visible") {
+      startTimer();
+    } else {
+      pauseTimer();
+    }
+  }, [startTimer, pauseTimer]);
+
+  // Initialize timer and event listeners
+  React.useEffect(() => {
+    // Start the timer immediately when component mounts
+    startTimer();
+
+    // Add event listeners
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", startTimer);
+    window.addEventListener("blur", pauseTimer);
+
+    // Socket initialization
+    setSocket(get_socket());
+
+    // Cleanup on unmount
+    return () => {
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+      }
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", startTimer);
+      window.removeEventListener("blur", pauseTimer);
+    };
+  }, [startTimer, pauseTimer, handleVisibilityChange]);
+
   return (
     <header className="flex items-center gap-3 p-4 border-b">
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
@@ -203,13 +295,13 @@ export const OneToOneChatHeader: React.FC<ChatHeaderProps> = ({
         <AvatarImage src="/images/avatar.svg" alt={selectedUser.username} />
         <AvatarFallback>{selectedUser.username.charAt(0)}</AvatarFallback>
       </Avatar> */}
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 space-y-1">
         <Badge variant="secondary" className="font-semibold truncate">
           @ {selectedUser?.menteeUserName}
         </Badge>
-        {/* <p className="text-xs text-muted-foreground truncate">
-          {lastActiveTime || "Active 9m ago"}
-        </p> */}
+        <p className="text-xs text-muted-foreground truncate">
+          {formatTime(elapsedTime)} - {isTimerRunning ? "Running" : "Paused"}
+        </p>
       </div>
 
       {

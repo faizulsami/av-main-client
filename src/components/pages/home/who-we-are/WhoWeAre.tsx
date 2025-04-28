@@ -48,7 +48,7 @@ export default function WhoWeAre() {
   };
 
   return (
-    <section className="relative w-full mx-auto mt-10 py-12 space-y-10 px-4 overflow-hidden">
+    <section className="relative w-full mx-auto xl:py-8 space-y-10 px-4 overflow-hidden">
       {/* Chat Icon - Only visible on larger screens */}
       <motion.div
         className="absolute top-1 right-1 before:p-1 rounded-full"

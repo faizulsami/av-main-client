@@ -86,7 +86,7 @@ export default function Component() {
           <div className="container mx-auto">
             {/* Subtitle */}
             <div className="text-center mb-8">
-              <h3 className="text-violet text-2xl font-bold mb-4">
+              <h3 className="text-violet text-2xl font-bold my-4">
                 Step-by-Step Guideline
               </h3>
               <div className="inline-flex items-center bg-soft-paste rounded-full px-6 py-2 text-white gap-4">

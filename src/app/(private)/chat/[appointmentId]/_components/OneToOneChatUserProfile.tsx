@@ -32,7 +32,7 @@ const OneToOneChatUserProfile: React.FC<UserProfileProps> = ({
   const [socket, setSocket] = React.useState<Socket | null>(null);
 
   // Create a storage key based on the user ID
-  const timerStorageKey = `${selectedUser._id}-message-time`;
+  const timerStorageKey = `${selectedUser.id}-message-time`;
 
   // Timer states
   const [elapsedTime, setElapsedTime] = React.useState(() => {
@@ -128,7 +128,7 @@ const OneToOneChatUserProfile: React.FC<UserProfileProps> = ({
   const handleComplete = async () => {
     try {
       if (!socket) return;
-      await AppointmentService.updateAppointment(selectedUser._id, {
+      await AppointmentService.updateAppointment(selectedUser.id, {
         status: "completed",
         duration: elapsedTime, // Save the call duration
       });
@@ -187,7 +187,7 @@ const OneToOneChatUserProfile: React.FC<UserProfileProps> = ({
       <Card className="h-full rounded-none border-0">
         <OneToOneUserInfo selectedUser={selectedUser} />
         <div className="mt-3 mb-2">
-          <p className="font-medium text-center">Call Duration</p>
+          <p className="font-medium text-center">Chat Duration</p>
           <p className="text-xl font-bold text-center">
             {formatTime(elapsedTime)}
           </p>

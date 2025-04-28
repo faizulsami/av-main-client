@@ -96,13 +96,16 @@ export default function VolunteerCard({
         // router.push("/");
       }
     };
-    fetchBookingDetails();
-  }, []);
 
-  const isCompleted = allAppointments?.some(
+    fetchBookingDetails();
+  }, [actionType, user?.userName]);
+
+  const hasPendingAppointment = allAppointments?.some(
     (appointment: any) =>
-      appointment.status !== "completed" || appointment.status !== "cancelled",
+      appointment.status !== "completed" && appointment.status !== "cancelled",
   );
+
+  const isCompleted = !hasPendingAppointment;
 
   return (
     <Card className="overflow-hidden transition-all hover:shadow-md bg-soft-paste-light-hover">

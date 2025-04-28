@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export default function WhyAnonymousVoice() {
   return (
-    <section className="container mx-auto px-4 py-16 md:py-24 overflow-hidden">
+    <section className="container mx-auto px-4 py-10 overflow-hidden">
       <h2 className="text-2xl md:text-4xl font-bold text-violet text-center mb-4 lg:mb-8">
         What to Expect from Anonymous Voices?
       </h2>

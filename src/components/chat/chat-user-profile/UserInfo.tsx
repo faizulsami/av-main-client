@@ -123,7 +123,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ selectedUser }) => {
       </div>
 
       <div className="mt-3 mb-2">
-        <p className="font-medium text-center">Call Duration</p>
+        <p className="font-medium text-center">Chat Duration</p>
         <p className="text-xl font-bold text-center">
           {formatTime(elapsedTime)}
         </p>
