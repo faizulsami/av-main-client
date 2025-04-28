@@ -76,14 +76,7 @@ export default function VolunteerCard({
       try {
         const { data } = await api.get(`/api/v1/appointments`);
         const filterAppointments = data?.data?.filter(
-          (appointment: any) =>
-            appointment.appointmentType ===
-              (actionType === "chat"
-                ? "Chat"
-                : actionType == "quick-call"
-                  ? "Quick Call"
-                  : "Booking Call") &&
-            appointment.menteeUserName === user?.userName,
+          (appointment: any) => appointment.menteeUserName === user?.userName,
         );
 
         setAllAppointments(filterAppointments);
@@ -177,6 +170,7 @@ export default function VolunteerCard({
 
               {isButtonEnabled("booking") && (
                 <Button
+                  disabled={allAppointments?.length > 0 && !isCompleted}
                   className=" h-9 text-xs font-bold bg-soft-paste hover:bg-soft-paste-dark text-white"
                   onClick={() => handleAction("booking")}
                 >

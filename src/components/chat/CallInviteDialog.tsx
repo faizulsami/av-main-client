@@ -32,14 +32,6 @@ const CallInviteDialog: React.FC<CallInviteDialogProps> = ({
   const [timerActive, setTimerActive] = useState<boolean>(false);
 
   // Load previous call duration from localStorage when dialog opens
-  useEffect(() => {
-    if (isOpen) {
-      const savedTimer = localStorage.getItem("callTimer");
-      if (savedTimer) {
-        setTimer(parseInt(savedTimer, 10));
-      }
-    }
-  }, [isOpen]);
 
   // Timer logic
   useEffect(() => {

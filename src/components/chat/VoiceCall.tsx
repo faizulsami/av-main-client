@@ -13,25 +13,16 @@ export const VoiceCall: React.FC<VoiceCallProps> = ({ onEndCall, isOpen }) => {
   const [timer, setTimer] = useState<number>(0);
   const [timerActive, setTimerActive] = useState<boolean>(isOpen);
 
-  // Load previous call duration from localStorage when dialog opens
-  useEffect(() => {
-    if (isOpen) {
-      const savedTimer = localStorage.getItem("callTimer");
-      if (savedTimer) {
-        setTimer(parseInt(savedTimer, 10));
-      }
-    }
-  }, [isOpen]);
-
   // Timer logic
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
 
     if (timerActive) {
+      setTimer(0);
       interval = setInterval(() => {
         setTimer((prevTime) => {
           const newTime = prevTime + 1;
-          localStorage.setItem("callTimer", newTime.toString());
+
           return newTime;
         });
       }, 1000);

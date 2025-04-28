@@ -222,14 +222,25 @@ export default function OneToOneChatInterface() {
     const handleCallAccept = () => {
       setShowCallScreen(true);
     };
+    const formatTime = (seconds: number): string => {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+      return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
+    };
 
     const handleCallEnded = (username: string) => {
       setShowCallScreen(false);
       setCallEndedUsername(username);
+      let time = 0;
+      const savedTimer = localStorage.getItem("callTimer");
+      if (savedTimer) {
+        time = parseInt(savedTimer);
+      }
       connectionRef.current?.destroy();
       if (user_audio.current) user_audio.current.srcObject = null;
       if (typeof window !== "undefined") {
-        alert("call ended");
+        // alert(`Call Ended, Your call duration is ${formatTime(time)}`);
+        alert("Call Ended");
       }
     };
 
