@@ -122,7 +122,7 @@ const OneToOneChatUserProfile: React.FC<UserProfileProps> = ({
   const handleComplete = async () => {
     try {
       if (!socket) return;
-      await AppointmentService.updateAppointment(selectedUser.id, {
+      await AppointmentService.updateAppointment(selectedUser._id, {
         status: "completed",
       });
 

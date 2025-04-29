@@ -366,9 +366,16 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         <Badge variant="secondary" className="font-semibold truncate">
           @ {selectedUser.username}
         </Badge>
-        <p className="text-xs text-muted-foreground truncate">
-          {formatTime(elapsedTime)} - {isTimerRunning ? "Running" : "Paused"}
-        </p>
+        {currentUser.role === "mentor" && (
+          <p className="text-xs text-muted-foreground truncate block lg:hidden">
+            {formatTime(elapsedTime)} - {isTimerRunning ? "Running" : "Paused"}
+          </p>
+        )}
+        {currentUser.role === "mentee" && (
+          <p className="text-xs text-muted-foreground truncate ">
+            {formatTime(elapsedTime)} - {isTimerRunning ? "Running" : "Paused"}
+          </p>
+        )}
       </div>
 
       {currentUser.role === "mentor" && (
