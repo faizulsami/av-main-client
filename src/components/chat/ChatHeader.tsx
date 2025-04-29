@@ -396,7 +396,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         </button>
       )}
 
-      {currentUser.role === "mentor" && (
+      {selectedUser.type != "Chat" && currentUser.role === "mentor" && (
         <CallButton menteeId={selectedUser.id} onPhoneClick={onPhoneClick} />
       )}
       {/* {currentUser.role === "mentor" && (

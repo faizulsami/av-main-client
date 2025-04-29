@@ -1,3 +1,5 @@
+import { Appointment } from "@/types/appointment.types";
+
 export const getContactsByRole = (
   appointments: Appointment[],
   currentUserRole: string,
@@ -16,6 +18,7 @@ export const getContactsByRole = (
         avatar: "/images/avatar/male-avatar.png",
         lastMessage: "",
         duration: appointment.durationMinutes ?? 10,
+        type: appointment.appointmentType,
         selectedSlot: appointment.selectedSlot,
       }));
   }
@@ -26,6 +29,7 @@ export const getContactsByRole = (
     avatar: "/images/avatar/male-avatar.png",
     lastMessage: "",
     duration: appointment.durationMinutes ?? 10,
+    type: appointment.appointmentType,
     selectedSlot: appointment.selectedSlot,
   }));
 };

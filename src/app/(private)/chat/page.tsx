@@ -110,6 +110,7 @@ export default function ChatInterface() {
         lastMessage: "",
         mentorUserName: appointment.mentorUserName,
         duration: appointment.durationMinutes ?? 10,
+        type: appointment.appointmentType,
         selectedSlot: appointment.selectedSlot,
       }));
 

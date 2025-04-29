@@ -106,6 +106,7 @@ export const AppointmentSection = ({
                 },
                 schedule: appointment.selectedSlot[0].time,
                 duration: appointment.durationMinutes,
+                type: appointment.appointmentType,
                 createdAt: appointment.createdAt,
                 updatedAt: appointment.updatedAt,
               }}

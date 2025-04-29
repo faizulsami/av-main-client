@@ -14,6 +14,7 @@ import { AuthService } from "@/services/auth.service";
 import Link from "next/link";
 import { ChatContact } from "@/types/chat.types";
 import { getMatchedContacts } from "@/utils/getMatchedContacts";
+import { AppointmentService } from "@/services/appointment.service";
 
 interface currentMentorUser {
   username: string;

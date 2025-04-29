@@ -39,5 +39,6 @@ export interface ChatContact {
   mentorName?: string;
   mentorUserName: string;
   duration: number;
+  type?: string;
   selectedSlot?: AppointmentSlot[];
 }

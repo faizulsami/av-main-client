@@ -79,6 +79,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
       avatar: "/images/avatar/male-avatar.png",
       lastMessage: "",
       mentorUserName: appointment.mentorUserName,
+      type: appointment.appointmentType,
       duration: appointment.durationMinutes ?? 10,
       selectedSlot: appointment.selectedSlot,
     }));
@@ -134,6 +135,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
       setSelectedUser({
         ...contact,
         duration: appointment?.durationMinutes ?? 10,
+        type: appointment?.appointmentType,
         selectedSlot: appointment?.selectedSlot,
       });
 
