@@ -22,12 +22,14 @@ import { AppointmentService } from "@/services/appointment.service";
 import CancelDialog from "@/components/chat/chat-user-profile/CancelDialog";
 import CompleteDialog from "@/components/chat/chat-user-profile/CompleteDialog";
 import Link from "next/link";
+import { formatTime } from "@/utils/formateTimer";
 
 interface ChatHeaderProps {
   selectedUser: ChatContact;
   isSidebarOpen: boolean;
   setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
   onPhoneClick: () => void;
+  onStatusUpdate: () => void;
 }
 
 export const OneToOneChatHeader: React.FC<ChatHeaderProps> = ({
@@ -35,6 +37,7 @@ export const OneToOneChatHeader: React.FC<ChatHeaderProps> = ({
   isSidebarOpen,
   setIsSidebarOpen,
   onPhoneClick,
+  onStatusUpdate,
 }) => {
   const router = useRouter();
   const { filteredContacts } = useChatContactsStore();
@@ -57,78 +60,15 @@ export const OneToOneChatHeader: React.FC<ChatHeaderProps> = ({
     setSocket(get_socket());
   }, []);
 
-  const handleComplete = async () => {
-    try {
-      if (!socket) return;
-
-      socket.emit("appointment-completed", {
-        menteeUserName: selectedUser.menteeUserName,
-      });
-      toast({
-        title: "Success",
-        description: "Appointment marked as completed",
-      });
-
-      await refetch();
-      router.push("/dashboard/booked-calls");
-
-      setShowCompleteDialog(true);
-    } catch (error) {
-      console.error("Failed to complete appointment", error);
-      toast({
-        title: "Error",
-        description: "Failed to complete appointment",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleCancel = async () => {
-    try {
-      if (!socket) return;
-      await AppointmentService.updateAppointment(selectedUser._id, {
-        status: "cancelled",
-      });
-      socket.emit("appointment-completed", {
-        menteeUserName: selectedUser.menteeUserName,
-      });
-      toast({
-        title: "Success",
-        description: "Appointment cancelled successfully",
-      });
-      await refetch();
-
-      setShowCancelDialog(true);
-    } catch (error) {
-      console.error("Failed to cancel appointment", error);
-      toast({
-        title: "Error",
-        description: "Failed to cancel appointment",
-        variant: "destructive",
-      });
-    }
-  };
-
+  // Create a storage key based on the user ID
   const timerStorageKey = `${selectedUser.id}-message-time`;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+  // Timer states
   const [elapsedTime, setElapsedTime] = React.useState(() => {
     // Get the stored elapsed time or start from 0
     const storedTime = sessionStorage.getItem(timerStorageKey);
     return storedTime ? parseInt(storedTime, 10) : 0;
   });
-
-  // Format time as HH:MM:SS
-  const formatTime = (timeInSeconds: number) => {
-    const hours = Math.floor(timeInSeconds / 3600);
-    const minutes = Math.floor((timeInSeconds % 3600) / 60);
-    const seconds = timeInSeconds % 60;
-
-    return [
-      hours.toString().padStart(2, "0"),
-      minutes.toString().padStart(2, "0"),
-      seconds.toString().padStart(2, "0"),
-    ].join(":");
-  };
 
   const [isTimerRunning, setIsTimerRunning] = React.useState(false);
   const timerIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
@@ -137,7 +77,7 @@ export const OneToOneChatHeader: React.FC<ChatHeaderProps> = ({
   // Store elapsed time in sessionStorage whenever it changes
   React.useEffect(() => {
     sessionStorage.setItem(timerStorageKey, elapsedTime.toString());
-  }, [elapsedTime, timerStorageKey]);
+  }, [elapsedTime, timerStorageKey, selectedUser]);
 
   // Reset elapsedTime when timerStorageKey changes
   React.useEffect(() => {
@@ -182,6 +122,86 @@ export const OneToOneChatHeader: React.FC<ChatHeaderProps> = ({
       pauseTimer();
     }
   }, [startTimer, pauseTimer]);
+
+  // Initialize timer and event listeners
+  React.useEffect(() => {
+    // Start the timer immediately when component mounts
+    startTimer();
+
+    // Add event listeners
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", startTimer);
+    window.addEventListener("blur", pauseTimer);
+
+    // Socket initialization
+    setSocket(get_socket());
+
+    // Cleanup on unmount
+    return () => {
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+      }
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", startTimer);
+      window.removeEventListener("blur", pauseTimer);
+    };
+  }, [startTimer, pauseTimer, handleVisibilityChange]);
+
+  const handleComplete = async () => {
+    try {
+      if (!socket) return;
+      await AppointmentService.updateAppointment(selectedUser.id, {
+        status: "completed",
+      });
+
+      socket.emit("appointment-completed", {
+        menteeUserName: selectedUser.menteeUserName,
+      });
+      toast({
+        title: "Success",
+        description: "Appointment marked as completed",
+      });
+
+      await refetch();
+      router.push("/dashboard/booked-calls");
+      onStatusUpdate?.();
+      setShowCompleteDialog(false);
+    } catch (error) {
+      console.error("Failed to complete appointment", error);
+      toast({
+        title: "Error",
+        description: "Failed to complete appointment",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCancel = async () => {
+    try {
+      if (!socket) return;
+      await AppointmentService.updateAppointment(selectedUser._id, {
+        status: "cancelled",
+      });
+      socket.emit("appointment-completed", {
+        menteeUserName: selectedUser.menteeUserName,
+      });
+      toast({
+        title: "Success",
+        description: "Appointment cancelled successfully",
+      });
+      await refetch();
+      router.push("/dashboard/booked-calls");
+      onStatusUpdate?.();
+      setShowCancelDialog(false);
+    } catch (error) {
+      console.error("Failed to cancel appointment", error);
+      toast({
+        title: "Error",
+        description: "Failed to cancel appointment",
+        variant: "destructive",
+      });
+    }
+  };
 
   // Initialize timer and event listeners
   React.useEffect(() => {

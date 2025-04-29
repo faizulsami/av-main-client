@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { formatTime } from "@/utils/formateTimer";
 import { Phone } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
@@ -51,13 +52,6 @@ const CallInviteDialog: React.FC<CallInviteDialogProps> = ({
       if (interval) clearInterval(interval);
     };
   }, [timerActive]);
-
-  // Format time as mm:ss
-  const formatTime = (seconds: number): string => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
-  };
 
   const handleAccept = () => {
     // Reset timer when accepting a new call

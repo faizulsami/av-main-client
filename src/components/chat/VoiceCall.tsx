@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
+import { formatTime } from "@/utils/formateTimer";
 
 import { PhoneOff } from "lucide-react";
 import React, { useEffect, useState } from "react";
@@ -32,13 +33,6 @@ export const VoiceCall: React.FC<VoiceCallProps> = ({ onEndCall, isOpen }) => {
       if (interval) clearInterval(interval);
     };
   }, [timerActive]);
-
-  // Format time as mm:ss
-  const formatTime = (seconds: number): string => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
-  };
 
   // Handle call end and clear timer
   const handleEndCall = () => {

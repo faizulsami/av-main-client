@@ -14,6 +14,7 @@ import { get_socket } from "@/utils/get-socket";
 import { useRouter } from "next/navigation";
 import { Socket } from "socket.io-client";
 import OneToOneUserInfo from "./OneToOneUserInfo";
+import { formatTime } from "@/utils/formateTimer";
 
 interface UserProfileProps {
   selectedUser: ChatContact;
@@ -55,19 +56,6 @@ const OneToOneChatUserProfile: React.FC<UserProfileProps> = ({
     const storedTime = sessionStorage.getItem(timerStorageKey);
     setElapsedTime(storedTime ? parseInt(storedTime, 10) : 0);
   }, [timerStorageKey]);
-
-  // Format time as HH:MM:SS
-  const formatTime = (timeInSeconds: number) => {
-    const hours = Math.floor(timeInSeconds / 3600);
-    const minutes = Math.floor((timeInSeconds % 3600) / 60);
-    const seconds = timeInSeconds % 60;
-
-    return [
-      hours.toString().padStart(2, "0"),
-      minutes.toString().padStart(2, "0"),
-      seconds.toString().padStart(2, "0"),
-    ].join(":");
-  };
 
   // Start timer function
   const startTimer = React.useCallback(() => {
@@ -136,7 +124,6 @@ const OneToOneChatUserProfile: React.FC<UserProfileProps> = ({
       if (!socket) return;
       await AppointmentService.updateAppointment(selectedUser.id, {
         status: "completed",
-        duration: elapsedTime, // Save the call duration
       });
 
       socket.emit("appointment-completed", {

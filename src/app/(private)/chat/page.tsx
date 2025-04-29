@@ -232,11 +232,6 @@ export default function ChatInterface() {
     };
   }, [currentUser.username, selectedUser]);
 
-  const formatTime = (seconds: number): string => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
-  };
   useEffect(() => {
     const fetchMessages = async () => {
       if (!selectedUser) return;
@@ -559,33 +554,6 @@ export default function ChatInterface() {
   };
 
   //#endregion
-
-  const handleEndCall = () => {
-    if (
-      !socket ||
-      (user?.role === "mentee" && !searchParams.get("mentor")) ||
-      (user?.role === "mentor" && !searchParams.get("mentee"))
-    )
-      return;
-
-    setShowCallScreen(false);
-    connectionRef.current?.destroy();
-    if (user_audio.current) user_audio.current.srcObject = null;
-
-    if (user?.role === "mentor") {
-      socket.emit("call:ended", {
-        needToEndCallUsername: searchParams.get("mentee"),
-        callEndedUsername: currentUser.username,
-        callEndUserType: "mentor",
-      });
-    } else {
-      socket.emit("call:ended", {
-        needToEndCallUsername: searchParams.get("mentor"),
-        callEndedUsername: currentUser.username,
-        callEndUserType: "mentee",
-      });
-    }
-  };
 
   if (!currentActiveUser?.userName) {
     return <Loading />;

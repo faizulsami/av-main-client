@@ -222,11 +222,6 @@ export default function OneToOneChatInterface() {
     const handleCallAccept = () => {
       setShowCallScreen(true);
     };
-    const formatTime = (seconds: number): string => {
-      const minutes = Math.floor(seconds / 60);
-      const remainingSeconds = seconds % 60;
-      return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
-    };
 
     const handleCallEnded = (username: string) => {
       setShowCallScreen(false);

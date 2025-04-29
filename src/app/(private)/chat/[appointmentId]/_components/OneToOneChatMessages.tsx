@@ -15,6 +15,8 @@ import Link from "next/link";
 import { ChatContact } from "@/types/chat.types";
 import { getMatchedContacts } from "@/utils/getMatchedContacts";
 import { OneToOneChatHeader } from "./OneToOneChatHeader";
+import socket from "@/lib/socket";
+import { useAuth } from "@/hooks/useAuth";
 
 interface currentMentorUser {
   username: string;
@@ -95,6 +97,24 @@ const OneToOneChatMessages = ({
     }
   }, []);
 
+  const { user } = useAuth();
+
+  const handleEndCall = () => {
+    if (user?.role === "mentor") {
+      socket.emit("call:ended", {
+        needToEndCallUsername: selectedUser?.menteeUserName,
+        callEndedUsername: user?.userName,
+        callEndUserType: "mentor",
+      });
+    } else {
+      socket.emit("call:ended", {
+        needToEndCallUsername: selectedUser?.mentorUserName,
+        callEndedUsername: user?.userName,
+        callEndUserType: "mentee",
+      });
+    }
+  };
+
   const matchedContacts = React.useMemo(() => {
     return getMatchedContacts(
       filteredContacts,
@@ -140,6 +160,10 @@ const OneToOneChatMessages = ({
         <OneToOneChatHeader
           selectedUser={selectedUser}
           isSidebarOpen={isSidebarOpen}
+          onStatusUpdate={() => {
+            setSelectedUser(null);
+            handleEndCall();
+          }}
           setIsSidebarOpen={setIsSidebarOpen}
           onPhoneClick={onPhoneClick}
         />

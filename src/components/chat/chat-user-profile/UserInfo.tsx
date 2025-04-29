@@ -3,6 +3,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { CalendarDays, Clock } from "lucide-react";
 import { ChatContact } from "@/types/chat.types";
 import { Badge } from "@/components/ui/badge";
+import { formatTime } from "@/utils/formateTimer";
 
 interface UserInfoProps {
   selectedUser: ChatContact;
@@ -29,19 +30,6 @@ const UserInfo: React.FC<UserInfoProps> = ({ selectedUser }) => {
   React.useEffect(() => {
     sessionStorage.setItem(timerStorageKey, elapsedTime.toString());
   }, [elapsedTime, timerStorageKey]);
-
-  // Format time as HH:MM:SS
-  const formatTime = (timeInSeconds: number) => {
-    const hours = Math.floor(timeInSeconds / 3600);
-    const minutes = Math.floor((timeInSeconds % 3600) / 60);
-    const seconds = timeInSeconds % 60;
-
-    return [
-      hours.toString().padStart(2, "0"),
-      minutes.toString().padStart(2, "0"),
-      seconds.toString().padStart(2, "0"),
-    ].join(":");
-  };
 
   // Start timer function
   const startTimer = React.useCallback(() => {

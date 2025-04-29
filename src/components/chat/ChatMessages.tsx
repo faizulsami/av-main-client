@@ -15,6 +15,8 @@ import Link from "next/link";
 import { ChatContact } from "@/types/chat.types";
 import { getMatchedContacts } from "@/utils/getMatchedContacts";
 import { AppointmentService } from "@/services/appointment.service";
+import socket from "@/lib/socket";
+import { useAuth } from "@/hooks/useAuth";
 
 interface currentMentorUser {
   username: string;
@@ -130,6 +132,29 @@ const ChatMessages = ({
     );
     setChatSelectedUser(contact);
   };
+  const { user } = useAuth();
+  const handleEndCall = () => {
+    if (
+      !socket ||
+      (user?.role === "mentee" && !searchParams.get("mentor")) ||
+      (user?.role === "mentor" && !searchParams.get("mentee"))
+    )
+      return;
+
+    if (user?.role === "mentor") {
+      socket.emit("call:ended", {
+        needToEndCallUsername: searchParams.get("mentee"),
+        callEndedUsername: currentUser.username,
+        callEndUserType: "mentor",
+      });
+    } else {
+      socket.emit("call:ended", {
+        needToEndCallUsername: searchParams.get("mentor"),
+        callEndedUsername: currentUser.username,
+        callEndUserType: "mentee",
+      });
+    }
+  };
 
   const renderChatView = () => {
     if (!selectedUser) return null;
@@ -142,6 +167,10 @@ const ChatMessages = ({
           selectedUser={selectedUser}
           setSelectedUser={setSelectedUser}
           isSidebarOpen={isSidebarOpen}
+          onStatusUpdate={() => {
+            setSelectedUser(null);
+            handleEndCall();
+          }}
           setIsSidebarOpen={setIsSidebarOpen}
           isProfileOpen={isProfileOpen}
           setIsProfileOpen={setIsProfileOpen}
