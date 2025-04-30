@@ -36,6 +36,7 @@ export const VoiceCall: React.FC<VoiceCallProps> = ({ onEndCall, isOpen }) => {
 
   // Handle call end and clear timer
   const handleEndCall = () => {
+    console.log("click");
     setTimerActive(false);
     setTimer(0);
     onEndCall();

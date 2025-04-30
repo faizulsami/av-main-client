@@ -144,7 +144,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         description: "Appointment marked as completed",
       });
       await refetch();
-      onStatusUpdate?.();
+      // onStatusUpdate?.();
       setShowCompleteDialog(false);
     } catch (error) {
       console.error("Failed to complete appointment", error);
@@ -172,7 +172,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         description: "Appointment cancelled successfully",
       });
       await refetch();
-      onStatusUpdate?.();
+      // onStatusUpdate?.();
       setShowCancelDialog(false);
     } catch (error) {
       console.error("Failed to cancel appointment", error);

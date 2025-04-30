@@ -555,6 +555,27 @@ export default function ChatInterface() {
 
   //#endregion
 
+  const handleEndCall = () => {
+    if (!socket || user?.role === "mentee") return;
+    setShowCallScreen(false);
+    connectionRef.current?.destroy();
+    if (user_audio.current) user_audio.current.srcObject = null;
+
+    if (user?.role === "mentor") {
+      socket.emit("call:ended", {
+        needToEndCallUsername: selectedUser?.menteeUserName,
+        callEndedUsername: user?.userName,
+        callEndUserType: "mentor",
+      });
+    } else {
+      socket.emit("call:ended", {
+        needToEndCallUsername: selectedUser?.mentorUserName,
+        callEndedUsername: user?.userName,
+        callEndUserType: "mentee",
+      });
+    }
+  };
+
   if (!currentActiveUser?.userName) {
     return <Loading />;
   }

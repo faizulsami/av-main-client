@@ -38,7 +38,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
         description: "Appointment marked as completed",
       });
       await refetch();
-      onStatusUpdate?.();
+      // onStatusUpdate?.();
       setShowCompleteDialog(false);
     } catch (error) {
       console.error("Failed to complete appointment", error);
@@ -66,7 +66,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
         description: "Appointment cancelled successfully",
       });
       await refetch();
-      onStatusUpdate?.();
+      // onStatusUpdate?.();
       setShowCancelDialog(false);
     } catch (error) {
       console.error("Failed to cancel appointment", error);

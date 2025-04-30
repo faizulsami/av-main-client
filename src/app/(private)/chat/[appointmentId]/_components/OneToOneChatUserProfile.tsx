@@ -122,7 +122,7 @@ const OneToOneChatUserProfile: React.FC<UserProfileProps> = ({
   const handleComplete = async () => {
     try {
       if (!socket) return;
-      await AppointmentService.updateAppointment(selectedUser._id, {
+      await AppointmentService.updateAppointment(selectedUser.id, {
         status: "completed",
       });
 
@@ -136,7 +136,7 @@ const OneToOneChatUserProfile: React.FC<UserProfileProps> = ({
 
       await refetch();
       router.push("/dashboard/booked-calls");
-      onStatusUpdate?.();
+      // onStatusUpdate?.();
       setShowCompleteDialog(false);
     } catch (error) {
       console.error("Failed to complete appointment", error);
@@ -163,7 +163,7 @@ const OneToOneChatUserProfile: React.FC<UserProfileProps> = ({
       });
       await refetch();
       router.push("/dashboard/booked-calls");
-      onStatusUpdate?.();
+      // onStatusUpdate?.();
       setShowCancelDialog(false);
     } catch (error) {
       console.error("Failed to cancel appointment", error);

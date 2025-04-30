@@ -58,7 +58,7 @@ const CallInviteDialog: React.FC<CallInviteDialogProps> = ({
     setTimer(0);
     localStorage.setItem("callTimer", "0");
 
-    setShowCallScreen(true);
+    // setShowCallScreen(true);
     setTimerActive(true);
     onAccept();
   };
