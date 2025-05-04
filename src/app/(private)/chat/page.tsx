@@ -680,36 +680,37 @@ export default function ChatInterface() {
       {isCompleted &&
         !!searchParams.get("mentee") &&
         !!searchParams.get("mentor") && (
-          <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50">
-            <div className="border p-10 fixed text-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-background rounded-2xl shadow-2xl flex flex-col gap-3">
-              <h2 className="text-2xl font-bold ">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center px-4 sm:px-6">
+            <div className="w-full max-w-xl bg-background rounded-2xl shadow-2xl p-6 sm:p-8 md:p-10 text-center flex flex-col gap-4 sm:gap-5">
+              <h2 className="text-xl sm:text-2xl font-bold">
                 Thank you for sharing with us.
               </h2>
-              <p className="text-center my-2">
+              <p className="text-sm sm:text-base my-2">
                 We appreciate your trust in Anonymous Voices. Remember, you are
                 not alone, and your feelings are valid. Take a deep breath, be
                 kind to yourself, and reach out whenever you need support. Your
                 Voice is Safe Here: Let It Flow
               </p>
-              <div className="flex items-center gap-2 justify-center">
+              <div className="flex items-center gap-1 justify-center">
                 <Star fill="#FFD700" className="text-[#FFD700]" />
                 <Star fill="#FFD700" className="text-[#FFD700]" />
                 <Star fill="#FFD700" className="text-[#FFD700]" />
                 <Star fill="#FFD700" className="text-[#FFD700]" />
                 <Star fill="#FFD700" className="text-[#FFD700]" />
               </div>
-              <p className="text-lg">
+              <p className="text-base sm:text-lg">
                 Please share feedback on your experience in the following link.
               </p>
               <a
-                className="text-[#78bfc8]"
+                className="text-[#78bfc8] break-words"
                 href="https://docs.google.com/forms/d/e/1FAIpQLScgqy892yA1RfQynR07tC2w1DL85AG3RfnIRAmsTA8ktTqxvA/viewform?usp=sharing"
                 target="_blank"
+                rel="noopener noreferrer"
               >
                 https://docs.google.com/forms/d/e/1FAIpQLScgqy892yA1RfQynR07tC2w1DL85AG3RfnIRAmsTA8ktTqxvA/viewform?usp=sharing
               </a>
-              <Link className="mt-5" href="/">
-                <Button className="rounded-xl px-6 py-2 text-white bg-[#78bec6]">
+              <Link href="/" className="mt-4">
+                <Button className="rounded-xl px-6 py-2 text-white bg-[#78bec6] w-full sm:w-auto">
                   Back to Homepage
                 </Button>
               </Link>

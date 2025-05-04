@@ -46,13 +46,13 @@ const steps: Step[] = [
     description: "Browse articles, mental health resources, and helpful tools.",
     icon: <FileText className="w-6 h-6" />,
   },
-  {
-    id: 5,
-    title: "Get Ongoing Support",
-    description:
-      "Continue your journey with ongoing volunteer support or expert referrals.",
-    icon: <Heart className="w-6 h-6" />,
-  },
+  // {
+  //   id: 5,
+  //   title: "Get Ongoing Support",
+  //   description:
+  //     "Continue your journey with ongoing volunteer support or expert referrals.",
+  //   icon: <Heart className="w-6 h-6" />,
+  // },
 ];
 
 const containerVariants = {

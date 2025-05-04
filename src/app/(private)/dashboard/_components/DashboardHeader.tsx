@@ -17,6 +17,7 @@ import {
   MessageSquare,
   PenSquare,
   Settings2,
+  User,
   // User,
   UserPlus,
   Users,
@@ -55,6 +56,11 @@ const getMentorNavItems = (): NavItem[] => [
     title: "Notifications",
     href: "/dashboard/notifications",
     icon: <Mail size={20} />,
+  },
+  {
+    title: "Profile",
+    href: "/dashboard/profile",
+    icon: <User size={20} />,
   },
 ];
 

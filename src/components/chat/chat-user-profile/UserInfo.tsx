@@ -112,7 +112,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ selectedUser }) => {
         </Badge>
       </div>
 
-      <div className="mt-3 mb-2">
+      {/* <div className="mt-3 mb-2">
         <p className="font-medium text-center">
           {selectedUser.type == "Chat" ? "Chat Duration" : "Call Duration"}
         </p>
@@ -122,7 +122,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ selectedUser }) => {
         <p className="text-xs text-gray-500 text-center">
           {isTimerRunning ? "Running" : "Paused"}
         </p>
-      </div>
+      </div> */}
     </div>
   );
 };

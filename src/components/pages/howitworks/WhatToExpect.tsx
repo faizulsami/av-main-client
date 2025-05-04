@@ -22,7 +22,7 @@ const expectations: ExpectationCard[] = [
   },
   {
     id: 3,
-    title: "Expert Guidance",
+    title: "No Professional Intervention",
     image: "/images/HowItWorks/expert.png",
   },
   {

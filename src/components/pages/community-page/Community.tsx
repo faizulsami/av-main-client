@@ -671,9 +671,6 @@ export default function Community() {
                 <h2 className="text-xl font-bold mb-2 text-gray-800">
                   Anonymous Voices Community
                 </h2>
-                <p className="text-gray-600 mb-4">
-                  built on real-world success and failure.
-                </p>
 
                 <button
                   onClick={() => setGuidelinesModalOpen(true)}

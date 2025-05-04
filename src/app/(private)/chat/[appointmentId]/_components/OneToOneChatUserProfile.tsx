@@ -179,7 +179,7 @@ const OneToOneChatUserProfile: React.FC<UserProfileProps> = ({
     <div className="flex flex-col items-center gap-4">
       <Card className="h-full rounded-none border-0">
         <OneToOneUserInfo selectedUser={selectedUser} />
-        <div className="mt-3 mb-2">
+        {/* <div className="mt-3 mb-2">
           <p className="font-medium text-center">Call Duration</p>
           <p className="text-xl font-bold text-center">
             {formatTime(elapsedTime)}
@@ -187,7 +187,7 @@ const OneToOneChatUserProfile: React.FC<UserProfileProps> = ({
           <p className="text-xs text-gray-500 text-center">
             {isTimerRunning ? "Running" : "Paused"}
           </p>
-        </div>
+        </div> */}
         <div className="flex flex-col gap-4 mt-6">
           <Button
             size="sm"

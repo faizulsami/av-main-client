@@ -43,7 +43,7 @@ export const VoiceCall: React.FC<VoiceCallProps> = ({ onEndCall, isOpen }) => {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 bg-background p-4 rounded-lg shadow-lg">
+    <div className="fixed bottom-10 lg:bottom-4 right-4 bg-background p-4 rounded-lg shadow-lg">
       <div className="flex items-center gap-4">
         <div className="flex flex-col">
           <span className="text-sm font-medium">Connected</span>

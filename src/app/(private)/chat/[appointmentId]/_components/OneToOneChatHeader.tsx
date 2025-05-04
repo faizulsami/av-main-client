@@ -327,7 +327,7 @@ export const OneToOneChatHeader: React.FC<ChatHeaderProps> = ({
         <Badge variant="secondary" className="font-semibold truncate">
           @ {selectedUser?.menteeUserName}
         </Badge>
-        {user?.role === "mentor" && (
+        {/* {user?.role === "mentor" && (
           <p className="text-xs text-muted-foreground truncate block lg:hidden">
             {formatTime(elapsedTime)} - {isTimerRunning ? "Running" : "Paused"}
           </p>
@@ -336,7 +336,7 @@ export const OneToOneChatHeader: React.FC<ChatHeaderProps> = ({
           <p className="text-xs text-muted-foreground truncate ">
             {formatTime(elapsedTime)} - {isTimerRunning ? "Running" : "Paused"}
           </p>
-        )}
+        )} */}
       </div>
 
       {
