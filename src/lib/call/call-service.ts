@@ -16,6 +16,18 @@ export class CallService {
       initiator: false,
       trickle: false,
       stream: this.localStream,
+      config: {
+        iceServers: [
+          {
+            urls: `stun:stun.anonymousvoicesav.com`,
+          },
+          {
+            urls: `turn:stun.anonymousvoicesav.com`,
+            username: process.env.NEXT_PUBLIC_TURN_SERVER_USERNAME,
+            credential: process.env.NEXT_PUBLIC_TURN_SERVER_PASSWORD,
+          },
+        ]
+      }
     });
 
     this.peerConnection.on("signal", (data: Peer.SignalData) => {
@@ -106,6 +118,18 @@ export class CallService {
       initiator: false,
       trickle: false,
       stream: this.localStream,
+      config: {
+        iceServers: [
+          {
+            urls: `stun:stun.anonymousvoicesav.com`,
+          },
+          {
+            urls: `turn:stun.anonymousvoicesav.com`,
+            username: process.env.NEXT_PUBLIC_TURN_SERVER_USERNAME,
+            credential: process.env.NEXT_PUBLIC_TURN_SERVER_PASSWORD,
+          },
+        ],
+      }
     });
 
     this.peerConnection.on("signal", (data: Peer.SignalData) => {
