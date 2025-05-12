@@ -30,6 +30,8 @@ export class CallService {
       }
     });
 
+    console.log('flag33');
+
     this.peerConnection.on("signal", (data: Peer.SignalData) => {
       socket.emit("call_to_user", { name: user, signal: data, from: me });
     });
@@ -131,6 +133,8 @@ export class CallService {
         ],
       }
     });
+
+    console.log('flag44');
 
     this.peerConnection.on("signal", (data: Peer.SignalData) => {
       socket.emit("call:accept", { username, signal: data, from: me });

@@ -302,6 +302,8 @@ export default function OneToOneChatInterface() {
           },
         });
 
+        console.log('flag');
+
         peer.on("signal", (signal) => {
           socket.emit("call:invite", {
             signal,
