@@ -31,6 +31,7 @@ export const initializeVoiceCall = (
     .getUserMedia({ audio: true })
     .then((stream) => {
       stream.getTracks().forEach((track) => {
+        console.log('adding track', track);
         peerConnection.addTrack(track, stream);
       });
     })
@@ -66,6 +67,7 @@ export const handleIncomingCall = (
   setIsCallActive: React.Dispatch<React.SetStateAction<boolean>>,
   setCallLink: React.Dispatch<React.SetStateAction<string | null>>,
 ) => {
+  console.log('Handling incoming');
   socket.on(
     "voice-call-offer",
     async (data: { from: string; offer: RTCSessionDescriptionInit }) => {
