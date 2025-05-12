@@ -1,5 +1,6 @@
 import { Socket } from "socket.io-client";
 import { SOCKET_EVENTS } from "./socket";
+import { ICE_SERVERS } from "./constants";
 
 export class WebRTCService {
   private peerConnection: RTCPeerConnection | null = null;
@@ -33,7 +34,7 @@ export class WebRTCService {
 
   private async initializePeerConnection() {
     this.peerConnection = new RTCPeerConnection({
-      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+      iceServers: ICE_SERVERS,
     });
 
     this.peerConnection.onicecandidate = (event) => {

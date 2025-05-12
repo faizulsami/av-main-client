@@ -12,4 +12,14 @@ export const SOCKET_EVENTS = {
   WEBRTC_ICE: "webrtc:ice",
 } as const;
 
-export const ICE_SERVERS = [{ urls: "stun:stun.l.google.com:19302" }];
+export const ICE_SERVERS = [
+  { urls: "stun:stun.l.google.com:19302" },
+  {
+    urls: `stun:stun.anonymousvoicesav.com`,
+  },
+  {
+    urls: `turn:stun.anonymousvoicesav.com`,
+    username: process.env.NEXT_PUBLIC_TURN_SERVER_USERNAME,
+    credential: process.env.NEXT_PUBLIC_TURN_SERVER_PASSWORD,
+  }
+];

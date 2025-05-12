@@ -49,6 +49,9 @@ interface ReceivedMessage {
 }
 
 export default function ChatInterface() {
+
+  console.log('debug flag 1');
+
   const router = useRouter();
   const { toast, dismiss } = useToast();
   const { appointments, refetch } = useAppointments();

@@ -17,6 +17,9 @@ interface CallRoomProps {
 }
 
 export default function CallRoom({ params }: CallRoomProps) {
+
+  console.log('debug flag 2');
+
   const [isMuted, setIsMuted] = useState(false);
   const webRTCRef = useRef<WebRTCService | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
