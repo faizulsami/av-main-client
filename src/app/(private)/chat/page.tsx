@@ -491,6 +491,7 @@ export default function ChatInterface() {
         });
 
         console.log('flag22');
+        console.log(peer);
 
         peer.on("signal", (signal) => {
           socket.emit("call:invite", {
