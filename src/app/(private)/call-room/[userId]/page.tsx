@@ -59,11 +59,11 @@ export default function CallRoom({ params }: CallRoomProps) {
   }, [handleEndCall, toast]);
 
   const toggleMute = () => {
-    const tracks = webRTCRef.current?.localStream?.getAudioTracks();
-    if (tracks?.length) {
-      tracks[0].enabled = isMuted;
+    // const tracks = webRTCRef.current?.localStream?.getAudioTracks();
+    // if (tracks?.length) {
+      // tracks[0].enabled = isMuted;
       setIsMuted(!isMuted);
-    }
+    // }
   };
 
   return (

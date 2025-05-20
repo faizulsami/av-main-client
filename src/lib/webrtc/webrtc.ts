@@ -1,5 +1,5 @@
 import { Socket } from "socket.io-client";
-import { SOCKET_EVENTS } from "./socket";
+import { SOCKET_EVENTS } from "./constants";
 import { ICE_SERVERS } from "./constants";
 
 export class WebRTCService {
@@ -15,18 +15,18 @@ export class WebRTCService {
 
   private initializeSocketEvents() {
     // Listen for WebRTC signaling events
-    this.socket.on(SOCKET_EVENTS.OFFER, async ({ offer, from }) => {
+    this.socket.on(SOCKET_EVENTS.WEBRTC_OFFER, async ({ offer, from }) => {
       console.log("Received offer from:", from);
       this.remoteUserId = from;
       await this.handleOffer(offer);
     });
 
-    this.socket.on(SOCKET_EVENTS.ANSWER, async ({ answer }) => {
+    this.socket.on(SOCKET_EVENTS.WEBRTC_OFFER, async ({ answer }) => {
       console.log("Received answer");
       await this.handleAnswer(answer);
     });
 
-    this.socket.on(SOCKET_EVENTS.ICE_CANDIDATE, async ({ candidate }) => {
+    this.socket.on(SOCKET_EVENTS.WEBRTC_OFFER, async ({ candidate }) => {
       console.log("Received ICE candidate");
       await this.handleNewICECandidate(candidate);
     });
@@ -70,7 +70,7 @@ export class WebRTCService {
       const offer = await this.peerConnection!.createOffer();
       await this.peerConnection!.setLocalDescription(offer);
 
-      this.socket.emit(SOCKET_EVENTS.OFFER, {
+      this.socket.emit(SOCKET_EVENTS.WEBRTC_OFFER, {
         offer,
         to: remoteUserId,
         from: this.socket.id,
