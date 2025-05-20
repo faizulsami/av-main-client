@@ -49,10 +49,16 @@ export default function Hero() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
-  // Remove or comment out handleAction if not needed
-  // const handleAction = (actionType: ActionType) => {
-  //   router.push(`/sessions?action=${actionType}`);
-  // };
+  // Restore handleAction for chat button
+  const handleAction = (actionType: ActionType) => {
+    if (actionType === "chat") {
+      // Uncomment and use router if needed
+      // router.push(`/sessions?action=${actionType}`);
+      window.location.href = `/sessions?action=${actionType}`;
+    } else {
+      setShowModal(true);
+    }
+  };
 
   // Simple Modal component
   const Modal = ({ open, onClose }: { open: boolean; onClose: () => void }) =>
@@ -78,7 +84,7 @@ export default function Hero() {
     label,
     icon: Icon,
     variant = "bg-soft-paste",
-    // actionType,
+    actionType,
     className,
   }) => (
     <motion.div
@@ -89,7 +95,7 @@ export default function Hero() {
     >
       <Button
         className={`w-full ${variant} text-white font-bold`}
-        onClick={() => setShowModal(true)}
+        onClick={() => handleAction(actionType)}
       >
         <Icon className="w-4 h-4 mr-2" />
         {label}
