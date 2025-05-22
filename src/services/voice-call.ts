@@ -62,7 +62,7 @@ export const initializeVoiceCall = (
 };
 
 export const handleIncomingCall = (
-  socket: Socket,
+  socket: Socket & { auth: { username: string } },
   peerConnection: RTCPeerConnection,
   setIsCallActive: React.Dispatch<React.SetStateAction<boolean>>,
   setCallLink: React.Dispatch<React.SetStateAction<string | null>>,

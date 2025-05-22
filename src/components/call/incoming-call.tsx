@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -28,13 +29,37 @@ export function IncomingCall({
   onReject,
 }: IncomingCallProps) {
   const router = useRouter();
+  const ringtoneRef = useRef<HTMLAudioElement>(null);
+
+  // Play ringtone when component mounts, stop when unmounts
+  useEffect(() => {
+    if (ringtoneRef.current) {
+      ringtoneRef.current.currentTime = 0;
+      ringtoneRef.current.play().catch(() => {});
+    }
+    return () => {
+      if (ringtoneRef.current) {
+        ringtoneRef.current.pause();
+        ringtoneRef.current.currentTime = 0;
+      }
+    };
+  }, []);
+
+  const stopRingtone = () => {
+    if (ringtoneRef.current) {
+      ringtoneRef.current.pause();
+      ringtoneRef.current.currentTime = 0;
+    }
+  };
 
   const handleAccept = () => {
+    stopRingtone();
     socket.emit(SOCKET_EVENTS.CALL_ACCEPT, { to: fromUserId, roomId });
     router.push(`/call-room/${roomId}`);
   };
 
   const handleReject = () => {
+    stopRingtone();
     socket.emit(SOCKET_EVENTS.CALL_REJECT, { to: fromUserId });
     onReject();
   };
@@ -66,6 +91,8 @@ export function IncomingCall({
           Accept
         </Button>
       </CardFooter>
+      {/* Hidden audio element for ringtone */}
+      <audio ref={ringtoneRef} src="/ringtone.mp3" loop />
     </Card>
   );
 }

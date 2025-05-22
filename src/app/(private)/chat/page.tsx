@@ -26,7 +26,7 @@ import { Star } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import * as React from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useRef, useEffect, useMemo, useState } from "react";
 import Peer from "simple-peer";
 import { io, Socket } from "socket.io-client";
 
@@ -49,7 +49,6 @@ interface ReceivedMessage {
 }
 
 export default function ChatInterface() {
-
   console.log('debug flag 1');
 
   const router = useRouter();
@@ -526,9 +525,32 @@ export default function ChatInterface() {
           }
         });
 
+        // Play ringtone
+        const ringtoneRef = useRef<HTMLAudioElement>(null);
+
+        const startRingtone = () => {
+          if (ringtoneRef.current) {
+            ringtoneRef.current.currentTime = 0;
+            ringtoneRef.current.play().catch(() => {});
+          }
+        };
+
+        const stopRingtone = () => {
+          if (ringtoneRef.current) {
+            ringtoneRef.current.pause();
+            ringtoneRef.current.currentTime = 0;
+          }
+        };
+
         socket.on("call:accept", (data) => {
+          stopRingtone();
           setShowCallScreen(true);
           if (data.signal) peer.signal(data.signal);
+        });
+        socket.on("call:rejected", () => {
+          stopRingtone();
+          setIncomingCall(null);
+          setCallRejectUsername(selectedUser?.username || "");
         });
 
         peer.on("close", () => {

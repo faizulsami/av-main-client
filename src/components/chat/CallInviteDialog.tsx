@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { formatTime } from "@/utils/formateTimer";
 import { Phone } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 interface CallInviteDialogProps {
   isOpen: boolean;
@@ -31,8 +31,24 @@ const CallInviteDialog: React.FC<CallInviteDialogProps> = ({
 }) => {
   const [timer, setTimer] = useState<number>(0);
   const [timerActive, setTimerActive] = useState<boolean>(false);
+  const ringtoneRef = useRef<HTMLAudioElement>(null);
 
-  // Load previous call duration from localStorage when dialog opens
+  // Play/stop ringtone when dialog opens/closes
+  useEffect(() => {
+    if (isOpen && ringtoneRef.current) {
+      ringtoneRef.current.currentTime = 0;
+      ringtoneRef.current.play().catch(() => {});
+    } else if (!isOpen && ringtoneRef.current) {
+      ringtoneRef.current.pause();
+      ringtoneRef.current.currentTime = 0;
+    }
+    return () => {
+      if (ringtoneRef.current) {
+        ringtoneRef.current.pause();
+        ringtoneRef.current.currentTime = 0;
+      }
+    };
+  }, [isOpen]);
 
   // Timer logic
   useEffect(() => {
@@ -53,20 +69,26 @@ const CallInviteDialog: React.FC<CallInviteDialogProps> = ({
     };
   }, [timerActive]);
 
+  const stopRingtone = () => {
+    if (ringtoneRef.current) {
+      ringtoneRef.current.pause();
+      ringtoneRef.current.currentTime = 0;
+    }
+  };
+
   const handleAccept = () => {
     // Reset timer when accepting a new call
     setTimer(0);
     localStorage.setItem("callTimer", "0");
-
-    // setShowCallScreen(true);
     setTimerActive(true);
+    stopRingtone();
     onAccept();
   };
 
   const handleReject = () => {
     // Stop timer when rejecting a call
     setTimerActive(false);
-
+    stopRingtone();
     onReject();
   };
 
@@ -87,6 +109,8 @@ const CallInviteDialog: React.FC<CallInviteDialogProps> = ({
           </Button>
           <Button onClick={handleAccept}>Accept</Button>
         </DialogFooter>
+        {/* Hidden audio element for ringtone */}
+        <audio ref={ringtoneRef} src="/ringtone.mp3" loop />
       </DialogContent>
     </Dialog>
   );
