@@ -75,23 +75,22 @@ export class WebRTCService {
     }
   }
 
-  private async initializeLocalStream() {
+  private async initializeLocalStream(): Promise<MediaStream> {
     try {
       const constraints: MediaStreamConstraints = {
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true,
-          sampleRate: 48000,
-          channelCount: 2, // Stereo audio
+          sampleRate: 44100, // Try 44100 Hz
+          channelCount: 1, // Mono audio
+          sampleSize: 16, // 16-bit samples
         },
       };
-      this.localStream = await navigator.mediaDevices.getUserMedia(constraints);
-      this.localStream.getTracks().forEach((track) => {
-        this.peerConnection?.addTrack(track, this.localStream);
-      });
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      return stream;
     } catch (error) {
-      this.handleError(new Error("Failed to get user media: " + error));
+      throw new Error("Failed to get user media: " + error);
     }
   }
 
