@@ -1,8 +1,7 @@
 import { Socket } from "socket.io-client";
 import { CallInvitation } from "./types";
 import Peer from "simple-peer";
-import { CallInvitation as CallInvitationType } from "@/types/call";
-
+import { CallInvitationExtends } from "@/types/call";
 export class CallService {
   private static peerConnection: Peer.Instance | null = null;
   static localStream: MediaStream | null = null;
@@ -11,13 +10,7 @@ export class CallService {
     return `${Math.random().toString(36).substring(2, 9)}${Date.now()}`;
   }
 
-  // Added user and me as parameters
-  static async initializeCall(
-    socket: Socket,
-    roomId: string,
-    user: string,
-    me: string
-  ) {
+  static async initializeCall(socket: Socket, roomId: string) {
     if (!this.localStream) return;
     this.peerConnection = new Peer({
       initiator: false,
@@ -33,8 +26,8 @@ export class CallService {
             username: process.env.NEXT_PUBLIC_TURN_SERVER_USERNAME,
             credential: process.env.NEXT_PUBLIC_TURN_SERVER_PASSWORD,
           },
-        ],
-      },
+        ]
+      }
     });
 
     console.log('flag33');
@@ -43,7 +36,15 @@ export class CallService {
       socket.emit("call_to_user", { name: user, signal: data, from: me });
     });
 
-    // Removed onicecandidate block (not needed for simple-peer)
+    // Handle ICE  candidates
+    this.peerConnection.onicecandidate = (event) => {
+      if (event.candidate) {
+        socket.emit("ice-candidate", {
+          candidate: event.candidate,
+          roomId,
+        });
+      }
+    };
 
     // Set up audio track
     try {
@@ -101,7 +102,7 @@ export class CallService {
 
   static endCall() {
     this.localStream?.getTracks().forEach((track) => track.stop());
-    this.peerConnection?.destroy(); // Use destroy() for simple-peer
+    this.peerConnection?.close();
     this.peerConnection = null;
     this.localStream = null;
   }
@@ -110,43 +111,36 @@ export class CallService {
     socket.emit("call:invite", invitation);
   }
 
-  static async acceptCall(
+  static acceptCall(
     socket: Socket,
     { username, me }: { username: string; me: string },
   ) {
-    try {
-      // Request audio permissions and get the stream
-      this.localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    if (!this.localStream) return;
+    this.peerConnection = new Peer({
+      initiator: false,
+      trickle: false,
+      stream: this.localStream,
+      config: {
+        iceServers: [
+          {
+            urls: `stun:stun.anonymousvoicesav.com`,
+          },
+          {
+            urls: `turn:stun.anonymousvoicesav.com`,
+            username: process.env.NEXT_PUBLIC_TURN_SERVER_USERNAME,
+            credential: process.env.NEXT_PUBLIC_TURN_SERVER_PASSWORD,
+          },
+        ],
+      }
+    });
 
-      this.peerConnection = new Peer({
-        initiator: false,
-        trickle: false,
-        stream: this.localStream,
-        config: {
-          iceServers: [
-            {
-              urls: `stun:stun.anonymousvoicesav.com`,
-            },
-            {
-              urls: `turn:stun.anonymousvoicesav.com`,
-              username: process.env.NEXT_PUBLIC_TURN_SERVER_USERNAME,
-              credential: process.env.NEXT_PUBLIC_TURN_SERVER_PASSWORD,
-            },
-          ],
-        }
-      });
+    console.log('flag44');
 
-      console.log('flag44');
+    this.peerConnection.on("signal", (data: Peer.SignalData) => {
+      socket.emit("call:accept", { username, signal: data, from: me });
+    });
 
-      this.peerConnection.on("signal", (data: Peer.SignalData) => {
-        socket.emit("call:accept", { username, signal: data, from: me });
-      });
-
-      // socket.emit("call:accept", { roomId });
-    } catch (err) {
-      console.error("Error accessing microphone:", err);
-      throw err;
-    }
+    // socket.emit("call:accept", { roomId });
   }
 
   static rejectCall(socket: Socket, roomId: string) {
@@ -155,7 +149,7 @@ export class CallService {
 
   static listenForCallInvitations(
     socket: Socket,
-    callback: (invitation: CallInvitationType) => void,
+    callback: (invitation: CallInvitationExtends) => void,
   ) {
     socket.on("call:invite", callback);
   }
