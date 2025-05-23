@@ -120,11 +120,17 @@ export class WebRTCService {
     }
   }
 
-  private handleRemoteStream(remoteStream: MediaStream) {
+private handleRemoteStream(remoteStream: MediaStream, parentElement: HTMLElement | null = null) {
     const audioElement = document.createElement("audio");
     audioElement.srcObject = remoteStream;
     audioElement.autoplay = true;
-    document.body.appendChild(audioElement);
+    const container = parentElement || document.body;
+    if (container) {
+      container.appendChild(audioElement);
+    } else {
+      console.error("Could not find parent element for audio. Using document.body as fallback.");
+      document.body.appendChild(audioElement);
+    }
   }
 
   public endCall() {

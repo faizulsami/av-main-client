@@ -1,9 +1,11 @@
 import { Socket } from "socket.io-client";
+import { MediaStreamConstraints } from "./constants";
 
 export interface WebRTCConfig {
   socket: Socket;
-  onRemoteStream?: (stream: MediaStream) => void;
+  onRemoteStream: (stream: MediaStream, parentElement: HTMLElement | null) => void;
   onError?: (error: Error) => void;
+  mediaConstraints?: MediaStreamConstraints;
 }
 
 export interface CallPayload {

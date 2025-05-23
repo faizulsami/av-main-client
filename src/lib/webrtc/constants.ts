@@ -23,3 +23,8 @@ export const ICE_SERVERS = [
     credential: process.env.NEXT_PUBLIC_TURN_SERVER_PASSWORD,
   }
 ];
+
+export type MediaStreamConstraints = {
+  audio?: boolean | MediaTrackConstraints;
+  video?: boolean | MediaTrackConstraints;
+};

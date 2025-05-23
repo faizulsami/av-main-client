@@ -6,15 +6,28 @@ export class WebRTCService {
   private peerConnection: RTCPeerConnection | null = null;
   private localStream: MediaStream | null = null;
   private readonly socket: Socket;
-  private readonly onRemoteStream?: (stream: MediaStream) => void;
+private readonly onRemoteStream: (stream: MediaStream, parentElement: HTMLElement | null) => void;
   private readonly onError?: (error: Error) => void;
 
-  constructor(config: WebRTCConfig) {
+constructor(config: WebRTCConfig) {
     this.socket = config.socket;
     this.onRemoteStream = config.onRemoteStream;
     this.onError = config.onError;
     this.setupPeerConnection();
   }
+
+  public handleRemoteStream = (remoteStream: MediaStream, parentElement: HTMLElement | null = null) => {
+    const audioElement = document.createElement("audio");
+    audioElement.srcObject = remoteStream;
+    audioElement.autoplay = true;
+    const container = parentElement || document.body;
+    if (container) {
+      container.appendChild(audioElement);
+    } else {
+      console.error("Could not find parent element for audio. Using document.body as fallback.");
+      document.body.appendChild(audioElement);
+    }
+  };
 
   private setupPeerConnection() {
     this.peerConnection = new RTCPeerConnection({ iceServers: ICE_SERVERS });
@@ -29,7 +42,7 @@ export class WebRTCService {
 
     this.peerConnection.ontrack = (event) => {
       if (event.streams[0] && this.onRemoteStream) {
-        this.onRemoteStream(event.streams[0]);
+this.onRemoteStream(event.streams[0], null);
       }
     };
   }
