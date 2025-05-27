@@ -15,7 +15,9 @@ export class WebRTCService {
     this.onError = config.onError;
     this.setupPeerConnection();
   }
-
+ getLocalAudioTracks(): MediaStreamTrack[] {
+    return this.localStream?.getAudioTracks() || [];
+  }
   private setupPeerConnection() {
     this.peerConnection = new RTCPeerConnection({ iceServers: ICE_SERVERS });
 
