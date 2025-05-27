@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
@@ -29,6 +30,7 @@ import * as React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Peer from "simple-peer";
 import { io, Socket } from "socket.io-client";
+import { isIOS } from "react-device-detect"; // Add this at the top
 
 interface Message {
   id: string;
@@ -88,6 +90,7 @@ export default function ChatInterface() {
 
   // Inside the ChatInterface component, add these state variables
   const [callTimer, setCallTimer] = useState<number>(0);
+  const [iosAudioEnabled, setIosAudioEnabled] = useState(false);
 
   const currentActiveUser = useMemo(() => AuthService.getStoredUser(), []);
   const currentUser = useMemo(
@@ -588,6 +591,16 @@ export default function ChatInterface() {
     }
   };
 
+  const enableIosAudio = () => {
+    if (user_audio.current) {
+      user_audio.current.muted = false;
+      user_audio.current
+        .play()
+        .then(() => setIosAudioEnabled(true))
+        .catch(() => setIosAudioEnabled(false));
+    }
+  };
+
   if (!currentActiveUser?.userName) {
     return <Loading />;
   }
@@ -670,7 +683,17 @@ export default function ChatInterface() {
       )}
       {showCallScreen ? (
         <>
-          <audio ref={user_audio} autoPlay muted={false} playsInline />
+          <audio ref={user_audio} autoPlay muted={isIOS && !iosAudioEnabled} playsInline />
+          {isIOS && !iosAudioEnabled && (
+            <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+              <button
+                className="bg-[#78bec6] text-white px-6 py-3 rounded-xl text-lg font-semibold shadow-lg"
+                onClick={enableIosAudio}
+              >
+                Tap to Enable Audio
+              </button>
+            </div>
+          )}
           <VoiceCall onEndCall={handleEndCall} isOpen={showCallScreen} />
         </>
       ) : (
