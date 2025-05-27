@@ -17,9 +17,6 @@ interface CallRoomProps {
 }
 
 export default function CallRoom({ params }: CallRoomProps) {
-
-  console.log('debug flag 2');
-
   const [isMuted, setIsMuted] = useState(false);
   const webRTCRef = useRef<WebRTCService | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -38,6 +35,14 @@ export default function CallRoom({ params }: CallRoomProps) {
       onRemoteStream: (stream) => {
         if (audioRef.current) {
           audioRef.current.srcObject = stream;
+          console.log("Remote audio tracks:", stream.getAudioTracks());
+
+          const playPromise = audioRef.current.play();
+          if (playPromise !== undefined) {
+            playPromise.catch((error) =>
+              console.warn("iOS autoplay error:", error)
+            );
+          }
         }
       },
       onError: (error) => {
@@ -61,7 +66,7 @@ export default function CallRoom({ params }: CallRoomProps) {
   const toggleMute = () => {
     const tracks = webRTCRef.current?.localStream?.getAudioTracks();
     if (tracks?.length) {
-      tracks[0].enabled = isMuted;
+      tracks[0].enabled = !isMuted;
       setIsMuted(!isMuted);
     }
   };
@@ -79,7 +84,8 @@ export default function CallRoom({ params }: CallRoomProps) {
             <p className="text-sm text-muted-foreground">Connected</p>
           </div>
 
-          <audio ref={audioRef} autoPlay />
+          {/* Audio element with playsInline and muted false */}
+          <audio ref={audioRef} autoPlay playsInline />
 
           <div className="flex space-x-4">
             <Button
