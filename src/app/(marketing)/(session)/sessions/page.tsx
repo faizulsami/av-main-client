@@ -12,6 +12,7 @@ import { ActionType } from "@/components/pages/home/hero/Hero";
 import TitleHeader from "@/components/common/TitleHeader";
 import useApprovedVolunteers from "@/hooks/useApprovedVolunteers";
 import { useAuth } from "@/hooks/useAuth";
+import VoiceCallModal from "@/components/ui/VoiceCallModal";
 
 export default function Session() {
   const searchParams = useSearchParams();
@@ -63,6 +64,7 @@ export default function Session() {
 
   return (
     <div className="container mx-auto px-4 py-8 md:px-6 lg:px-8">
+      <VoiceCallModal />
       {/* Header Section */}
       <TitleHeader title={getHeaderText()} />
 
