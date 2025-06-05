@@ -290,17 +290,17 @@ const Header: React.FC = () => {
     return () => clearInterval(intervalId);
   }, [user?.id]);
 
-  useEffect(() => {
-    if (!user) return;
+  // useEffect(() => {
+  //   if (!user) return;
 
-    if (initialized && (!user || error !== null)) {
-      logout();
+  //   if (initialized && (!user || error !== null)) {
+  //     logout();
 
-      toast.error("You're removed as listener by admin!", {
-        duration: 15000,
-      });
-    }
-  }, [initialized, currentUser, error]);
+  //     toast.error("You're removed as listener by admin!", {
+  //       duration: 15000,
+  //     });
+  //   }
+  // }, [initialized, currentUser, error]);
 
   useEffect(() => {
     setSocket(get_socket());

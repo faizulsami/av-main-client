@@ -64,7 +64,8 @@ export default function Session() {
 
   return (
     <div className="container mx-auto px-4 py-8 md:px-6 lg:px-8">
-      <VoiceCallModal />
+      {actionType != "chat" && <VoiceCallModal />}
+
       {/* Header Section */}
       <TitleHeader title={getHeaderText()} />
 

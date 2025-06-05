@@ -27,28 +27,26 @@ const DAYS = [
   { value: "sunday", label: "Sunday" },
 ] as const;
 
-const TIME_SLOTS = [
-  { hours: 9, minutes: 0 },
-  { hours: 9, minutes: 30 },
-  { hours: 10, minutes: 0 },
-  { hours: 10, minutes: 30 },
-  { hours: 11, minutes: 0 },
-  { hours: 11, minutes: 30 },
-  { hours: 12, minutes: 0 },
-  { hours: 12, minutes: 30 },
-  { hours: 1, minutes: 0 },
-  { hours: 1, minutes: 30 },
-  { hours: 2, minutes: 0 },
-  { hours: 2, minutes: 30 },
-  { hours: 3, minutes: 0 },
-  { hours: 3, minutes: 30 },
-  { hours: 4, minutes: 0 },
-  { hours: 4, minutes: 30 },
-  { hours: 5, minutes: 0 },
-];
+// Generate all 30-minute intervals from 00:00 to 23:30
+const TIME_SLOTS = Array.from({ length: 48 }, (_, i) => {
+  const hours = Math.floor(i / 2);
+  const minutes = i % 2 === 0 ? 0 : 30;
+  return { hours, minutes };
+});
 
-const formatTime = (time: { hours: number; minutes: number }) => {
-  return `${time.hours.toString().padStart(2, "0")}:${time.minutes.toString().padStart(2, "0")}`;
+const formatTo24 = (time: { hours: number; minutes: number }) => {
+  return `${time.hours.toString().padStart(2, "0")}:${time.minutes
+    .toString()
+    .padStart(2, "0")}`;
+};
+
+const formatTo12Hour = (hours: number, minutes: number) => {
+  const suffix = hours >= 12 ? "PM" : "AM";
+  const adjustedHour = hours % 12 || 12;
+  const formatted = `${adjustedHour.toString().padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")} ${suffix}`;
+  return formatted;
 };
 
 export function AvailabilityScheduler({
@@ -78,12 +76,9 @@ export function AvailabilityScheduler({
   const handleAvailabilityToggle = (day: Day) => {
     const existingSlot = value.find((s) => s.day === day);
     const updatedSlots = existingSlot
-      ? value.map((slot) => {
-          if (slot.day === day) {
-            return { ...slot, isAvailable: !slot.isAvailable };
-          }
-          return slot;
-        })
+      ? value.map((slot) =>
+          slot.day === day ? { ...slot, isAvailable: !slot.isAvailable } : slot,
+        )
       : [
           ...value,
           {
@@ -122,47 +117,61 @@ export function AvailabilityScheduler({
 
               {slot.isAvailable && (
                 <div className="flex items-center space-x-2">
+                  {/* Start Time */}
                   <Select
-                    value={formatTime(startTime)}
+                    value={formatTo24(startTime)}
                     onValueChange={(time) =>
                       handleTimeChange(day.value, "startTime", time)
                     }
                   >
-                    <SelectTrigger className="w-24">
-                      <SelectValue placeholder="Start Time" />
+                    <SelectTrigger className="w-32">
+                      <SelectValue
+                        placeholder="Start Time"
+                        renderValue={(value) => {
+                          const [h, m] = value.split(":").map(Number);
+                          return formatTo12Hour(h, m);
+                        }}
+                      />
                     </SelectTrigger>
                     <SelectContent>
-                      {TIME_SLOTS.map((time) => (
-                        <SelectItem
-                          key={formatTime(time)}
-                          value={formatTime(time)}
-                        >
-                          {formatTime(time)}
-                        </SelectItem>
-                      ))}
+                      {TIME_SLOTS.map((time) => {
+                        const rawValue = formatTo24(time);
+                        return (
+                          <SelectItem key={rawValue} value={rawValue}>
+                            {formatTo12Hour(time.hours, time.minutes)}
+                          </SelectItem>
+                        );
+                      })}
                     </SelectContent>
                   </Select>
 
                   <span>to</span>
 
+                  {/* End Time */}
                   <Select
-                    value={formatTime(endTime)}
+                    value={formatTo24(endTime)}
                     onValueChange={(time) =>
                       handleTimeChange(day.value, "endTime", time)
                     }
                   >
-                    <SelectTrigger className="w-24">
-                      <SelectValue placeholder="End Time" />
+                    <SelectTrigger className="w-32">
+                      <SelectValue
+                        placeholder="End Time"
+                        renderValue={(value) => {
+                          const [h, m] = value.split(":").map(Number);
+                          return formatTo12Hour(h, m);
+                        }}
+                      />
                     </SelectTrigger>
                     <SelectContent>
-                      {TIME_SLOTS.map((time) => (
-                        <SelectItem
-                          key={formatTime(time)}
-                          value={formatTime(time)}
-                        >
-                          {formatTime(time).toString()}
-                        </SelectItem>
-                      ))}
+                      {TIME_SLOTS.map((time) => {
+                        const rawValue = formatTo24(time);
+                        return (
+                          <SelectItem key={rawValue} value={rawValue}>
+                            {formatTo12Hour(time.hours, time.minutes)}
+                          </SelectItem>
+                        );
+                      })}
                     </SelectContent>
                   </Select>
                 </div>
