@@ -291,16 +291,24 @@ const Header: React.FC = () => {
   }, [user?.id]);
 
   // useEffect(() => {
-  //   if (!user) return;
+  //   if (!socket || !user || !currentUser?.data) return;
 
-  //   if (initialized && (!user || error !== null)) {
-  //     logout();
+  //   const handleUserRemoved = (data: { userId: string }) => {
+  //     console.log(data);
+  //     if (data.userId === currentUser?.data?.id) {
+  //       logout();
+  //       toast.error("You're removed as a listener by admin!", {
+  //         duration: 15000,
+  //       });
+  //     }
+  //   };
 
-  //     toast.error("You're removed as listener by admin!", {
-  //       duration: 15000,
-  //     });
-  //   }
-  // }, [initialized, currentUser, error]);
+  //   socket.on("user_removed", handleUserRemoved);
+
+  //   return () => {
+  //     socket.off("user_removed", handleUserRemoved);
+  //   };
+  // }, [socket, user]);
 
   useEffect(() => {
     setSocket(get_socket());

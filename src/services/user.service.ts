@@ -1,6 +1,7 @@
 "use client"; // store/userStore.ts
 import { create } from "zustand";
 import api from "@/config/axios.config";
+import { toast } from "sonner";
 
 interface UserState {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -27,6 +28,15 @@ export const useUserStore = create<UserState>((set) => ({
       set({ user: res.data, loading: false, initialized: true });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("needsPasswordChange");
+      localStorage.removeItem("user");
+      localStorage.removeItem("isAuthenticated");
+      alert("You're removed as a listener by admin!");
+      toast.error("You're removed as a listener by admin!", {
+        duration: 15000,
+      });
+      window.location.replace("/");
       set({
         error: error?.response?.data?.message || "Something went wrong",
         loading: false,
