@@ -32,11 +32,14 @@ export const useUserStore = create<UserState>((set) => ({
       localStorage.removeItem("needsPasswordChange");
       localStorage.removeItem("user");
       localStorage.removeItem("isAuthenticated");
-      alert("You're removed as a listener by admin!");
-      toast.error("You're removed as a listener by admin!", {
-        duration: 15000,
-      });
       window.location.replace("/");
+
+      setTimeout(() => {
+        toast.error("You're removed as a listener by admin!", {
+          duration: 10000,
+        });
+      }, 5000);
+
       set({
         error: error?.response?.data?.message || "Something went wrong",
         loading: false,
