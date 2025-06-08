@@ -98,7 +98,7 @@ const MentorRegistrationForm = () => {
       // console.log("MENTOR REGISTRATION RESULT", result);
 
       setDialogMessage(
-        "Registration Successful. Your mentor account has been created. Please wait for admin approval.",
+        "Registration successful. Your listener account has been created. Please wait for admin approval.",
       );
       setShowDialog(true);
 
