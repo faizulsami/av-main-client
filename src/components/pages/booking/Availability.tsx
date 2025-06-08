@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import type { DaySchedule, TimeRange } from "@/types/volunteer";
+import type { DaySchedule } from "@/types/volunteer";
 import { useBookingStore } from "@/store/useBookingStore";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
@@ -22,12 +23,6 @@ interface AvailabilityProps {
   schedule: DaySchedule[];
 }
 
-interface TimeSlot {
-  start: { hours: number; minutes: number };
-  end: { hours: number; minutes: number };
-  formatted: string;
-}
-
 const daysOfWeek = [
   "sunday",
   "monday",
@@ -38,36 +33,46 @@ const daysOfWeek = [
   "saturday",
 ];
 
+type TimeRange = { hours: number; minutes: number };
+type TimeSlot = {
+  start: TimeRange;
+  end: TimeRange;
+  formatted: string;
+};
+
+function format12Hour(hours: number, minutes: number): string {
+  const suffix = hours >= 12 ? "PM" : "AM";
+  const hour12 = hours % 12 === 0 ? 12 : hours % 12;
+  const paddedMinutes = String(minutes).padStart(2, "0");
+  return `${hour12}:${paddedMinutes} ${suffix}`;
+}
+
 function generateTimeSlots(
   startTime: TimeRange,
   endTime: TimeRange,
 ): TimeSlot[] {
   const slots: TimeSlot[] = [];
-  let currentStart = startTime.hours * 60 + startTime.minutes;
-  if (startTime.hours < 9) {
-    startTime.hours = startTime.hours + 12;
-  }
-  if (endTime.hours < 9) {
-    endTime.hours = endTime.hours + 12;
-  }
-  const endMinutes = endTime.hours * 60 + endTime.minutes;
 
-  while (currentStart < endMinutes) {
+  let currentStart = startTime.hours * 60 + startTime.minutes;
+  let end = endTime.hours * 60 + endTime.minutes;
+
+  // Handle overnight range (e.g., 14:00 to 02:00 next day)
+  if (end <= currentStart) {
+    end += 24 * 60;
+  }
+
+  while (currentStart < end) {
     const currentEnd = currentStart + 30;
 
-    // Format start time
-    const startHours = Math.floor(currentStart / 60);
+    const startHours = Math.floor(currentStart / 60) % 24;
     const startMins = currentStart % 60;
-    const formattedStart = `${String(startHours).padStart(2, "0")} : ${String(startMins).padStart(2, "0")}`;
-
-    // Format end time
-    const endHours = Math.floor(currentEnd / 60);
+    const endHours = Math.floor(currentEnd / 60) % 24;
     const endMins = currentEnd % 60;
 
     slots.push({
       start: { hours: startHours, minutes: startMins },
       end: { hours: endHours, minutes: endMins },
-      formatted: `${formattedStart}`,
+      formatted: `${format12Hour(startHours, startMins)} - ${format12Hour(endHours, endMins)}`,
     });
 
     currentStart += 30;
@@ -186,32 +191,39 @@ export default function Availability({ schedule }: AvailabilityProps) {
                     >
                       <SelectTrigger className="mx-auto w-[70%] md:w-[80%]">
                         <SelectValue
-                          placeholder={`${daySchedule.startTime.hours < 12 && daySchedule.startTime.hours > 5 ? daySchedule.startTime.hours : daySchedule.startTime.hours - 12} ${daySchedule.startTime.hours < 12 && daySchedule.startTime.hours > 5 ? "am" : "pm"} - ${daySchedule.endTime.hours < 12 && daySchedule.endTime.hours > 5 ? daySchedule.endTime.hours : daySchedule.endTime.hours - 12} ${daySchedule.endTime.hours < 12 && daySchedule.endTime.hours > 5 ? "am" : "pm"}`}
+                          placeholder={`
+  ${
+    daySchedule.startTime.hours % 12 === 0
+      ? 12
+      : daySchedule.startTime.hours % 12
+  } ${daySchedule.startTime.hours >= 12 ? "pm" : "am"} - ${
+    daySchedule.endTime.hours % 12 === 0 ? 12 : daySchedule.endTime.hours % 12
+  } ${daySchedule.endTime.hours >= 12 ? "pm" : "am"}
+`}
                         />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
                           {slots.map((slot, index) => {
-                            const formatTime = (time: string) => {
-                              const [hours, minutes] = time
-                                .split(":")
-                                .map(Number);
-                              const period =
-                                hours < 12 && hours > 5 ? "am" : "pm";
-                              const formattedHours =
-                                hours > 12 || hours <= 5
-                                  ? (hours - 12).toString().padStart(2, "0")
-                                  : hours.toString();
+                            const formatTime = (time: any) => {
+                              const { hours, minutes } = time;
+                              const period = hours >= 12 ? "pm" : "am";
+                              const hour12 =
+                                hours === 0
+                                  ? 12
+                                  : hours > 12
+                                    ? hours - 12
+                                    : hours;
 
-                              return `${formattedHours} : ${minutes.toString().padStart(2, "0")} ${period}`;
+                              return `${hour12?.toString()?.padStart(2, "0")} : ${minutes?.toString()?.padStart(2, "0")} ${period}`;
                             };
                             return (
                               <>
                                 <SelectItem
                                   key={index}
-                                  value={`${daySchedule.day} ${formatTime(slot.formatted)}`}
+                                  value={`${daySchedule.day} ${formatTime(slot.start)}`}
                                 >
-                                  {formatTime(slot.formatted)}
+                                  {formatTime(slot.start)}
                                 </SelectItem>
                               </>
                             );
