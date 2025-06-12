@@ -58,7 +58,7 @@ const DEFAULT_AVAILABILITY: Array<{
   "sunday",
 ].map((day) => ({
   day: day as Day,
-  startTime: { hours: 2, minutes: 0 },
+  startTime: { hours: 14, minutes: 0 },
   endTime: { hours: 2, minutes: 0 },
   isAvailable: false,
 }));

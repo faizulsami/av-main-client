@@ -52,8 +52,8 @@ const formatTo12Hour = (hours: number, minutes: number) => {
 export function AvailabilityScheduler({
   value = DAYS.map((day) => ({
     day: day.value as Day,
-    startTime: { hours: 9, minutes: 0 },
-    endTime: { hours: 17, minutes: 0 },
+    startTime: { hours: 14, minutes: 0 },
+    endTime: { hours: 2, minutes: 0 },
     isAvailable: false,
   })),
   onChange,
@@ -83,8 +83,8 @@ export function AvailabilityScheduler({
           ...value,
           {
             day,
-            startTime: { hours: 9, minutes: 0 },
-            endTime: { hours: 17, minutes: 0 },
+            startTime: { hours: 14, minutes: 0 },
+            endTime: { hours: 2, minutes: 0 },
             isAvailable: true,
           },
         ];
@@ -96,13 +96,13 @@ export function AvailabilityScheduler({
       {DAYS.map((day) => {
         const slot = value.find((s) => s.day === day.value) ?? {
           day: day.value,
-          startTime: { hours: 9, minutes: 0 },
-          endTime: { hours: 17, minutes: 0 },
+          startTime: { hours: 14, minutes: 0 },
+          endTime: { hours: 2, minutes: 0 },
           isAvailable: false,
         };
 
-        const startTime = slot.startTime || { hours: 9, minutes: 0 };
-        const endTime = slot.endTime || { hours: 17, minutes: 0 };
+        const startTime = slot.startTime || { hours: 14, minutes: 0 };
+        const endTime = slot.endTime || { hours: 2, minutes: 0 };
 
         return (
           <Card key={day.value} className="p-4">

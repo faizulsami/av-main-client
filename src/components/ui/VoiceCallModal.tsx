@@ -8,13 +8,14 @@ import { useRouter } from "next/navigation";
 
 export default function VoiceCallModal() {
   const [isOpen, setIsOpen] = useState(true);
-  const [selected, setSelected] = useState<string[]>([]);
+  const [selected, setSelected] = useState<string>("");
+
   const router = useRouter();
 
   const handleSubmit = () => {
-    if (selected.includes("yes")) {
+    if (selected == "yes") {
       setIsOpen(false);
-    } else if (selected.includes("no")) {
+    } else if (selected == "no") {
       // alert("You need an Android or PC browser to use voice call.");
       setIsOpen(false);
       router.push("/");
@@ -103,16 +104,12 @@ export default function VoiceCallModal() {
             <div className="space-y-2 mb-4 text-left">
               <label className="flex text-white items-center gap-2 cursor-pointer border rounded-2xl bg-[#3E3DA4] p-4">
                 <input
-                  type="checkbox"
-                  checked={selected.includes("yes")}
-                  onChange={() => {
-                    setSelected((prev) =>
-                      prev.includes("yes")
-                        ? prev.filter((v) => v !== "yes")
-                        : [...prev, "yes"],
-                    );
-                  }}
-                  className="form-checkbox text-indigo-600 w-5 h-5"
+                  type="radio"
+                  name="device"
+                  value="yes"
+                  checked={selected === "yes"}
+                  onChange={() => setSelected("yes")}
+                  className="form-radio text-indigo-600 w-5 h-5 rounded"
                 />
                 <span className="text-sm">
                   Yes, I have Android device or PC browser
@@ -120,28 +117,25 @@ export default function VoiceCallModal() {
               </label>
 
               <div className="relative">
-                <label className="flex items-center gap-2 cursor-pointer p-4 bg-[#E7DFFE] rounded-2xl ">
+                <label className="flex items-center gap-2 cursor-pointer p-4 bg-[#E7DFFE] rounded-2xl">
                   <input
-                    type="checkbox"
-                    checked={selected.includes("no")}
-                    onChange={() => {
-                      setSelected((prev) =>
-                        prev.includes("no")
-                          ? prev.filter((v) => v !== "no")
-                          : [...prev, "no"],
-                      );
-                    }}
-                    className="form-checkbox text-indigo-600 w-5 h-5"
+                    type="radio"
+                    name="device"
+                    value="no"
+                    checked={selected === "no"}
+                    onChange={() => setSelected("no")}
+                    className="form-radio text-indigo-600 w-5 h-5"
                   />
                   <span className="text-[13px] pe-20 lg:pe-0">
                     No, I don’t have any of these devices
                   </span>
                 </label>
+
                 {/* Submit Button */}
                 <div className="w-20 absolute top-0 right-3">
                   <button
                     onClick={handleSubmit}
-                    className="bg-[#3E3DA4] hover:bg-indigo-700 text-white px-4 py-6 lg:py-3.5 rounded-2xl  font-semibold transition absolute"
+                    className="bg-[#3E3DA4] hover:bg-indigo-700 text-white px-4 py-6 lg:py-3.5 rounded-2xl font-semibold transition absolute"
                   >
                     Submit
                   </button>
