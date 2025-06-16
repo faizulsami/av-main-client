@@ -189,7 +189,7 @@ export default function Community() {
     }
   };
 
-  const popularPosts = posts?.filter((post: any) => post.votes > 10);
+  const popularPosts = posts?.filter((post: any) => post.votes >= 5);
   const announcementsPosts = posts?.filter(
     (post: any) =>
       post?.author?.role === "admin" || post?.author?.role === "mentor",
@@ -389,7 +389,7 @@ export default function Community() {
             ) : activeTab == "recent" ? (
               <div className="space-y-6">
                 {recentPosts?.length > 0 ? (
-                  recentPosts?.map((post: any) => (
+                  recentPosts?.slice(0, 10)?.map((post: any) => (
                     <div
                       key={post._id}
                       className="bg-white border border-purple-200 rounded-lg overflow-hidden cursor-pointer hover:border-purple-300 relative shadow-md"
