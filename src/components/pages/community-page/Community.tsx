@@ -194,17 +194,10 @@ export default function Community() {
     (post: any) =>
       post?.author?.role === "admin" || post?.author?.role === "mentor",
   );
-  const today = new Date();
+
   const recentPosts = posts
     ?.filter((post: any) => {
-      const postDate = new Date(post.createdAt);
-      return (
-        post.author.role !== "mentor" &&
-        post.author.role !== "admin" &&
-        postDate.getDate() === today.getDate() &&
-        postDate.getMonth() === today.getMonth() &&
-        postDate.getFullYear() === today.getFullYear()
-      );
+      return post.author.role !== "mentor" && post.author.role !== "admin";
     })
     .sort(
       (a: any, b: any) =>
@@ -302,264 +295,282 @@ export default function Community() {
             {/* Posts List */}
             {activeTab == "popular" ? (
               <div className="space-y-6">
-                {popularPosts?.map((post: any) => (
-                  <div
-                    key={post._id}
-                    className="bg-white border border-purple-200 rounded-lg overflow-hidden cursor-pointer hover:border-purple-300 relative shadow-md"
-                    onClick={() => handleOpenPost(post._id)}
-                  >
-                    {/* Delete Icon */}
-                    {(user?.role === "admin" ||
-                      user?.userName === post.author.name) && (
-                      <button
-                        className="absolute top-2 right-2 text-gray-400 hover:text-red-500 z-10 p-1 rounded-full hover:bg-gray-100"
-                        onClick={(e) => handleDeletePost(e, post._id)}
-                      >
-                        {postDeleting._id === post._id &&
-                        postDeleting.isLoading ? (
-                          <Loader2 className="animate-spin" />
-                        ) : (
-                          <Trash2 className="h-4 w-4" />
-                        )}
-                      </button>
-                    )}
-
-                    <div className="p-4 flex flex-row items-start gap-4">
-                      <div className="h-12 w-12 rounded-full border border-purple-200 overflow-hidden relative">
-                        <Image
-                          src={"/images/avatar/man.png"}
-                          width={48}
-                          height={48}
-                          alt={"avatar"}
-                          className="h-full w-full object-cover"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-gray-800">
-                            @{post.author.name}
-                          </span>
-                          {post.author.role && (
-                            <span
-                              className={`${post.author.role === "mentee" ? "" : "inline-flex uppercase items-center rounded-full border border-purple-300 bg-purple-100 px-2.5 py-0.5 text-xs font-semibold text-purple-700"}`}
-                            >
-                              {post.author.role === "admin"
-                                ? "Admin"
-                                : post.author.role === "mentor"
-                                  ? "Listener"
-                                  : ""}
-                            </span>
+                {popularPosts?.length > 0 ? (
+                  popularPosts?.map((post: any) => (
+                    <div
+                      key={post._id}
+                      className="bg-white border border-purple-200 rounded-lg overflow-hidden cursor-pointer hover:border-purple-300 relative shadow-md"
+                      onClick={() => handleOpenPost(post._id)}
+                    >
+                      {/* Delete Icon */}
+                      {(user?.role === "admin" ||
+                        user?.userName === post.author.name) && (
+                        <button
+                          className="absolute top-2 right-2 text-gray-400 hover:text-red-500 z-10 p-1 rounded-full hover:bg-gray-100"
+                          onClick={(e) => handleDeletePost(e, post._id)}
+                        >
+                          {postDeleting._id === post._id &&
+                          postDeleting.isLoading ? (
+                            <Loader2 className="animate-spin" />
+                          ) : (
+                            <Trash2 className="h-4 w-4" />
                           )}
+                        </button>
+                      )}
+
+                      <div className="p-4 flex flex-row items-start gap-4">
+                        <div className="h-12 w-12 rounded-full border border-purple-200 overflow-hidden relative">
+                          <Image
+                            src={"/images/avatar/man.png"}
+                            width={48}
+                            height={48}
+                            alt={"avatar"}
+                            className="h-full w-full object-cover"
+                          />
                         </div>
-                        <p className="text-sm text-gray-500">
-                          {moment(post.createdAt).fromNow()}
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-gray-800">
+                              @{post.author.name}
+                            </span>
+                            {post.author.role && (
+                              <span
+                                className={`${post.author.role === "mentee" ? "" : "inline-flex uppercase items-center rounded-full border border-purple-300 bg-purple-100 px-2.5 py-0.5 text-xs font-semibold text-purple-700"}`}
+                              >
+                                {post.author.role === "admin"
+                                  ? "Admin"
+                                  : post.author.role === "mentor"
+                                    ? "Listener"
+                                    : ""}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-500">
+                            {moment(post.createdAt).fromNow()}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="px-4 pb-2">
+                        <p className="whitespace-pre-line text-gray-700">
+                          {post?.content}
                         </p>
                       </div>
-                    </div>
-                    <div className="px-4 pb-2">
-                      <p className="whitespace-pre-line text-gray-700">
-                        {post?.content}
-                      </p>
-                    </div>
-                    <div className="flex justify-between border-t border-purple-100 pt-4 px-4 pb-4">
-                      <div className="flex items-center gap-2">
+                      <div className="flex justify-between border-t border-purple-100 pt-4 px-4 pb-4">
+                        <div className="flex items-center gap-2">
+                          <button className="flex items-center text-gray-500 hover:text-purple-600 text-sm">
+                            <ThumbsUp
+                              fill={
+                                votedLists.includes(post._id)
+                                  ? "#8b5cf6"
+                                  : undefined
+                              }
+                              className="h-4 w-4 mr-1"
+                            />
+                            {post?.votes || 0}
+                          </button>
+                          <button className="flex items-center text-gray-500 hover:text-purple-600 text-sm">
+                            <MessageSquare className="h-4 w-4 mr-1" />
+                            {post?.comments?.length || 0}
+                          </button>
+                        </div>
                         <button className="flex items-center text-gray-500 hover:text-purple-600 text-sm">
-                          <ThumbsUp
-                            fill={
-                              votedLists.includes(post._id)
-                                ? "#8b5cf6"
-                                : undefined
-                            }
-                            className="h-4 w-4 mr-1"
-                          />
-                          {post?.votes || 0}
-                        </button>
-                        <button className="flex items-center text-gray-500 hover:text-purple-600 text-sm">
-                          <MessageSquare className="h-4 w-4 mr-1" />
-                          {post?.comments?.length || 0}
+                          <Link2 className="h-4 w-4 mr-1" />
+                          {/* Share */}
                         </button>
                       </div>
-                      <button className="flex items-center text-gray-500 hover:text-purple-600 text-sm">
-                        <Link2 className="h-4 w-4 mr-1" />
-                        {/* Share */}
-                      </button>
                     </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <>
+                    <p>There is no popular posts.</p>
+                  </>
+                )}
               </div>
             ) : activeTab == "recent" ? (
               <div className="space-y-6">
-                {recentPosts?.map((post: any) => (
-                  <div
-                    key={post._id}
-                    className="bg-white border border-purple-200 rounded-lg overflow-hidden cursor-pointer hover:border-purple-300 relative shadow-md"
-                    onClick={() => handleOpenPost(post._id)}
-                  >
-                    {/* Delete Icon */}
-                    {(user?.role === "admin" ||
-                      user?.userName === post.author.name) && (
-                      <button
-                        className="absolute top-2 right-2 text-gray-400 hover:text-red-500 z-10 p-1 rounded-full hover:bg-gray-100"
-                        onClick={(e) => handleDeletePost(e, post._id)}
-                      >
-                        {postDeleting._id === post._id &&
-                        postDeleting.isLoading ? (
-                          <Loader2 className="animate-spin" />
-                        ) : (
-                          <Trash2 className="h-4 w-4" />
-                        )}
-                      </button>
-                    )}
-
-                    <div className="p-4 flex flex-row items-start gap-4">
-                      <div className="h-12 w-12 rounded-full border border-purple-200 overflow-hidden relative">
-                        <Image
-                          src={"/images/avatar/man.png"}
-                          width={48}
-                          height={48}
-                          alt={"avatar"}
-                          className="h-full w-full object-cover"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-gray-800">
-                            @{post.author.name}
-                          </span>
-                          {post.author.role && (
-                            <span
-                              className={`${post.author.role === "mentee" ? "" : "inline-flex uppercase items-center rounded-full border border-purple-300 bg-purple-100 px-2.5 py-0.5 text-xs font-semibold text-purple-700"}`}
-                            >
-                              {post.author.role === "admin"
-                                ? "Admin"
-                                : post.author.role === "mentor"
-                                  ? "Listener"
-                                  : ""}
-                            </span>
+                {recentPosts?.length > 0 ? (
+                  recentPosts?.map((post: any) => (
+                    <div
+                      key={post._id}
+                      className="bg-white border border-purple-200 rounded-lg overflow-hidden cursor-pointer hover:border-purple-300 relative shadow-md"
+                      onClick={() => handleOpenPost(post._id)}
+                    >
+                      {/* Delete Icon */}
+                      {(user?.role === "admin" ||
+                        user?.userName === post.author.name) && (
+                        <button
+                          className="absolute top-2 right-2 text-gray-400 hover:text-red-500 z-10 p-1 rounded-full hover:bg-gray-100"
+                          onClick={(e) => handleDeletePost(e, post._id)}
+                        >
+                          {postDeleting._id === post._id &&
+                          postDeleting.isLoading ? (
+                            <Loader2 className="animate-spin" />
+                          ) : (
+                            <Trash2 className="h-4 w-4" />
                           )}
+                        </button>
+                      )}
+
+                      <div className="p-4 flex flex-row items-start gap-4">
+                        <div className="h-12 w-12 rounded-full border border-purple-200 overflow-hidden relative">
+                          <Image
+                            src={"/images/avatar/man.png"}
+                            width={48}
+                            height={48}
+                            alt={"avatar"}
+                            className="h-full w-full object-cover"
+                          />
                         </div>
-                        <p className="text-sm text-gray-500">
-                          {moment(post.createdAt).fromNow()}
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-gray-800">
+                              @{post.author.name}
+                            </span>
+                            {post.author.role && (
+                              <span
+                                className={`${post.author.role === "mentee" ? "" : "inline-flex uppercase items-center rounded-full border border-purple-300 bg-purple-100 px-2.5 py-0.5 text-xs font-semibold text-purple-700"}`}
+                              >
+                                {post.author.role === "admin"
+                                  ? "Admin"
+                                  : post.author.role === "mentor"
+                                    ? "Listener"
+                                    : ""}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-500">
+                            {moment(post.createdAt).fromNow()}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="px-4 pb-2">
+                        <p className="whitespace-pre-line text-gray-700">
+                          {post?.content}
                         </p>
                       </div>
-                    </div>
-                    <div className="px-4 pb-2">
-                      <p className="whitespace-pre-line text-gray-700">
-                        {post?.content}
-                      </p>
-                    </div>
-                    <div className="flex justify-between border-t border-purple-100 pt-4 px-4 pb-4">
-                      <div className="flex items-center gap-2">
+                      <div className="flex justify-between border-t border-purple-100 pt-4 px-4 pb-4">
+                        <div className="flex items-center gap-2">
+                          <button className="flex items-center text-gray-500 hover:text-purple-600 text-sm">
+                            <ThumbsUp
+                              fill={
+                                votedLists.includes(post._id)
+                                  ? "#8b5cf6"
+                                  : undefined
+                              }
+                              className="h-4 w-4 mr-1"
+                            />
+                            {post?.votes || 0}
+                          </button>
+                          <button className="flex items-center text-gray-500 hover:text-purple-600 text-sm">
+                            <MessageSquare className="h-4 w-4 mr-1" />
+                            {post?.comments?.length || 0}
+                          </button>
+                        </div>
                         <button className="flex items-center text-gray-500 hover:text-purple-600 text-sm">
-                          <ThumbsUp
-                            fill={
-                              votedLists.includes(post._id)
-                                ? "#8b5cf6"
-                                : undefined
-                            }
-                            className="h-4 w-4 mr-1"
-                          />
-                          {post?.votes || 0}
-                        </button>
-                        <button className="flex items-center text-gray-500 hover:text-purple-600 text-sm">
-                          <MessageSquare className="h-4 w-4 mr-1" />
-                          {post?.comments?.length || 0}
+                          <Link2 className="h-4 w-4 mr-1" />
+                          {/* Share */}
                         </button>
                       </div>
-                      <button className="flex items-center text-gray-500 hover:text-purple-600 text-sm">
-                        <Link2 className="h-4 w-4 mr-1" />
-                        {/* Share */}
-                      </button>
                     </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <>
+                    <p>There is no recent posts.</p>
+                  </>
+                )}
               </div>
             ) : activeTab == "announcements" ? (
               <div className="space-y-6">
-                {announcementsPosts?.map((post: any) => (
-                  <div
-                    key={post._id}
-                    className="bg-white border border-purple-200 rounded-lg overflow-hidden cursor-pointer hover:border-purple-300 relative shadow-md"
-                    onClick={() => handleOpenPost(post._id)}
-                  >
-                    {/* Delete Icon */}
-                    {(user?.role === "admin" ||
-                      user?.userName === post.author.name) && (
-                      <button
-                        className="absolute top-2 right-2 text-gray-400 hover:text-red-500 z-10 p-1 rounded-full hover:bg-gray-100"
-                        onClick={(e) => handleDeletePost(e, post._id)}
-                      >
-                        {postDeleting._id === post._id &&
-                        postDeleting.isLoading ? (
-                          <Loader2 className="animate-spin" />
-                        ) : (
-                          <Trash2 className="h-4 w-4" />
-                        )}
-                      </button>
-                    )}
-
-                    <div className="p-4 flex flex-row items-start gap-4">
-                      <div className="h-12 w-12 rounded-full border border-purple-200 overflow-hidden relative">
-                        <Image
-                          src={"/images/avatar/man.png"}
-                          width={48}
-                          height={48}
-                          alt={"avatar"}
-                          className="h-full w-full object-cover"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-gray-800">
-                            @{post.author.name}
-                          </span>
-                          {post.author.role && (
-                            <span
-                              className={`${post.author.role === "mentee" ? "" : "inline-flex uppercase items-center rounded-full border border-purple-300 bg-purple-100 px-2.5 py-0.5 text-xs font-semibold text-purple-700"}`}
-                            >
-                              {post.author.role === "admin"
-                                ? "Admin"
-                                : post.author.role === "mentor"
-                                  ? "Listener"
-                                  : ""}
-                            </span>
+                {announcementsPosts?.length > 0 ? (
+                  announcementsPosts?.map((post: any) => (
+                    <div
+                      key={post._id}
+                      className="bg-white border border-purple-200 rounded-lg overflow-hidden cursor-pointer hover:border-purple-300 relative shadow-md"
+                      onClick={() => handleOpenPost(post._id)}
+                    >
+                      {/* Delete Icon */}
+                      {(user?.role === "admin" ||
+                        user?.userName === post.author.name) && (
+                        <button
+                          className="absolute top-2 right-2 text-gray-400 hover:text-red-500 z-10 p-1 rounded-full hover:bg-gray-100"
+                          onClick={(e) => handleDeletePost(e, post._id)}
+                        >
+                          {postDeleting._id === post._id &&
+                          postDeleting.isLoading ? (
+                            <Loader2 className="animate-spin" />
+                          ) : (
+                            <Trash2 className="h-4 w-4" />
                           )}
+                        </button>
+                      )}
+
+                      <div className="p-4 flex flex-row items-start gap-4">
+                        <div className="h-12 w-12 rounded-full border border-purple-200 overflow-hidden relative">
+                          <Image
+                            src={"/images/avatar/man.png"}
+                            width={48}
+                            height={48}
+                            alt={"avatar"}
+                            className="h-full w-full object-cover"
+                          />
                         </div>
-                        <p className="text-sm text-gray-500">
-                          {moment(post.createdAt).fromNow()}
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-gray-800">
+                              @{post.author.name}
+                            </span>
+                            {post.author.role && (
+                              <span
+                                className={`${post.author.role === "mentee" ? "" : "inline-flex uppercase items-center rounded-full border border-purple-300 bg-purple-100 px-2.5 py-0.5 text-xs font-semibold text-purple-700"}`}
+                              >
+                                {post.author.role === "admin"
+                                  ? "Admin"
+                                  : post.author.role === "mentor"
+                                    ? "Listener"
+                                    : ""}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-500">
+                            {moment(post.createdAt).fromNow()}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="px-4 pb-2">
+                        <p className="whitespace-pre-line text-gray-700">
+                          {post?.content}
                         </p>
                       </div>
-                    </div>
-                    <div className="px-4 pb-2">
-                      <p className="whitespace-pre-line text-gray-700">
-                        {post?.content}
-                      </p>
-                    </div>
-                    <div className="flex justify-between border-t border-purple-100 pt-4 px-4 pb-4">
-                      <div className="flex items-center gap-2">
+                      <div className="flex justify-between border-t border-purple-100 pt-4 px-4 pb-4">
+                        <div className="flex items-center gap-2">
+                          <button className="flex items-center text-gray-500 hover:text-purple-600 text-sm">
+                            <ThumbsUp
+                              fill={
+                                votedLists.includes(post._id)
+                                  ? "#8b5cf6"
+                                  : undefined
+                              }
+                              className="h-4 w-4 mr-1"
+                            />
+                            {post?.votes || 0}
+                          </button>
+                          <button className="flex items-center text-gray-500 hover:text-purple-600 text-sm">
+                            <MessageSquare className="h-4 w-4 mr-1" />
+                            {post?.comments?.length || 0}
+                          </button>
+                        </div>
                         <button className="flex items-center text-gray-500 hover:text-purple-600 text-sm">
-                          <ThumbsUp
-                            fill={
-                              votedLists.includes(post._id)
-                                ? "#8b5cf6"
-                                : undefined
-                            }
-                            className="h-4 w-4 mr-1"
-                          />
-                          {post?.votes || 0}
-                        </button>
-                        <button className="flex items-center text-gray-500 hover:text-purple-600 text-sm">
-                          <MessageSquare className="h-4 w-4 mr-1" />
-                          {post?.comments?.length || 0}
+                          <Link2 className="h-4 w-4 mr-1" />
+                          {/* Share */}
                         </button>
                       </div>
-                      <button className="flex items-center text-gray-500 hover:text-purple-600 text-sm">
-                        <Link2 className="h-4 w-4 mr-1" />
-                        {/* Share */}
-                      </button>
                     </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <>
+                    <p>There is no announcements.</p>
+                  </>
+                )}
               </div>
             ) : (
               <>
